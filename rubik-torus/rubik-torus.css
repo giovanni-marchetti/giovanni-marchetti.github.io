@@ -1,0 +1,175 @@
+/* Rubik's torus widget, adapted from torus_app/index.html (see rubik-torus.js).
+   Everything is scoped to .rt, in the light theme of the page. */
+#rubik-torus {
+  margin-top: 3rem;
+}
+
+.rt {
+  --rt-bg: hsl(210, 20%, 98%);          /* page background (latex.css) */
+  --rt-fg: #161a20;
+  --rt-muted: #59616c;
+  --rt-line: #ccd2d9;
+  --rt-btn: #ffffff;
+  --rt-btn-hover: #edf0f3;
+  --rt-accent: #a8203a;
+  --rt-accent-soft: rgba(168, 32, 58, 0.09);
+  --rt-plastic: #3a3e44;                /* the lines between the tiles */
+  --rt-veil: rgba(247, 249, 250, 0.66);
+  --rt-frame: hsl(210, 20%, 98%);       /* same as the page background (--rt-bg) */
+  max-width: 400px;
+  margin: 1rem auto 0;
+  color: var(--rt-fg);
+  line-height: 1.45;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rt button {
+  font: inherit;
+  color: inherit;
+}
+
+.rt button:focus-visible {
+  outline: 2px solid var(--rt-accent);
+  outline-offset: 2px;
+}
+
+/* options: grid size and turn direction */
+.rt-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 16px;
+}
+
+.rt-seg {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* The label hangs to the left, so that the buttons alone are centered. It is
+   in the same font, size and color as the text of the buttons. */
+.rt-seg-k {
+  position: absolute;
+  right: 100%;
+  margin-right: 10px;
+  white-space: nowrap;
+  font: inherit;
+  color: var(--rt-fg);
+}
+
+/* buttons: the options above the board and the actions below it, all in
+   the page font (see .rt button) */
+.rt-act,
+.rt-seg button {
+  height: 2.25rem;
+  padding: 0 14px;
+  border: 1px solid var(--rt-line);
+  background: var(--rt-btn);
+  border-radius: 0;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.rt-seg button {
+  min-width: 2.25rem;
+  padding: 0 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.rt-act:hover,
+.rt-seg button:hover {
+  background: var(--rt-btn-hover);
+}
+
+.rt-act:active,
+.rt-seg button:active {
+  transform: translateY(1px);
+}
+
+.rt-seg button[aria-checked="true"] {
+  color: var(--rt-accent);
+  background: var(--rt-accent-soft);
+  border-color: var(--rt-accent);
+}
+
+.rt-seg button svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+  margin: 0 auto;
+}
+
+.rt-act:disabled {
+  opacity: 0.45;
+  cursor: default;
+  transform: none;
+}
+
+.rt-act:disabled:hover {
+  background: var(--rt-btn);
+}
+
+/* board */
+.rt-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  margin: 0.75rem auto 0;
+}
+
+.rt-board {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: block;
+  /* Vertical swipes scroll the page; horizontal drags slide the torus. */
+  touch-action: pan-y;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.rt-board.sliding {
+  cursor: grabbing;
+}
+
+.rt-board:focus {
+  outline: none;
+}
+
+.rt-board:focus-visible {
+  outline: 2px solid var(--rt-accent);
+  outline-offset: 2px;
+}
+
+.rt-board.shuffle {
+  animation: rt-shuffle 260ms ease-out;
+}
+
+@keyframes rt-shuffle {
+  from { opacity: 0.25; transform: translate(-50%, -50%) scale(0.985); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* actions */
+.rt-actions {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 720px) {
+  .rt-actions .rt-act {
+    flex: 1 1 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rt-board.shuffle {
+    animation: none;
+  }
+}

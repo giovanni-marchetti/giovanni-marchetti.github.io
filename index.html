@@ -4,6 +4,7 @@
 <head>
   <title>Giovanni Luca Marchetti</title>
   <link rel="stylesheet" href="https://latex.vercel.app/style.css">
+  <link rel="stylesheet" href="rubik-torus/rubik-torus.css">
   <style>
   /* img {
     border: 3px solid #555;
@@ -110,6 +111,28 @@
     
     </div>
   
+  <div id="rubik-torus">
+    <p>In <a href="https://arxiv.org/abs/2502.13518">Rubik's Abstract Polytopes</a>, I generalize the Rubik's cube to arbitrary regular polytopes. Below, you can play with the <b>Rubik's torus</b>.</p>
+
+    <div class="rt" role="group" aria-label="Rubik's torus puzzle">
+      <div class="rt-options">
+        <div class="rt-seg" role="radiogroup" aria-label="Grid size" id="rt-size">
+          <span class="rt-seg-k" aria-hidden="true">Size</span>
+        </div>
+      </div>
+      <div class="rt-stage" id="rt-stage">
+        <canvas class="rt-board" id="rt-board" tabindex="0" aria-label="The Rubik's torus. Click or tap a square to turn it a quarter-turn. Drag to slide the torus. With the board focused, arrow keys pick a square and Space turns it."></canvas>
+      </div>
+      <div class="rt-actions">
+        <button type="button" class="rt-act" id="rt-undo" disabled>Undo</button>
+        <button type="button" class="rt-act" id="rt-scramble">Scramble</button>
+        <button type="button" class="rt-act" id="rt-reset" disabled>Reset</button>
+      </div>
+      <noscript><p>The Rubik's torus needs JavaScript.</p></noscript>
+    </div>
+  </div>
+
+  <script src="rubik-torus/rubik-torus.js" defer></script>
 
 </body>
 
