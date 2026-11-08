@@ -1,0 +1,220 @@
+[
+  {
+    "title": "Algebraic Geometry of Deep Learning",
+    "description": "these works explore the (algebraic) geometry of function spaces parametrized by neural networks.",
+    "papers": [
+      {
+        "title": "Polynomial Residual Networks are Generically Identifiable",
+        "url": "https://arxiv.org/abs/2610.33738",
+        "authors": ["Dahlgren", "Marchetti", "Kohn"],
+        "venue": "Preprint",
+        "year": 2026
+      },
+      {
+        "title": "Linear Independence of Polynomial Compositions and Identifiability of Deep Neural Networks",
+        "url": "https://arxiv.org/abs/2608.27113",
+        "authors": ["Kohn", "Marchetti", "Massarenti", "Mella"],
+        "venue": "Preprint",
+        "year": 2026
+      },
+      {
+        "title": "Singular Learning and Occam's Razor in Deep Monomial Networks",
+        "url": "https://arxiv.org/abs/2606.28464",
+        "authors": ["Kohn", "Marchetti", "Shabir", "Shahverdi", "Wang"],
+        "venue": "Preprint",
+        "year": 2026
+      },
+      {
+        "title": "Identifiable Equivariant Networks are Layerwise Equivariant",
+        "url": "https://arxiv.org/abs/2601.21645",
+        "authors": ["Shahverdi*", "Marchetti*", "Bökman*", "Kohn*"],
+        "venue": "ICML",
+        "year": 2026
+      },
+      {
+        "title": "Critical Points of Degenerate Metrics on Algebraic Varieties: A Tale of Overparametrization",
+        "url": "https://arxiv.org/abs/2512.21029",
+        "authors": ["Marchetti*", "Connelly*", "Breiding*", "Kohn*"],
+        "venue": "MFML",
+        "year": 2026
+      },
+      {
+        "title": "Learning on a Razor’s Edge: Identifiability and Singularity of Polynomial Neural Networks",
+        "url": "https://arxiv.org/abs/2505.11846",
+        "authors": ["Shahverdi*", "Marchetti*", "Kohn*"],
+        "venue": "ICLR",
+        "year": 2026
+      },
+      {
+        "title": "An Invitation to Neuroalgebraic Geometry",
+        "url": "https://arxiv.org/abs/2501.18915",
+        "authors": ["Marchetti*", "Shahverdi*", "Mereta*", "Trager*", "Kohn*"],
+        "venue": "ICML Spotlight",
+        "year": 2025
+      },
+      {
+        "title": "Geometry of Lightning Self-Attention: Identifiability and Dimension",
+        "url": "https://arxiv.org/abs/2408.17221",
+        "authors": ["Henry*", "Marchetti*", "Kohn*"],
+        "venue": "ICLR",
+        "year": 2025
+      },
+      {
+        "title": "On the Geometry and Optimization of Polynomial Convolutional Networks",
+        "url": "https://arxiv.org/abs/2410.00722",
+        "authors": ["Shahverdi*", "Marchetti*", "Kohn*"],
+        "venue": "AISTATS",
+        "year": 2025
+      }
+    ]
+  },
+  {
+    "title": "Feature Learning and Emergence",
+    "description": "these works explore the dynamics of feature learning in neural networks, with a focus on group-theoretical Fourier features.",
+    "papers": [
+      {
+        "title": "Sequential Group Composition: A Window into the Mechanics of Deep Learning",
+        "url": "https://arxiv.org/abs/2602.03655",
+        "authors": ["Marchetti*", "Kunin*", "Myers", "Acosta", "Miolane"],
+        "venue": "ICML",
+        "year": 2026
+      },
+      {
+        "title": "Alternating Gradient Flows: A Theory of Feature Learning in Two-layer Neural Networks",
+        "url": "https://arxiv.org/abs/2506.06489",
+        "authors": ["Kunin", "Marchetti", "Chen", "Karkada", "Simon", "DeWeese", "Ganguli", "Miolane"],
+        "venue": "NeurIPS",
+        "year": 2025
+      },
+      {
+        "title": "Harmonics of Learning: Universal Fourier Features Emerge in Invariant Networks",
+        "url": "https://arxiv.org/abs/2312.08550",
+        "authors": ["Marchetti", "Hillar", "Kragic", "Sanborn"],
+        "venue": "COLT",
+        "year": 2024
+      }
+    ]
+  },
+  {
+    "title": "Equivariant Deep Learning",
+    "description": "these works explore the interaction between symmetry and deep learning, with a focus on equivariant representation learning, and its applications to robotics.",
+    "papers": [
+      {
+        "title": "Neural Lattice Reduction: A Self-Supervised Geometric Deep Learning Approach",
+        "url": "https://arxiv.org/abs/2311.08170",
+        "authors": ["Marchetti", "Cesa", "Kumar", "Behboodi"],
+        "venue": "TMLR",
+        "year": 2025
+      },
+      {
+        "title": "Equivariant Representation Learning via Class-Pose Decomposition",
+        "url": "https://arxiv.org/abs/2207.03116",
+        "authors": ["Marchetti*", "Tegner*", "Varava", "Kragic"],
+        "venue": "AISTATS",
+        "year": 2023
+      },
+      {
+        "title": "Equivariant Representation Learning in the Presence of Stabilizers",
+        "url": "https://arxiv.org/abs/2301.05231",
+        "authors": ["Rey*", "Marchetti*", "Kragic", "Jarnikov", "Holenderski"],
+        "venue": "ECML-PKDD",
+        "year": 2023
+      },
+      {
+        "title": "Learning Geometric Representations of Objects via Interaction",
+        "url": "https://arxiv.org/abs/2309.05346",
+        "authors": ["Reichlin*", "Marchetti*", "Yin", "Varava", "Kragic"],
+        "venue": "ECML-PKDD",
+        "year": 2023
+      },
+      {
+        "title": "Back to the Manifold: Recovering from Out-of-Distribution States",
+        "url": "https://arxiv.org/abs/2207.08673",
+        "authors": ["Reichlin", "Marchetti", "Yin", "Ghadirzadeh", "Kragic"],
+        "venue": "IROS",
+        "year": 2022
+      },
+      {
+        "title": "Relative representations: Topological and Geometric Perspectives",
+        "url": "https://arxiv.org/abs/2409.10967",
+        "authors": ["Garcia-Castellanos", "Marchetti", "Kragic", "Scolamiero"],
+        "venue": "NeurIPS Workshop (UniReps)",
+        "year": 2024,
+        "hidden": true
+      }
+    ]
+  },
+  {
+    "title": "Computational Geometry",
+    "description": "these works concern high-dimensional Voronoi tessellations and Delaunay triangulations, with applications to density estimation and active learning.",
+    "papers": [
+      {
+        "title": "HyperSteiner: Computing Heuristic Hyperbolic Steiner Minimal Trees",
+        "url": "https://arxiv.org/abs/2409.05671",
+        "authors": ["Garcia-Castellanos*", "Medbouhi*", "Marchetti", "Bekkers", "Kragic"],
+        "venue": "ALENEX",
+        "year": 2025
+      },
+      {
+        "title": "Hyperbolic Delaunay Geometric Alignment",
+        "url": "https://arxiv.org/abs/2404.08608",
+        "authors": ["Medbouhi", "Marchetti", "Polianskii", "Kravberg", "Poklukar", "Varava", "Kragic"],
+        "venue": "ECML-PKDD",
+        "year": 2024
+      },
+      {
+        "title": "An Efficient and Continuous Voronoi Density Estimator",
+        "url": "https://arxiv.org/abs/2210.03964",
+        "authors": ["Marchetti", "Polianskii", "Varava", "Pokorny", "Kragic"],
+        "venue": "AISTATS Oral",
+        "year": 2023
+      },
+      {
+        "title": "Active Nearest Neighbor Regression Through Delaunay Refinement",
+        "url": "https://arxiv.org/abs/2206.08061",
+        "authors": ["Kravberg*", "Marchetti*", "Polianskii*", "Varava", "Pokorny", "Kragic"],
+        "venue": "ICML",
+        "year": 2022
+      },
+      {
+        "title": "Voronoi Density Estimator: Computation, Compactification and Convergence",
+        "url": "https://arxiv.org/abs/2206.08051",
+        "authors": ["Polianskii*", "Marchetti*", "Kravberg", "Varava", "Pokorny", "Kragic"],
+        "venue": "UAI",
+        "year": 2022
+      }
+    ]
+  },
+  {
+    "title": "Other",
+    "description": "these works concern various topics in pure mathematics, e.g., category theory and combinatorics.",
+    "papers": [
+      {
+        "title": "Rubik's Abstract Polytopes",
+        "url": "https://arxiv.org/abs/2502.13518",
+        "authors": ["Marchetti"],
+        "venue": "Preprint",
+        "year": 2025
+      },
+      {
+        "title": "Hearts and Towers in Stable ∞-Categories",
+        "url": "https://arxiv.org/abs/1501.04658",
+        "authors": ["Fiorenza", "Loregian", "Marchetti"],
+        "venue": "Journal of Homotopy and Related Structures",
+        "year": 2019
+      }
+    ]
+  },
+  {
+    "title": "Thesis",
+    "description": "I obtained my doctoral degree from KTH in 2024 under the supervision of Prof. Danica Kragic. Below you can download the thesis.",
+    "papers": [
+      {
+        "title": "On Symmetries and Metrics in Geometric Inference",
+        "url": "files/PhD_Thesis.pdf",
+        "venue": "KTH",
+        "year": 2024
+      }
+    ]
+  }
+]
