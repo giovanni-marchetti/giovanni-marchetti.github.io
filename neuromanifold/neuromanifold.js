@@ -35,6 +35,8 @@ const LINE_EVERY = 10;             // an iso-weight line every LINE_EVERY sample
 const MIN_DEG = 2, MAX_DEG = 5;
 const MAX_COEF = 100;
 const CAM_DIST = 4, FOV = 36 * Math.PI / 180;
+const FILL = 0.9;                  // the picture fills this share of the view (of its half-width, from the center)
+const MAX_ZOOM = 2.5;              // but it is never more than this times the size at which its ball fits the view
 const ORBIT_SPEED = 0.008;         // radians per pixel of drag
 const KEY_STEP = 0.08;             // radians per arrow key
 const NV = GRID * GRID;
@@ -476,11 +478,11 @@ function recompute() {
 
   geo = { d, D, n, nn, Y, C, trC, lambda, E, W1, W2, center, span, embed, net, bw, mu, scale, gmax, even };
 
-  let msg;
+  // The status only speaks up when the leading coefficient of σ has been set to 0.
+  let msg = '';
   if (d === 1) msg = 'The leading coefficient is 0, so σ is linear, and so is f: the neuromanifold lies in the 2-dimensional space of linear polynomials.';
   else if (d < deg) msg = `The leading coefficient is 0, so deg σ = ${d} and f is a polynomial of degree ${D}. The neuromanifold is a surface in the ${n}-dimensional space of such polynomials.`;
-  else msg = `deg σ = ${d}, so f is a polynomial of degree ${D}, and the neuromanifold is a surface in the ${n}-dimensional space of such polynomials.`;
-  if (span < n) msg += ` It spans an affine subspace of dimension ${span}` + (span <= 3 ? ', so the principal components show it exactly.' : '.');
+  if (msg && span < n) msg += ` It spans an affine subspace of dimension ${span}` + (span <= 3 ? ', so the principal components show it exactly.' : '.');
   setStatus(msg);
   afterGeometry();
 }
@@ -815,7 +817,19 @@ function initView(canvas) {
     for (let r = 0; r < 3; r++) for (let k = 0; k < nn; k++) c[r] += Fr[r * nn + k] * geo.center[k];
 
     // project, about the center
-    let r2 = 0;
+    // The picture is scaled by 1 / view.r, with the eye at distance CAM_DIST.
+    // A point (x, y, z) then lands within FILL of the half-width of the view
+    // when max(|x|, |y|) / tan(FOV/2) ≤ FILL · (CAM_DIST · view.r − z), so
+    // view.r is fitted to the largest z + K · max(|x|, |y|): the picture fills
+    // the view as it turns. Against zooming far into a picture seen edge-on,
+    // view.r stays at least 1 / MAX_ZOOM of its radius (which also keeps the
+    // eye outside it).
+    const K = 1 / (Math.tan(FOV / 2) * FILL);
+    let r2 = 0, fit = 0;
+    const include = (x, y, z) => {
+      r2 = Math.max(r2, x * x + y * y + z * z);
+      fit = Math.max(fit, z + K * Math.max(Math.abs(x), Math.abs(y)));
+    };
     for (let v = 0; v < NV; v++) {
       const o = v * nn;
       let x = -c[0], y = -c[1], z = -c[2];
@@ -824,15 +838,10 @@ function initView(canvas) {
         x += Fr[k] * t; y += Fr[nn + k] * t; z += Fr[2 * nn + k] * t;
       }
       pos[3 * v] = x; pos[3 * v + 1] = y; pos[3 * v + 2] = z;
-      const q = x * x + y * y + z * z;
-      if (q > r2) r2 = q;
+      include(x, y, z);
     }
-    if (train.target) {                           // the target, which may be off the surface, is in the picture too
-      const [x, y, z] = place(train.target.t, nn);
-      r2 = Math.max(r2, x * x + y * y + z * z);
-    }
-    // The picture is scaled to fit (radius ≤ 1).
-    const r = Math.sqrt(r2) || 1;
+    if (train.target) include(...place(train.target.t, nn));   // the target, which may be off the surface, is in the picture too
+    const r = Math.max(fit / CAM_DIST, Math.sqrt(r2) / MAX_ZOOM) || 1;
     let more = false;
     if (view.snap || !view.r) { view.r = r; view.snap = false; }
     else {
@@ -1031,20 +1040,18 @@ function frame() {
   else if (view.markDirty) view.render(false);
   if (disk.dirty) drawDisk();
   if (train.plotDirty) drawLossPlot();
-  if (train.statusDirty) updateTrainStatus();
   updateCaption();
   if (more) requestDraw();
 }
 
 // ---------------------------------------------------------------- the caption
-// What the view shows: the principal components, unless the 4D rotation has
-// turned it away from them, or else a projection; with the share of the
-// variance (of the surface, with its area element) that it holds.
+// The share of the variance (of the surface, with its area element) that the
+// projection holds, and how to turn it.
 let capText = '';
 function updateCaption() {
   let text = '';
   if (geo) {
-    const nn = geo.nn, Fr = view.frame(), C = geo.C, cam = view.cam;
+    const nn = geo.nn, Fr = view.frame(), C = geo.C;
     let held = 0;
     for (let r = 0; r < 3; r++) for (let i = 0; i < nn; i++) {
       const fi = Fr[r * nn + i];
@@ -1052,13 +1059,9 @@ function updateCaption() {
       for (let j = 0; j < nn; j++) held += fi * C[i * nn + j] * Fr[r * nn + j];
     }
     held /= geo.trC || 1;
-    const pca = view.mode === 'pca' && Math.abs(cam[3]) + Math.abs(cam[7]) + Math.abs(cam[11]) < 1e-9;
-    text = !pca ? `This projection holds ${pct(held)} of the variance. `
-      : geo.span <= 3 ? `The principal components show the surface exactly: it lies in an affine subspace of dimension ${geo.span}. `
-      : `The top three principal components, which hold ${pct(held)} of the variance. `;
-    text += 'Drag to orbit; Shift-drag rotates the projection through a hidden dimension.';
+    text = `<span>This projection holds ${pct(held)} of the variance.</span><span>Drag: rotate. Drag + Shift: rotate in a hidden dimension.</span>`;
   }
-  if (text !== capText) { $('nm-cap').textContent = text; capText = text; }
+  if (text !== capText) { $('nm-cap').innerHTML = text; capText = text; }
 }
 
 // ---------------------------------------------------------------- after a new surface
@@ -1193,9 +1196,6 @@ function setProbe(w1, w2) {
     if (r > range) { w1 *= range / r; w2 *= range / r; }
     probe = { w1, w2 };
   }
-  const f = x => { const v = Math.round(x * 100) / 100; return (v < 0 ? '−' : '') + Math.abs(v).toFixed(2); };
-  $('nm-readout').innerHTML = probe
-    ? `(<i>w</i><sub>1</sub>, <i>w</i><sub>2</sub>) = (${f(probe.w1)}, ${f(probe.w2)})` : '&nbsp;';
   disk.dirty = true;
   view.markDirty = true;
   requestDraw();
@@ -1295,7 +1295,7 @@ function setBasis(mode, basis) {
 // The learning rate is constant: 1/(2 gmax), half the largest stable rate for
 // the Gauss–Newton part 2 JᵀJ of the curvature over the disk. Should the loss
 // ever go up, the step is undone and the rate halved.
-const train = { nu: 0.3, target: null, run: null, plotDirty: true, statusDirty: true, statusHtml: null };
+const train = { nu: 0.3, target: null, run: null, plotDirty: true };
 
 // Makes the target for the current surface: a new one if fresh, or else from
 // the same teacher weights and noise direction.
@@ -1323,17 +1323,15 @@ function buildTarget(fresh) {
     T.g[i] = F[i] * geo.bw[i] + train.nu * rho * T.u[i];
     T.t[i] = (T.g[i] - geo.mu[i]) / geo.scale;
   }
-  // the lowest and highest loss over the grid
+  // the lowest loss over the grid
   const Y = geo.Y, s2 = geo.scale * geo.scale;
-  let lo = Infinity, hi = 0, best = 0;
+  let lo = Infinity, best = 0;
   for (let v = 0; v < NV; v++) {
     let q = 0;
     for (let i = 0; i < nn; i++) { const e = Y[v * nn + i] - T.t[i]; q += e * e; }
     q *= s2;
     if (q < lo) { lo = q; best = v; }
-    hi = Math.max(hi, q);
   }
-  T.lossMax = hi;
   T.lossMin = Math.min(lo, polishMin(T, geo.W1[best], geo.W2[best]));
   train.target = T;
 }
@@ -1373,22 +1371,6 @@ function polishMin(T, w1, w2) {
     if (moved < 1e-14 * range) break;
   }
   return L;
-}
-
-// What the run converged to, from the Hessian of the loss there (by finite
-// differences of the gradient): 'minimum', 'saddle', or 'degenerate'.
-function criticalKind(run) {
-  const h = 1e-6 * range, { w1, w2 } = run, g = [];
-  for (const [x, y] of [[w1 + h, w2], [w1 - h, w2], [w1, w2 + h], [w1, w2 - h]]) {
-    lossGrad(run, x, y);
-    g.push([run.g1, run.g2]);
-  }
-  lossGrad(run, w1, w2);
-  const a = (g[0][0] - g[1][0]) / (2 * h), c = (g[2][1] - g[3][1]) / (2 * h);
-  const b = (g[0][1] - g[1][1] + g[2][0] - g[3][0]) / (4 * h);
-  const m = (a + c) / 2, q = Math.hypot((a - c) / 2, b), lmin = m - q, lmax = m + q;
-  const tol = 1e-4 * Math.max(Math.abs(lmin), Math.abs(lmax));
-  return lmin > tol ? 'minimum' : lmin < -tol ? 'saddle' : 'degenerate';
 }
 
 // The loss and its gradient at the weights (w1, w2), into run.L, run.g1, run.g2.
@@ -1471,67 +1453,26 @@ function advanceRun() {
     else if (run.step >= MAX_STEPS) run.status = 'limit';
   }
   if (run.status !== 'running') {
-    if (run.status === 'converged') run.kind = criticalKind(run);
     addPathPoint(run, true);
     run.hist.push([run.step, run.L]);
     updateTrainButtons();
   }
   view.markDirty = true;
   disk.dirty = true;
-  train.plotDirty = train.statusDirty = true;
+  train.plotDirty = true;
 }
 
 // After a new target or run: redraw what shows them.
 function trainChanged() {
   view.dirty = true;                            // the framing takes in the target
   disk.dirty = true;
-  train.plotDirty = train.statusDirty = true;
+  train.plotDirty = true;
   updateTrainButtons();
   requestDraw();
 }
 
 function updateTrainButtons() {
-  const run = train.run, pause = $('nm-pause');
-  pause.disabled = !run || (run.status !== 'running' && run.status !== 'paused');
-  pause.textContent = run && run.status === 'paused' ? 'Resume' : 'Pause';
   $('nm-clear').disabled = !train.target;
-}
-
-// x as m·10^e, in HTML
-function sci(x) {
-  if (!(x > 0)) return '0';
-  let e = Math.floor(Math.log10(x)), m = (x / 10 ** e).toFixed(2);
-  if (m === '10.00') { m = '1.00'; e++; }
-  return e === 0 ? m : `${m}·10<sup>${e < 0 ? '−' + -e : e}</sup>`;
-}
-
-function updateTrainStatus() {
-  train.statusDirty = false;
-  const T = train.target, run = train.run;
-  let html = '';
-  if (T) {
-    if (!run) html = `Click on the disk to train from there. The lowest loss on the disk is ${sci(T.lossMin)}.`;
-    else {
-      const lowest = Math.min(T.lossMin, run.L), best = `the lowest on the disk is ${sci(lowest)}`;
-      const n = run.step.toLocaleString('en-US'), steps = `${n} step${run.step === 1 ? '' : 's'}`, loss = `loss ${sci(run.L)}`;
-      const atBest = run.L <= lowest + Math.max(1e-6 * lowest, 1e-12 * T.lossMax);
-      html = {
-        running: `Step ${n}: ${loss}; ${best}.`,
-        paused: `Paused at step ${n}: ${loss}; ${best}.`,
-        converged: atBest ? `Converged after ${steps}: ${loss}, the lowest on the disk.`
-          : run.kind === 'minimum' ? `Converged after ${steps} to a local minimum: ${loss}, while ${best}.`
-          : run.kind === 'saddle' ? `Converged after ${steps} to a saddle point: ${loss}; ${best}.`
-          : `Converged after ${steps}: ${loss}; ${best}.`,
-        left: `Stopped after ${steps}, as the weights left the disk: ${loss}.`,
-        diverged: `Stopped after ${steps}, as the loss diverged.`,
-        limit: `Stopped after ${steps}: ${loss}; ${best}.`,
-      }[run.status];
-    }
-  }
-  if (html !== train.statusHtml) {
-    $('nm-train-status').innerHTML = html || '&nbsp;';
-    train.statusHtml = html;
-  }
 }
 
 // The loss against the steps, both on log scales, with the lowest loss on the
@@ -1625,10 +1566,11 @@ function buildSigma() {
   }
 }
 
+// A new degree starts from the monomial σ(t) = t^d.
 function setDegree(d) {
   deg = d;
-  for (let k = d + 1; k <= MAX_DEG; k++) coef[k] = 0;
-  if (coef[d] === 0) coef[d] = 1;
+  coef.fill(0);
+  coef[d] = 1;
   buildSigma();
   recompute();
 }
@@ -1643,12 +1585,6 @@ function init() {
 
   segmented($('nm-degree'), [2, 3, 4, 5].map(d => [d, String(d)]), deg, setDegree);
 
-  $('nm-monomial').addEventListener('click', () => {
-    coef.fill(0);
-    coef[deg] = 1;
-    buildSigma();
-    recompute();
-  });
   $('nm-random').addEventListener('click', () => {
     coef.fill(0);
     for (let k = 0; k < deg; k++) coef[k] = Math.round(20 * Math.random() - 10) / 10;
@@ -1670,10 +1606,8 @@ function init() {
     disk.layerDirty = disk.dirty = true;
     requestDraw();
   });
-  const probeBtn = $('nm-probe');
-  probeBtn.addEventListener('click', () => {
-    showProbe = !showProbe;
-    probeBtn.textContent = showProbe ? 'Hide point' : 'Show point';
+  $('nm-probe').addEventListener('change', e => {
+    showProbe = e.target.checked;
     view.markDirty = true;
     disk.dirty = true;
     requestDraw();
@@ -1704,15 +1638,6 @@ function init() {
     buildTarget(true);
     if (train.run) startRun(...train.run.start);
     else trainChanged();
-  });
-  $('nm-pause').addEventListener('click', () => {
-    const run = train.run;
-    if (!run) return;
-    if (run.status === 'running') run.status = 'paused';
-    else if (run.status === 'paused') run.status = 'running';
-    updateTrainButtons();
-    train.statusDirty = true;
-    requestDraw();
   });
   $('nm-clear').addEventListener('click', clearTraining);
   new ResizeObserver(() => { train.plotDirty = true; requestDraw(); }).observe($('nm-loss'));

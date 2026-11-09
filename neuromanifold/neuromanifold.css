@@ -152,70 +152,80 @@
   color: var(--nm-muted);
 }
 
-/* the disk of weights and the plot of the loss, with the range R, the probed
-   weights and the training beside them */
-.nm-weights {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 16px 30px;
-  margin-top: 1rem;
+.nm-status:empty {
+  display: none;
 }
 
-.nm-disk-col {
-  flex: none;
+/* The disk of weights beside the view, on rows that keep them level: the
+   disk centered on the view, the slider of the range R beside the display
+   options of the view (with its label above it, beside the buttons), and the
+   hint beside the caption. */
+.nm-main {
+  display: grid;
+  grid-template-columns: 216px minmax(0, 520px);   /* the disk with room for its labels; the view */
+  grid-template-areas:
+    "disk  stage"
+    ".     bar"
+    "range display"
+    "hint  cap";
+  justify-content: center;
+  gap: 8px 24px;
+  margin-top: 1.25rem;
+}
+
+/* below them, the plot of the loss and the training */
+.nm-weights {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px 30px;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--nm-line);
+}
+
+
+.nm-loss-box {
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 12px;
+  gap: 6px;
 }
 
 .nm-loss {
   display: block;
-  width: 200px;
-  height: 64px;
+  width: 100%;
+  height: 120px;
   border: 1px solid var(--nm-line);
   background: #ffffff;
 }
 
 .nm-loss-cap {
-  width: 200px;
-  margin: -6px 0 0;
-  font-size: 0.8em;
-  line-height: 1.3;
+  margin: 0;
+  font-size: 0.9em;
   color: var(--nm-muted);
-  text-align: center;
+  text-align: left;
 }
 
 .nm-train {
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-top: 8px;
-  padding-top: 10px;
-  border-top: 1px solid var(--nm-line);
 }
 
 .nm-train-head {
   margin: 0;
-  font-size: 0.9em;
   text-align: left;
 }
 
 .nm-train-btns {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 6px;
   margin-top: 2px;
-}
-
-.nm-train-status {
-  margin: 0;
-  min-height: 2.9em;              /* two lines, so that the layout does not jump */
-  font-size: 0.9em;
-  color: var(--nm-muted);
-  text-align: left;
-  font-variant-numeric: tabular-nums;
 }
 
 .nm-acc {
@@ -233,11 +243,12 @@
 }
 
 .nm-disk {
+  grid-area: disk;
+  align-self: center;
   position: relative;
-  flex: none;
   width: 190px;
   height: 190px;
-  margin: 16px 22px 4px 4px;      /* room for the axis labels */
+  margin: 16px 22px 16px 4px;     /* room for the axis labels, and as much below as above */
 }
 
 .nm-disk canvas {
@@ -268,41 +279,44 @@
   transform: translate(-50%, -6px);
 }
 
-.nm-weights-side {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 6px;
-  max-width: 300px;
+/* At the bottom of the row of the buttons of the view, and free to rise
+   past it (two lines are taller than the buttons) without making it taller. */
+.nm-range-lbl {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  align-self: end;
+  font-size: 0.9em;
+  text-align: center;
+  text-wrap: balance;
 }
 
-.nm-weights-side input[type="range"] {
+.nm-range-in {
+  grid-area: range;
+  align-self: center;
+}
+
+.nm-nowrap {
+  white-space: nowrap;
+}
+
+.nm input[type="range"] {
   width: 100%;
   margin: 0;
   accent-color: var(--nm-accent);
 }
 
 .nm-hint {
-  margin: 6px 0 0;
+  grid-area: hint;
+  margin: 0;
   font-size: 0.9em;
   color: var(--nm-muted);
-  text-align: left;
-}
-
-.nm-readout {
-  margin: 0;
-  min-height: 1.45em;
-  text-align: left;
-  font-variant-numeric: tabular-nums;
+  text-align: center;
+  text-wrap: balance;
 }
 
 /* the view */
-.nm-view {
-  max-width: 520px;
-  margin: 1.5rem auto 0;
-}
-
 .nm-stage {
+  grid-area: stage;
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
@@ -325,11 +339,12 @@
 }
 
 .nm-viewbar {
+  grid-area: bar;
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
   gap: 6px;
-  margin-top: 8px;
 }
 
 .nm-small {
@@ -338,20 +353,26 @@
 }
 
 .nm-cap {
-  margin: 0.5rem 0 0;
+  grid-area: cap;
+  margin: 0;
   font-size: 0.9em;
   color: var(--nm-muted);
-  text-align: left;
+  text-align: center;
+  text-wrap: balance;
 }
 
-/* display options */
+.nm-cap span {
+  display: block;                 /* one line for the variance, one for the controls */
+}
+
+/* display options, on their own line under the buttons of the view */
 .nm-display {
+  grid-area: display;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 8px 18px;
-  margin-top: 1.1rem;
+  gap: 6px 18px;
 }
 
 .nm-display label {
@@ -370,29 +391,42 @@
   color: var(--nm-fg);
 }
 
-.nm-legend {
-  margin: 0.6rem auto 0;
-  max-width: 620px;
-  font-size: 0.9em;
-  color: var(--nm-muted);
-  text-align: center;
-}
-
-.nm-nogl .nm-weights,
-.nm-nogl .nm-view,
-.nm-nogl .nm-display,
-.nm-nogl .nm-legend {
+.nm-nogl .nm-main,
+.nm-nogl .nm-weights {
   display: none;
 }
 
 @media (max-width: 620px) {
-  .nm-weights {
-    flex-direction: column;
-    align-items: center;
+  .nm-main {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "disk" "label" "range" "hint" "stage" "bar" "display" "cap";
   }
 
-  .nm-weights-side {
-    width: 100%;
-    max-width: 360px;
+  .nm-disk {
+    justify-self: center;
+  }
+
+  .nm-range-lbl {
+    grid-area: label;
+  }
+
+  .nm-range-lbl,
+  .nm-hint {
+    justify-self: center;
+    width: 216px;
+  }
+
+  .nm-stage {
+    margin-top: 8px;
+  }
+
+  .nm-weights {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .nm-loss-box,
+  .nm-train {
+    flex: none;
   }
 }
