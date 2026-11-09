@@ -4,7 +4,8 @@
  * A residual network with two layers of one neuron each, no biases and a
  * polynomial activation σ of degree d computes
  *     f(x) = σ(w2·h(x)) + h(x),   h(x) = σ(w1·x) + x,
- * a polynomial of degree d² in x. As (w1, w2) ranges over the disk
+ * a polynomial of degree d² in x; without its skip connections, it is the
+ * plain network f(x) = σ(w2·σ(w1·x)). As (w1, w2) ranges over the disk
  * w1² + w2² ≤ R², f traces a surface, the neuromanifold, in the space of
  * polynomials of degree ≤ d² (of dimension d² + 1). That space carries the
  * Bombieri–Weyl inner product <x^i, x^j> = δ_ij / C(d², i), and the surface
@@ -58,11 +59,13 @@ const PATH_EPS = 0.004;            // the path gets a point every PATH_EPS · R 
 const MAX_PATH = 4000;             // points of the path at most
 const MAX_STEPS = 3e6;             // gradient steps of a run at most
 const SPF_MAX = 2000;              // gradient steps per frame at most; the first frames take fewer
+const REG = 0.1;                   // the regularization λ ||w||², when on, has λ = REG ρ²/R² (see regLambda)
 
 // ---------------------------------------------------------------- state
 let deg = 2;
 const coef = new Float64Array(MAX_DEG + 1);   // σ(t) = Σ coef[k] t^k
 coef[2] = 1;
+let skip = true;                   // whether the network has its skip connections
 let range = 1;
 let showLines = true, xray = false;
 let geo = null;                    // the sampled surface, see recompute()
@@ -73,9 +76,10 @@ let visible = true;
 // ---------------------------------------------------------------- the network
 // Returns a function (w1, w2, F, J1, J2) that writes the coefficients (lowest
 // degree first) of f and of ∂f/∂w1, ∂f/∂w2 into arrays of length d² + 1, for
-// σ of degree d ≥ 1 with coefficients c.
-//   ∂f/∂w1 = (w2·σ'(w2 h) + 1) · σ'(w1 x) x,    ∂f/∂w2 = σ'(w2 h) · h.
-function makeNetwork(c, d) {
+// σ of degree d ≥ 1 with coefficients c, with or without the skip connections:
+// f = σ(w2 h) + s·h with h = σ(w1 x) + s·x, where s is 1 or 0. Then
+//   ∂f/∂w1 = (w2·σ'(w2 h) + s) · σ'(w1 x) x,    ∂f/∂w2 = σ'(w2 h) · h.
+function makeNetwork(c, d, skip) {
   const L = d * d + 1;
   const dc = new Float64Array(d);                 // coefficients of σ'
   for (let k = 1; k <= d; k++) dc[k - 1] = k * c[k];
@@ -103,7 +107,7 @@ function makeNetwork(c, d) {
   }
 
   return function (w1, w2, F, J1, J2) {
-    // h = σ(w1 x) + x and dh = ∂h/∂w1 = σ'(w1 x)·x
+    // h = σ(w1 x) + s·x and dh = ∂h/∂w1 = σ'(w1 x)·x
     let p = 1;                                    // w1^k
     dh[0] = 0;
     for (let k = 0; k <= d; k++) {
@@ -111,13 +115,13 @@ function makeNetwork(c, d) {
       if (k < d) dh[k + 1] = (k + 1) * c[k + 1] * p;
       p *= w1;
     }
-    h[1] += 1;
+    if (skip) h[1] += 1;
     for (let k = 0; k <= d; k++) u[k] = w2 * h[k];
 
     const dg = compose(c, d, g);                  // σ(w2 h)
     F.fill(0);
     for (let i = 0; i <= dg; i++) F[i] = g[i];
-    for (let k = 0; k <= d; k++) F[k] += h[k];
+    if (skip) for (let k = 0; k <= d; k++) F[k] += h[k];
 
     const dq = compose(dc, d - 1, q);             // σ'(w2 h)
     J1.fill(0);
@@ -130,18 +134,18 @@ function makeNetwork(c, d) {
         J2[i + j] += a * h[j];
       }
     }
-    for (let j = 0; j <= d; j++) J1[j] += dh[j];
+    if (skip) for (let j = 0; j <= d; j++) J1[j] += dh[j];
   };
 }
 
 // The dimension of the affine span of the neuromanifold. It is the rank of
 // the coefficients of f - f(0,0), as polynomials in (w1, w2), and is computed
 // from those polynomials: samples of them are too badly conditioned.
-function affineSpan(c, d) {
+function affineSpan(c, d, skip) {
   const X = d * d + 1, A = d * d + 1, B = d + 1;   // degrees in x, w1, w2
   const at = (i, a, b) => (i * A + a) * B + b, size = X * A * B;
-  // u = w2·h, with h = σ(w1 x) + x
-  const uTerms = [[1, 0, 1, 1]];                  // [degree in x, in w1, in w2, coefficient]
+  // u = w2·h, with h = σ(w1 x) + s·x (s = 1 with the skip connections, 0 without)
+  const uTerms = skip ? [[1, 0, 1, 1]] : [];      // [degree in x, in w1, in w2, coefficient]
   for (let k = 0; k <= d; k++) if (c[k] !== 0) uTerms.push([k, k, 1, c[k]]);
   // g = σ(u), by Horner's rule
   let g = new Float64Array(size), tmp = new Float64Array(size);
@@ -157,9 +161,10 @@ function affineSpan(c, d) {
     [g, tmp] = [tmp, g];
     g[0] += c[k];
   }
-  // rows: the coefficients of x^i in f - f(0,0) (h adds nothing to them but
-  // its terms c_k w1^k x^k), with columns the monomials w1^a w2^b ≠ 1
-  for (let k = 1; k <= d; k++) g[at(k, k, 0)] += c[k];
+  // rows: the coefficients of x^i in f - f(0,0) (the skip connection adds
+  // nothing to them but the terms c_k w1^k x^k of h), with columns the
+  // monomials w1^a w2^b ≠ 1
+  if (skip) for (let k = 1; k <= d; k++) g[at(k, k, 0)] += c[k];
   const cols = A * B - 1, M = [];
   for (let i = 0; i < X; i++) {
     const row = new Float64Array(cols);
@@ -297,12 +302,14 @@ function oklabToRgb8(L, A, B, out, o) {
 }
 
 // The color of the weights R·(x, y): hue for the direction, chroma for the size.
-// When σ is even, the weights (±w1, ±w2) give the same function, so they get
-// the same color: the hue is then four times the angle of (|w1|, |w2|), which
-// still runs through all hues in each quadrant.
-function weightColor(x, y, out, o, even) {
+// Weights that give the same function (see sym in recompute) get the same
+// color, with hues that still run through all hues: when (±w1, ±w2) do, the
+// hue is four times the angle of (|w1|, |w2|); when (w1, w2) and (−w1, −w2)
+// do, it is twice the angle of (w1, w2).
+function weightColor(x, y, out, o, sym) {
   const rho = Math.min(1, Math.hypot(x, y));
-  const th = even ? 4 * Math.atan2(Math.abs(y), Math.abs(x)) : Math.atan2(y, x);
+  const th = sym === 'mirror' ? 4 * Math.atan2(Math.abs(y), Math.abs(x))
+           : sym === 'antipodal' ? 2 * Math.atan2(y, x) : Math.atan2(y, x);
   oklabToRgb8(0.74 - 0.06 * rho, 0.13 * rho * Math.cos(th), 0.13 * rho * Math.sin(th), out, o);
 }
 
@@ -318,10 +325,10 @@ function diskToSquare(x, y) {
 }
 
 // The cells of the grid (index b·(GRID − 1) + a for the cell from vertex
-// (a, b) to (a + 1, b + 1)) within two cells of the weights (w1, w2), and,
-// when σ is even, of their mirror images (±w1, ±w2), which give the same
+// (a, b) to (a + 1, b + 1)) within two cells of the weights (w1, w2), and of
+// their images under the symmetry sym (see recompute), which give the same
 // function.
-function cellsNear(w1, w2, even) {
+function cellsNear(w1, w2, sym) {
   const [s, t] = diskToSquare(w1 / range, w2 / range), C = GRID - 1;
   const a0 = Math.min(Math.max(Math.floor((s + 1) * MID), 0), C - 1);
   const b0 = Math.min(Math.max(Math.floor((t + 1) * MID), 0), C - 1);
@@ -331,13 +338,14 @@ function cellsNear(w1, w2, even) {
       if (i >= 0 && j >= 0 && i < C && j < C) cells.add(j * C + i);
   };
   around(a0, b0);
-  if (even) { around(C - 1 - a0, b0); around(a0, C - 1 - b0); around(C - 1 - a0, C - 1 - b0); }
+  if (sym !== 'none') around(C - 1 - a0, C - 1 - b0);
+  if (sym === 'mirror') { around(C - 1 - a0, b0); around(a0, C - 1 - b0); }
   return cells;
 }
 
 // ---------------------------------------------------------------- the surface
 // Samples f over the disk of weights w1² + w2² ≤ R² and computes its principal
-// components. geo = { d, D, n, nn, Y, C, trC, lambda, E, W1, W2, center, span, embed, net, bw, mu, scale, gmax, even }:
+// components. geo = { d, D, n, nn, Y, C, trC, lambda, E, W1, W2, center, span, embed, net, bw, mu, scale, gmax, sym }:
 //   Y      NV x nn, the samples in Bombieri–Weyl orthonormal coordinates,
 //          centered and scaled to max |coordinate| = 1 (nn = max(n, 4): the
 //          coordinates past n are 0);
@@ -346,13 +354,14 @@ function cellsNear(w1, w2, even) {
 //   W1, W2 the weights of each sample;
 //   center the center of the view, in the same coordinates as Y;
 //   embed  (w1, w2, out) ↦ the coordinates of f for any weights, as in Y;
-//   net    the network (see makeNetwork), for this σ;
+//   net    the network (see makeNetwork), for this σ and these skip connections;
 //   bw     the factors 1/√C(D, i) from monomial to BW orthonormal coordinates;
 //   mu, scale  the center and the scale of Y: Y = (BW coordinates − mu) / scale;
 //   gmax   the largest eigenvalue of JᵀJ (BW metric) over the samples, a bound
 //          for the curvature of the loss in the training (as its Gauss–Newton
 //          part is 2 JᵀJ);
-//   even   whether σ is even, so that (±w1, ±w2) give the same function.
+//   sym    the weights that give the same function as (w1, w2): (±w1, ±w2)
+//          ('mirror'), or (−w1, −w2) ('antipodal'), or no others ('none').
 function effectiveDegree() {
   for (let k = deg; k >= 0; k--) if (coef[k] !== 0) return k;
   return -1;
@@ -362,13 +371,14 @@ function recompute() {
   const d = effectiveDegree();
   if (d < 1) {
     geo = null;
-    setStatus(d === 0 ? 'σ is constant, so f(x) = 2σ(0) + x for all weights: the neuromanifold is a single point.'
-                      : 'σ is zero, so f(x) = x for all weights: the neuromanifold is a single point.');
+    const f = d === 0 ? (skip ? 'σ is constant, so f(x) = 2σ(0) + x' : 'σ is constant, so f(x) = σ(0)')
+                      : (skip ? 'σ is zero, so f(x) = x' : 'σ is zero, and so is f');
+    setStatus(f + ' for all weights: the neuromanifold is a single point.');
     afterGeometry();
     return;
   }
   const D = d * d, n = D + 1, nn = Math.max(n, 4);
-  const net = makeNetwork(Float64Array.from(coef), d);   // a copy, as σ may be edited while geo is in use
+  const net = makeNetwork(Float64Array.from(coef), d, skip);   // a copy, as σ may be edited while geo is in use
   const bw = new Float64Array(n);                 // x^i ↦ x^i / sqrt(C(D, i)) is BW-orthonormal
   for (let i = 0; i < n; i++) bw[i] = 1 / Math.sqrt(binomial(D, i));
   const F = new Float64Array(n), J1 = new Float64Array(n), J2 = new Float64Array(n);
@@ -449,7 +459,7 @@ function recompute() {
     if (dot === 0) for (let k = 0; k < nn; k++) if (Math.abs(E[r * nn + k]) > Math.abs(big)) big = E[r * nn + k];
     if (dot < 0 || big < 0) for (let k = 0; k < nn; k++) E[r * nn + k] = -E[r * nn + k];
   }
-  const span = affineSpan(coef, d);
+  const span = affineSpan(coef, d, skip);
 
   // The view turns about the center of an approximate smallest ball around
   // the surface (Bădoiu–Clarkson iterations, on every 3rd sample).
@@ -472,16 +482,25 @@ function recompute() {
     for (let i = 0; i < nn; i++) out[i] = i < n && varies[i] ? (Fe[i] * bw[i] - mu[i]) / scale : 0;
   };
 
-  // σ even: (±w1, ±w2) give the same function (see weightColor)
-  let even = true;
-  for (let k = 1; k <= d; k += 2) if (coef[k] !== 0) even = false;
+  // Weights that give the same function (see weightColor): when σ is even,
+  // (±w1, ±w2); without the skip connections, when σ is odd, (−w1, −w2), as
+  // then σ(−w2 σ(−w1 x)) = σ(w2 σ(w1 x)).
+  let even = true, odd = true, monomial = true;
+  for (let k = 0; k <= d; k++) if (coef[k] !== 0) {
+    if (k % 2) even = false; else odd = false;
+    if (k < d) monomial = false;
+  }
+  const sym = even ? 'mirror' : odd && !skip ? 'antipodal' : 'none';
 
-  geo = { d, D, n, nn, Y, C, trC, lambda, E, W1, W2, center, span, embed, net, bw, mu, scale, gmax, even };
+  geo = { d, D, n, nn, Y, C, trC, lambda, E, W1, W2, center, span, embed, net, bw, mu, scale, gmax, sym };
 
-  // The status only speaks up when the leading coefficient of σ has been set to 0.
+  // The status only speaks up when the leading coefficient of σ has been set
+  // to 0. (Without the skip connections and with σ(t) = c·t^d a monomial, f(x)
+  // = c^(d+1) (w2 w1^d)^d x^(d²): the neuromanifold is a segment, not a surface.)
+  const segment = !skip && monomial && d > 1;
   let msg = '';
   if (d === 1) msg = 'The leading coefficient is 0, so σ is linear, and so is f: the neuromanifold lies in the 2-dimensional space of linear polynomials.';
-  else if (d < deg) msg = `The leading coefficient is 0, so deg σ = ${d} and f is a polynomial of degree ${D}. The neuromanifold is a surface in the ${n}-dimensional space of such polynomials.`;
+  else if (d < deg) msg = `The leading coefficient is 0, so deg σ = ${d} and f is a polynomial of degree ${D}. The neuromanifold ${segment ? 'lies' : 'is a surface'} in the ${n}-dimensional space of such polynomials.`;
   if (msg && span < n) msg += ` It spans an affine subspace of dimension ${span}` + (span <= 3 ? ', so the principal components show it exactly.' : '.');
   setStatus(msg);
   afterGeometry();
@@ -865,7 +884,7 @@ function initView(canvas) {
     }
 
     const uploadColors = view.colorsDirty;
-    if (uploadColors) for (let v = 0; v < NV; v++) weightColor(geo.W1[v] / range, geo.W2[v] / range, col, 3 * v, geo.even);
+    if (uploadColors) for (let v = 0; v < NV; v++) weightColor(geo.W1[v] / range, geo.W2[v] / range, col, 3 * v, geo.sym);
     view.colorsDirty = false;
 
     gl.bindBuffer(gl.ARRAY_BUFFER, bPos); gl.bufferSubData(gl.ARRAY_BUFFER, 0, pos);
@@ -900,8 +919,9 @@ function initView(canvas) {
     gl.drawElements(gl.TRIANGLES, iTri.count, gl.UNSIGNED_SHORT, 0);
     gl.disable(gl.POLYGON_OFFSET_FILL);
 
-    // the iso-weight lines, and the weight axes in darker ink
-    if (showLines) {
+    // the iso-weight lines, and the weight axes in darker ink; always when the
+    // neuromanifold is a segment, as they are all there is to see of it
+    if (showLines || geo.span < 2) {
       gl.uniform1i(uLine, 1);
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
@@ -928,11 +948,11 @@ function initView(canvas) {
       if (run.pathY.length) drawPath(nn, run, proj);
     }
     if (T) view.targetHidden = drawMarker(T.t, STYLE.target, nn, proj, null);
-    if (run) view.runHidden = drawMarker(runY, STYLE.run, nn, proj, cellsNear(run.w1, run.w2, geo.even));
+    if (run) view.runHidden = drawMarker(runY, STYLE.run, nn, proj, cellsNear(run.w1, run.w2, geo.sym));
     if (probe && showProbe) {
       if (!markY || markY.length !== nn) markY = new Float64Array(nn);
       geo.embed(probe.w1, probe.w2, markY);
-      view.markHidden = drawMarker(markY, STYLE.probe, nn, proj, cellsNear(probe.w1, probe.w2, geo.even));
+      view.markHidden = drawMarker(markY, STYLE.probe, nn, proj, cellsNear(probe.w1, probe.w2, geo.sym));
     }
   }
 
@@ -1046,7 +1066,7 @@ function frame() {
 
 // ---------------------------------------------------------------- the caption
 // The share of the variance (of the surface, with its area element) that the
-// projection holds, and how to turn it.
+// projection holds.
 let capText = '';
 function updateCaption() {
   let text = '';
@@ -1059,9 +1079,9 @@ function updateCaption() {
       for (let j = 0; j < nn; j++) held += fi * C[i * nn + j] * Fr[r * nn + j];
     }
     held /= geo.trC || 1;
-    text = `<span>This projection holds ${pct(held)} of the variance.</span><span>Drag: rotate. Drag + Shift: rotate in a hidden dimension.</span>`;
+    text = `This projection holds ${pct(held)} of the variance.`;
   }
-  if (text !== capText) { $('nm-cap').innerHTML = text; capText = text; }
+  if (text !== capText) { $('nm-cap').textContent = text; capText = text; }
 }
 
 // ---------------------------------------------------------------- after a new surface
@@ -1074,7 +1094,7 @@ function afterGeometry() {
   }
   view.snap = true;
   view.colorsChanged();
-  if (disk.even !== !!(geo && geo.even)) disk.layerDirty = true;   // the colors of the disk change with the parity of σ
+  if (disk.sym !== (geo ? geo.sym : 'none')) disk.layerDirty = true;   // the colors of the disk change with the symmetries of the network
   disk.dirty = true;
   // The target is made again for the new surface, from the same teacher
   // weights and noise; a run starts again from the same weights.
@@ -1113,12 +1133,12 @@ function drawDiskLayer() {
   layer.height = H;
   const g = layer.getContext('2d');
   const img = g.createImageData(W, H), px = img.data, rgb = new Uint8Array(3);
-  const cx = W / 2, cy = H / 2, rad = diskRadius(), even = disk.even = !!(geo && geo.even);
+  const cx = W / 2, cy = H / 2, rad = diskRadius(), sym = disk.sym = geo ? geo.sym : 'none';
   for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) {
     const x = (i + 0.5 - cx) / rad, y = (cy - j - 0.5) / rad;
     const cover = Math.min(Math.max((1 - Math.hypot(x, y)) * rad + 0.5, 0), 1);   // smooth edge
     if (cover === 0) continue;
-    weightColor(x, y, rgb, 0, even);
+    weightColor(x, y, rgb, 0, sym);
     const o = 4 * (j * W + i);
     px[o] = rgb[0]; px[o + 1] = rgb[1]; px[o + 2] = rgb[2]; px[o + 3] = Math.round(255 * cover);
   }
@@ -1292,10 +1312,21 @@ function setBasis(mode, basis) {
 // where w* is random in the disk of radius 0.8 R, u is a random unit vector
 // in BW coordinates (a normalized Kostlan polynomial), ρ is the RMS size of
 // the surface and ν the noise level: with ν = 0, the target is on the surface.
-// The learning rate is constant: 1/(2 gmax), half the largest stable rate for
-// the Gauss–Newton part 2 JᵀJ of the curvature over the disk. Should the loss
-// ever go up, the step is undone and the rate halved.
-const train = { nu: 0.3, target: null, run: null, plotDirty: true };
+// With regularization on, the loss is L(w) = ||f_w − g||²_BW + λ ||w||², the
+// squared L² norm of the weights (weight decay).
+// The learning rate is constant: 1/(2 (gmax + λ)), half the largest stable
+// rate for the Gauss–Newton part 2 (JᵀJ + λ) of the curvature over the disk.
+// Should the loss ever go up, the step is undone and the rate halved.
+const train = { nu: 0.3, reg: false, target: null, run: null, plotDirty: true };
+
+// λ, or 0 when the regularization is off. It is REG ρ²/R², with ρ the RMS
+// size of the surface (as for the noise) and R the radius of the disk: the
+// loss scales as ρ² and ||w||² as R², and their sizes change by orders of
+// magnitude with deg σ, so that a fixed λ would do nothing for some σ and
+// everything for others.
+function regLambda() {
+  return train.reg && geo ? REG * geo.scale * geo.scale * geo.trC / (range * range) : 0;
+}
 
 // Makes the target for the current surface: a new one if fresh, or else from
 // the same teacher weights and noise direction.
@@ -1324,12 +1355,12 @@ function buildTarget(fresh) {
     T.t[i] = (T.g[i] - geo.mu[i]) / geo.scale;
   }
   // the lowest loss over the grid
-  const Y = geo.Y, s2 = geo.scale * geo.scale;
+  const Y = geo.Y, s2 = geo.scale * geo.scale, lam = regLambda();
   let lo = Infinity, best = 0;
   for (let v = 0; v < NV; v++) {
     let q = 0;
     for (let i = 0; i < nn; i++) { const e = Y[v * nn + i] - T.t[i]; q += e * e; }
-    q *= s2;
+    q = q * s2 + lam * (geo.W1[v] * geo.W1[v] + geo.W2[v] * geo.W2[v]);
     if (q < lo) { lo = q; best = v; }
   }
   T.lossMin = Math.min(lo, polishMin(T, geo.W1[best], geo.W2[best]));
@@ -1340,16 +1371,18 @@ function buildTarget(fresh) {
 // Levenberg–Marquardt steps from the best sample, staying in the disk.
 function polishMin(T, w1, w2) {
   const n = geo.n, bw = geo.bw, F = new Float64Array(n), J1 = new Float64Array(n), J2 = new Float64Array(n);
+  const lam = regLambda();
   const loss = (x, y) => {
     geo.net(x, y, F, J1, J2);
     let s = 0;
     for (let i = 0; i < n; i++) { const r = F[i] * bw[i] - T.g[i]; s += r * r; }
-    return s;
+    return s + lam * (x * x + y * y);
   };
   let L = loss(w1, w2), lambda = -1;
   for (let it = 0; it < 200 && L > 0; it++) {
     geo.net(w1, w2, F, J1, J2);
-    let a = 0, b = 0, c = 0, g1 = 0, g2 = 0;
+    // Gauss–Newton for the residuals f − g and √λ w
+    let a = lam, b = 0, c = lam, g1 = lam * w1, g2 = lam * w2;
     for (let i = 0; i < n; i++) {
       const s = bw[i], j1 = J1[i] * s, j2 = J2[i] * s, r = F[i] * s - T.g[i];
       a += j1 * j1; b += j1 * j2; c += j2 * j2; g1 += j1 * r; g2 += j2 * r;
@@ -1375,7 +1408,7 @@ function polishMin(T, w1, w2) {
 
 // The loss and its gradient at the weights (w1, w2), into run.L, run.g1, run.g2.
 function lossGrad(run, w1, w2) {
-  const { F, J1, J2 } = run, g = train.target.g, bw = geo.bw;
+  const { F, J1, J2 } = run, g = train.target.g, bw = geo.bw, lam = regLambda();
   geo.net(w1, w2, F, J1, J2);
   let L = 0, g1 = 0, g2 = 0;
   for (let i = 0; i < geo.n; i++) {
@@ -1384,9 +1417,9 @@ function lossGrad(run, w1, w2) {
     g1 += r * J1[i] * b;
     g2 += r * J2[i] * b;
   }
-  run.L = L;
-  run.g1 = 2 * g1;
-  run.g2 = 2 * g2;
+  run.L = L + lam * (w1 * w1 + w2 * w2);
+  run.g1 = 2 * (g1 + lam * w1);
+  run.g2 = 2 * (g2 + lam * w2);
 }
 
 // Starts a run of gradient descent from the weights (w1, w2), pulled into the disk.
@@ -1398,7 +1431,7 @@ function startRun(w1, w2) {
   const n = geo.n;
   const run = train.run = {
     start: [w1, w2], w1, w2, step: 0, frames: 0, status: 'running',
-    lr: geo.gmax > 0 ? 0.5 / geo.gmax : 1,
+    lr: geo.gmax + regLambda() > 0 ? 0.5 / (geo.gmax + regLambda()) : 1,
     F: new Float64Array(n), J1: new Float64Array(n), J2: new Float64Array(n),
     path: [], pathY: [], hist: [], nextLog: 1,
   };
@@ -1585,6 +1618,10 @@ function init() {
 
   segmented($('nm-degree'), [2, 3, 4, 5].map(d => [d, String(d)]), deg, setDegree);
 
+  const skipIn = $('nm-skip');
+  skip = skipIn.checked;                        // as the browser may have restored it
+  skipIn.addEventListener('change', () => { skip = skipIn.checked; recompute(); });
+
   $('nm-random').addEventListener('click', () => {
     coef.fill(0);
     for (let k = 0; k < deg; k++) coef[k] = Math.round(20 * Math.random() - 10) / 10;
@@ -1636,6 +1673,13 @@ function init() {
   $('nm-target').addEventListener('click', () => {
     if (!geo) return;
     buildTarget(true);
+    if (train.run) startRun(...train.run.start);
+    else trainChanged();
+  });
+  $('nm-reg').addEventListener('change', e => {
+    train.reg = e.target.checked;
+    if (!train.target) return;
+    buildTarget(false);                         // the same target, with the lowest loss for the new loss
     if (train.run) startRun(...train.run.start);
     else trainChanged();
   });
