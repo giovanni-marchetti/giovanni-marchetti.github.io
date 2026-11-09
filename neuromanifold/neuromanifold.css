@@ -296,29 +296,10 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* the two views */
-.nm-views {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-top: 1rem;
-}
-
+/* the view */
 .nm-view {
-  min-width: 0;
-}
-
-.nm-view-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  min-height: 2.25rem;
-  margin-bottom: 6px;
-}
-
-.nm-title {
-  font-weight: bold;
+  max-width: 520px;
+  margin: 1.5rem auto 0;
 }
 
 .nm-stage {
@@ -398,17 +379,13 @@
 }
 
 .nm-nogl .nm-weights,
-.nm-nogl .nm-views,
+.nm-nogl .nm-view,
 .nm-nogl .nm-display,
 .nm-nogl .nm-legend {
   display: none;
 }
 
 @media (max-width: 620px) {
-  .nm-views {
-    grid-template-columns: 1fr;
-  }
-
   .nm-weights {
     flex-direction: column;
     align-items: center;

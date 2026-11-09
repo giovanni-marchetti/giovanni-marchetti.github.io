@@ -8,18 +8,17 @@
  * w1² + w2² ≤ R², f traces a surface, the neuromanifold, in the space of
  * polynomials of degree ≤ d² (of dimension d² + 1). That space carries the
  * Bombieri–Weyl inner product <x^i, x^j> = δ_ij / C(d², i), and the surface
- * is shown in two 3D views, both orthogonal projections for it:
- *   - PCA: the top three principal components of the surface, sampled with
- *     its area element;
- *   - a random projection, which can be rotated through the hidden
- *     dimensions by Shift-drag.
- * Features of the surface itself (singularities, self-intersections) are
- * there in every projection; artifacts of a projection move as it rotates.
+ * is shown in a 3D view, by an orthogonal projection for it: a random one,
+ * or the top three principal components of the surface (PCA), sampled with
+ * its area element. Shift-drag rotates the projection through the hidden
+ * dimensions. Features of the surface itself (singularities,
+ * self-intersections) are there in every projection; artifacts of a
+ * projection move as it rotates.
  * The surface is colored by the weights, as is the disk of weights.
  * Pointing at the disk of weights marks the function of those weights in
- * both views; clicking it trains the network from there, by gradient descent
+ * the view; clicking it trains the network from there, by gradient descent
  * on the squared Bombieri–Weyl distance to a target (a teacher network plus
- * noise), and the path of the training is drawn on the disk and in the views.
+ * noise), and the path of the training is drawn on the disk and in the view.
  *
  * Rendering uses WebGL 2, without libraries.
  */
@@ -46,7 +45,7 @@ const MARK_CORE = 0.5, MARK_RIM = 0.8;  // the mark: a dark core, a white ring f
 const INK = '#161a20', INK_GL = 'vec3(0.086, 0.102, 0.125)';
 const ACCENT = '#a8203a', ACCENT_GL = 'vec3(0.659, 0.125, 0.227)';
 const LINE_INK = 'rgba(23, 26, 33, ', LINE_A = 0.2, AXIS_A = 0.7;   // the grid lines, and the weight axes
-// The marks in the views: the probe (a bull's-eye), the weights of the run (a
+// The marks in the view: the probe (a bull's-eye), the weights of the run (a
 // dot) and the target of the training (a diamond), with their radii in CSS
 // pixels.
 const STYLE = { probe: 0, run: 1, target: 2 };
@@ -65,7 +64,7 @@ coef[2] = 1;
 let range = 1;
 let showLines = true, xray = false;
 let geo = null;                    // the sampled surface, see recompute()
-let probe = null;                  // the weights { w1, w2 } marked in the views, or null
+let probe = null;                  // the weights { w1, w2 } marked in the view, or null
 let showProbe = true;              // whether the probe is drawn (it follows the pointer either way)
 let visible = true;
 
@@ -343,7 +342,7 @@ function cellsNear(w1, w2, even) {
 //   C, E   the covariance (with the area element as weight) and its
 //          eigenvectors, as rows, with eigenvalues lambda;
 //   W1, W2 the weights of each sample;
-//   center the center of the views, in the same coordinates as Y;
+//   center the center of the view, in the same coordinates as Y;
 //   embed  (w1, w2, out) ↦ the coordinates of f for any weights, as in Y;
 //   net    the network (see makeNetwork), for this σ;
 //   bw     the factors 1/√C(D, i) from monomial to BW orthonormal coordinates;
@@ -450,7 +449,7 @@ function recompute() {
   }
   const span = affineSpan(coef, d);
 
-  // The views turn about the center of an approximate smallest ball around
+  // The view turns about the center of an approximate smallest ball around
   // the surface (Bădoiu–Clarkson iterations, on every 3rd sample).
   const center = new Float64Array(nn);
   for (let it = 1; it <= 60; it++) {
@@ -494,7 +493,7 @@ function pct(x) {
   return (100 * x).toFixed(1) + '%';
 }
 
-// ---------------------------------------------------------------- views
+// ---------------------------------------------------------------- the view
 const VERT = `#version 300 es
 in vec3 aPos;
 in vec3 aNor;
@@ -657,16 +656,21 @@ function lineIndices(pred) {
 }
 const LINES = lineIndices(l => l !== MID), AXES = lineIndices(l => l === MID);
 
-// A 3D view of the surface. Its picture is the projection onto the first
-// four rows of cam · basis, where basis is an orthogonal nn x nn matrix
-// (the principal components, or a random one) and cam an orthogonal 4 x 4
-// matrix (the orbit, and in the random view the 4D rotation): rows 0, 1, 2
-// are screen right, up, and towards the viewer; row 3 is a hidden direction,
-// through which the 4D rotation turns the picture.
-function makeView(canvas, kind) {
+// The 3D view of the surface. Its picture is the projection onto the first
+// four rows of cam · basis, where basis is an orthogonal nn x nn matrix (a
+// random one, or the principal components: mode is 'random' or 'pca') and
+// cam an orthogonal 4 x 4 matrix (the orbit, and the 4D rotation): rows 0,
+// 1, 2 are screen right, up, and towards the viewer; row 3 is a hidden
+// direction, through which the 4D rotation turns the picture.
+const view = { canvas: null, gl: null, ok: false, mode: 'random', basis: null, nn: 0, cam: null,
+               r: 0, snap: true, dirty: true, markDirty: false, steps: 0 };
+
+function initView(canvas) {
   const gl = canvas.getContext('webgl2', { antialias: true, alpha: false, preserveDrawingBuffer: true });
-  const view = { kind, canvas, gl, ok: !!gl, basis: null, cam: null, r: 0, snap: true, dirty: true, steps: 0 };
-  if (!gl) return view;
+  view.canvas = canvas;
+  view.gl = gl;
+  view.ok = !!gl;
+  if (!gl) return;
 
   function shader(type, src) {
     const s = gl.createShader(type);
@@ -690,7 +694,7 @@ function makeView(canvas, kind) {
     lprog = program(LINE_VERT, LINE_FRAG);
   } catch (e) {
     view.ok = false;
-    return view;
+    return;
   }
   const U = name => gl.getUniformLocation(prog, name);
   const uProj = U('uProj'), uScale = U('uScale'), uLine = U('uLine'), uLineColor = U('uLineColor'), uAlpha = U('uAlpha');
@@ -1013,7 +1017,6 @@ function makeView(canvas, kind) {
     view.dirty = true;
   };
   view.resetCam();
-  return view;
 }
 
 // ---------------------------------------------------------------- frame loop
@@ -1024,61 +1027,50 @@ function frame() {
   const training = !!(train.run && train.run.status === 'running' && geo && visible);
   if (training) advanceRun();
   let more = training;
-  for (const v of views) {
-    if (!v.ok) continue;
-    if (v.dirty) { if (v.render(true)) { v.dirty = true; more = true; } }   // still easing its scale
-    else if (v.markDirty) v.render(false);
-  }
+  if (view.dirty) { if (view.render(true)) { view.dirty = true; more = true; } }   // still easing its scale
+  else if (view.markDirty) view.render(false);
   if (disk.dirty) drawDisk();
   if (train.plotDirty) drawLossPlot();
   if (train.statusDirty) updateTrainStatus();
-  if (geo) updateRandCaption();
+  updateCaption();
   if (more) requestDraw();
 }
 
-// ---------------------------------------------------------------- captions
-function updatePcaCaption() {
-  const cap = $('nm-pca-cap');
-  if (!geo) { cap.textContent = ''; return; }
-  const L = geo.lambda, tot = L.reduce((x, y) => x + y, 0) || 1;
-  const top = (L[0] + L[1] + L[2]) / tot;
-  cap.textContent = geo.span <= 3
-    ? `The surface lies in a ${geo.span}-dimensional affine subspace, shown here exactly. Drag to orbit.`
-    : `Components 1–3 hold ${pct(top)} of the variance. Drag to orbit.`;
-}
-let randCapText = '';
-function updateRandCaption() {
-  const cap = $('nm-rand-cap');
+// ---------------------------------------------------------------- the caption
+// What the view shows: the principal components, unless the 4D rotation has
+// turned it away from them, or else a projection; with the share of the
+// variance (of the surface, with its area element) that it holds.
+let capText = '';
+function updateCaption() {
   let text = '';
   if (geo) {
-    const nn = geo.nn, Fr = randView.frame(), C = geo.C;
-    let cap3 = 0;
+    const nn = geo.nn, Fr = view.frame(), C = geo.C, cam = view.cam;
+    let held = 0;
     for (let r = 0; r < 3; r++) for (let i = 0; i < nn; i++) {
       const fi = Fr[r * nn + i];
       if (fi === 0) continue;
-      for (let j = 0; j < nn; j++) cap3 += fi * C[i * nn + j] * Fr[r * nn + j];
+      for (let j = 0; j < nn; j++) held += fi * C[i * nn + j] * Fr[r * nn + j];
     }
-    text = `This projection holds ${pct(cap3 / (geo.trC || 1))} of the variance. ` +
-      'Drag to orbit; Shift-drag rotates the projection through a hidden dimension.';
+    held /= geo.trC || 1;
+    const pca = view.mode === 'pca' && Math.abs(cam[3]) + Math.abs(cam[7]) + Math.abs(cam[11]) < 1e-9;
+    text = !pca ? `This projection holds ${pct(held)} of the variance. `
+      : geo.span <= 3 ? `The principal components show the surface exactly: it lies in an affine subspace of dimension ${geo.span}. `
+      : `The top three principal components, which hold ${pct(held)} of the variance. `;
+    text += 'Drag to orbit; Shift-drag rotates the projection through a hidden dimension.';
   }
-  if (text !== randCapText) { cap.textContent = text; randCapText = text; }
+  if (text !== capText) { $('nm-cap').textContent = text; capText = text; }
 }
 
 // ---------------------------------------------------------------- after a new surface
-let pcaView, randView, views = [];
+// The principal components follow the surface; a random projection stays,
+// unless the dimension changes.
 function afterGeometry() {
-  for (const v of views) {
-    if (!v.ok) continue;
-    if (geo) {
-      if (v.kind === 'pca') v.basis = geo.E;
-      else if (!v.basis || v.nn !== geo.nn) newProjection();
-    }
-    v.snap = true;
-    v.colorsChanged();
+  if (geo) {
+    if (view.mode === 'pca') { view.basis = geo.E; view.nn = geo.nn; }
+    else if (!view.basis || view.nn !== geo.nn) newProjection();
   }
-  updatePcaCaption();
-  randCapText = '';
-  if (!geo) $('nm-rand-cap').textContent = '';
+  view.snap = true;
+  view.colorsChanged();
   if (disk.even !== !!(geo && geo.even)) disk.layerDirty = true;   // the colors of the disk change with the parity of σ
   disk.dirty = true;
   // The target is made again for the new surface, from the same teacher
@@ -1095,8 +1087,8 @@ function afterGeometry() {
 // ---------------------------------------------------------------- the disk of weights
 // The weights w1² + w2² ≤ R², with their colors and the grid lines of the
 // surfaces (the images of the lines of the grid square). Pointing at the disk
-// sets the probe: its weights are marked in both views. The probe stays when
-// the pointer leaves, so that the views can be turned around it; Escape
+// sets the probe: its weights are marked in the view. The probe stays when
+// the pointer leaves, so that the view can be turned around it; Escape
 // removes it. Clicking (or Enter) starts a run of training from the probe.
 const disk = { canvas: null, ctx: null, layer: null, dpr: 1, dirty: true, layerDirty: true };
 
@@ -1205,7 +1197,7 @@ function setProbe(w1, w2) {
   $('nm-readout').innerHTML = probe
     ? `(<i>w</i><sub>1</sub>, <i>w</i><sub>2</sub>) = (${f(probe.w1)}, ${f(probe.w2)})` : '&nbsp;';
   disk.dirty = true;
-  for (const v of views) v.markDirty = true;
+  view.markDirty = true;
   requestDraw();
 }
 
@@ -1257,10 +1249,10 @@ function initDisk() {
   diskResize();
 }
 
-// A random orthogonal basis for the random view. Within the 3-space it
-// spans, the axes are turned to the principal axes of the picture, so that
-// the camera looks along its thinnest direction: this changes the viewpoint,
-// not the projection.
+// Shows a random projection: a random orthogonal basis. Within the 3-space
+// it spans, the axes are turned to the principal axes of the picture, so
+// that the camera looks along its thinnest direction: this changes the
+// viewpoint, not the projection.
 function newProjection() {
   const nn = geo.nn, Q = randomOrthogonal(nn), C = geo.C;
   const S = new Float64Array(9);
@@ -1276,10 +1268,21 @@ function newProjection() {
   const U = eigenSym(S, 3).vectors, top = Q.slice(0, 3 * nn);
   for (let r = 0; r < 3; r++) for (let k = 0; k < nn; k++)
     Q[r * nn + k] = U[r * 3] * top[k] + U[r * 3 + 1] * top[nn + k] + U[r * 3 + 2] * top[2 * nn + k];
-  randView.basis = Q;
-  randView.nn = nn;
-  randView.resetCam();
-  randView.snap = true;
+  setBasis('random', Q);
+}
+
+// Shows the top three principal components (the camera looks along the
+// third one, before the orbit of resetCam).
+function showPca() {
+  setBasis('pca', geo.E);
+}
+
+function setBasis(mode, basis) {
+  view.mode = mode;
+  view.basis = basis;
+  view.nn = geo.nn;
+  view.resetCam();
+  view.snap = true;
 }
 
 // ---------------------------------------------------------------- training
@@ -1473,14 +1476,14 @@ function advanceRun() {
     run.hist.push([run.step, run.L]);
     updateTrainButtons();
   }
-  for (const v of views) v.markDirty = true;
+  view.markDirty = true;
   disk.dirty = true;
   train.plotDirty = train.statusDirty = true;
 }
 
 // After a new target or run: redraw what shows them.
 function trainChanged() {
-  for (const v of views) v.dirty = true;        // the framing takes in the target
+  view.dirty = true;                            // the framing takes in the target
   disk.dirty = true;
   train.plotDirty = train.statusDirty = true;
   updateTrainButtons();
@@ -1631,10 +1634,8 @@ function setDegree(d) {
 }
 
 function init() {
-  pcaView = makeView($('nm-pca'), 'pca');
-  randView = makeView($('nm-rand'), 'rand');
-  views = [pcaView, randView];
-  if (!pcaView.ok || !randView.ok) {
+  initView($('nm-view'));
+  if (!view.ok) {
     root.classList.add('nm-nogl');
     $('nm-status').textContent = 'This viewer needs WebGL 2, which this browser does not provide.';
     return;
@@ -1665,7 +1666,7 @@ function init() {
   });
   $('nm-lines').addEventListener('change', e => {
     showLines = e.target.checked;
-    for (const v of views) v.dirty = true;
+    view.dirty = true;
     disk.layerDirty = disk.dirty = true;
     requestDraw();
   });
@@ -1673,14 +1674,19 @@ function init() {
   probeBtn.addEventListener('click', () => {
     showProbe = !showProbe;
     probeBtn.textContent = showProbe ? 'Hide point' : 'Show point';
-    for (const v of views) v.markDirty = true;
+    view.markDirty = true;
     disk.dirty = true;
     requestDraw();
   });
-  $('nm-xray').addEventListener('change', e => { xray = e.target.checked; for (const v of views) v.dirty = true; requestDraw(); });
+  $('nm-xray').addEventListener('change', e => { xray = e.target.checked; view.dirty = true; requestDraw(); });
   $('nm-new').addEventListener('click', () => {
     if (!geo) return;
     newProjection();
+    requestDraw();
+  });
+  $('nm-pca').addEventListener('click', () => {
+    if (!geo) return;
+    showPca();
     requestDraw();
   });
   // training
@@ -1711,42 +1717,42 @@ function init() {
   $('nm-clear').addEventListener('click', clearTraining);
   new ResizeObserver(() => { train.plotDirty = true; requestDraw(); }).observe($('nm-loss'));
 
-  for (const v of views) {
-    const c = v.canvas;
-    let drag = null;
-    c.addEventListener('pointerdown', e => {
-      if (drag || (e.pointerType === 'mouse' && e.button !== 0)) return;
-      drag = { id: e.pointerId, x: e.clientX, y: e.clientY };
-      c.setPointerCapture(e.pointerId);
-      c.classList.add('nm-grabbing');
-    });
-    c.addEventListener('pointermove', e => {
-      if (!drag || e.pointerId !== drag.id) return;
-      const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
-      drag.x = e.clientX; drag.y = e.clientY;
-      if (v.kind === 'rand' && e.shiftKey) v.rotate4(dx, dy);
-      else v.orbit(dx, dy);
-      requestDraw();
-    });
-    const end = e => {
-      if (!drag || e.pointerId !== drag.id) return;
-      drag = null;
-      c.classList.remove('nm-grabbing');
-    };
-    c.addEventListener('pointerup', end);
-    c.addEventListener('pointercancel', end);
-    c.addEventListener('keydown', e => {
-      const k = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
-      if (!k) return;
-      e.preventDefault();
-      const px = KEY_STEP / ORBIT_SPEED;
-      if (v.kind === 'rand' && e.shiftKey) v.rotate4(k[0] * px, k[1] * px);
-      else v.orbit(k[0] * px, k[1] * px);
-      requestDraw();
-    });
-    new ResizeObserver(() => { v.resize(); requestDraw(); }).observe(c);
-    v.resize();
-  }
+  // the view: drag to orbit, Shift-drag to rotate through a hidden dimension
+  const c = view.canvas;
+  let drag = null;
+  c.addEventListener('pointerdown', e => {
+    if (drag || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    drag = { id: e.pointerId, x: e.clientX, y: e.clientY };
+    c.setPointerCapture(e.pointerId);
+    c.classList.add('nm-grabbing');
+  });
+  c.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    drag.x = e.clientX; drag.y = e.clientY;
+    if (e.shiftKey) view.rotate4(dx, dy);
+    else view.orbit(dx, dy);
+    requestDraw();
+  });
+  const end = e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    drag = null;
+    c.classList.remove('nm-grabbing');
+  };
+  c.addEventListener('pointerup', end);
+  c.addEventListener('pointercancel', end);
+  c.addEventListener('keydown', e => {
+    const k = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+    if (!k) return;
+    e.preventDefault();
+    const px = KEY_STEP / ORBIT_SPEED;
+    if (e.shiftKey) view.rotate4(k[0] * px, k[1] * px);
+    else view.orbit(k[0] * px, k[1] * px);
+    requestDraw();
+  });
+  new ResizeObserver(() => { view.resize(); requestDraw(); }).observe(c);
+  view.resize();
+
   new IntersectionObserver(es => {
     visible = es.some(e => e.isIntersecting);
     if (visible) requestDraw();
@@ -1760,8 +1766,8 @@ function init() {
 
 if (window.NM_DEBUG) {
   window.NM_DEBUG = { makeNetwork, eigenSym, binomial, affineSpan, squareToDisk, diskToSquare, cellsNear, occluded, TRI, GRID, setProbe,
-                      train, startRun, lossGrad, buildTarget,
-                      get geo() { return geo; }, get views() { return views; }, get probe() { return probe; } };
+                      train, startRun, lossGrad, buildTarget, view, newProjection, showPca,
+                      get geo() { return geo; }, get probe() { return probe; } };
 }
 init();
 })();

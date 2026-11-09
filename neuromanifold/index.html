@@ -15,7 +15,7 @@
   <div id="neuromanifold">
     <p>A <b>neuromanifold</b> is the space of functions that a neural network computes as its weights vary. Below is the neuromanifold of a tiny residual network, with two layers of one neuron each, no biases, and a polynomial activation σ. It computes</p>
     <p class="nm-eq"><i>f</i>(<i>x</i>) = σ(<i>w</i><sub>2</sub>(σ(<i>w</i><sub>1</sub><i>x</i>) + <i>x</i>)) + σ(<i>w</i><sub>1</sub><i>x</i>) + <i>x</i>,</p>
-    <p>so as the weights (<i>w</i><sub>1</sub>, <i>w</i><sub>2</sub>) vary, <i>f</i> traces a surface in the space of polynomials of degree deg(σ)<sup>2</sup>. Choose σ, and see the surface through two 3D projections, both orthogonal for the Bombieri–Weyl inner product: its top three principal components, and a random projection that you can rotate through the hidden dimensions. Features of the surface itself, such as its singularities, are there in every projection; artifacts of a projection move around as it rotates.</p>
+    <p>so as the weights (<i>w</i><sub>1</sub>, <i>w</i><sub>2</sub>) vary, <i>f</i> traces a surface in the space of polynomials of degree deg(σ)<sup>2</sup>. Choose σ, and see the surface through a 3D projection, orthogonal for the Bombieri–Weyl inner product: a random one, or its top three principal components (PCA). You can rotate the projection through the hidden dimensions. Features of the surface itself, such as its singularities, are there in every projection; artifacts of a projection move around as it rotates.</p>
 
     <div class="nm" role="group" aria-label="Neuromanifold viewer">
       <div class="nm-controls">
@@ -34,7 +34,7 @@
       <div class="nm-weights">
         <div class="nm-disk-col">
           <div class="nm-disk">
-            <canvas id="nm-disk" tabindex="0" aria-label="The disk of weights. Point at it, or use the arrow keys, to mark the function of those weights in both views; Escape removes the mark. Click, or press Enter, to train the network from there."></canvas>
+            <canvas id="nm-disk" tabindex="0" aria-label="The disk of weights. Point at it, or use the arrow keys, to mark the function of those weights in the view; Escape removes the mark. Click, or press Enter, to train the network from there."></canvas>
             <span class="nm-disk-lbl nm-disk-w1" aria-hidden="true"><i>w</i><sub>1</sub></span>
             <span class="nm-disk-lbl nm-disk-w2" aria-hidden="true"><i>w</i><sub>2</sub></span>
           </div>
@@ -45,7 +45,7 @@
         <div class="nm-weights-side">
           <label class="nm-range" for="nm-range">Weights with <i>w</i><sub>1</sub><sup>2</sup> + <i>w</i><sub>2</sub><sup>2</sup> ≤ <i>R</i><sup>2</sup>, <i>R</i> = <output id="nm-range-out" for="nm-range">1.00</output></label>
           <input type="range" id="nm-range" min="0.2" max="2" step="0.05" value="1">
-          <p class="nm-hint">Point at the disk to mark the function <i>f</i> of those weights in both views (faintly where the surface hides it). Click to train the network from there.</p>
+          <p class="nm-hint">Point at the disk to mark the function <i>f</i> of those weights in the view (faintly where the surface hides it). Click to train the network from there.</p>
           <p class="nm-readout" id="nm-readout">&nbsp;</p>
           <div class="nm-train">
             <p class="nm-train-head"><b>Training</b> is gradient descent on the squared Bombieri–Weyl distance to a target <span class="nm-acc">◆</span>: a random function of the network, plus noise.</p>
@@ -61,35 +61,22 @@
         </div>
       </div>
 
-      <div class="nm-views">
-        <div class="nm-view">
-          <div class="nm-view-head">
-            <span class="nm-title">Principal components</span>
-          </div>
-          <div class="nm-stage">
-            <canvas id="nm-pca" tabindex="0" aria-label="The neuromanifold, projected onto its top three principal components. Drag, or use the arrow keys, to orbit."></canvas>
-          </div>
-          <p class="nm-cap" id="nm-pca-cap"></p>
+      <div class="nm-view">
+        <div class="nm-stage">
+          <canvas id="nm-view" tabindex="0" aria-label="The neuromanifold, under an orthogonal projection to 3D. Drag, or use the arrow keys, to orbit; hold Shift to rotate the projection through a hidden dimension."></canvas>
         </div>
-        <div class="nm-view">
-          <div class="nm-view-head">
-            <span class="nm-title">Random projection</span>
-          </div>
-          <div class="nm-stage">
-            <canvas id="nm-rand" tabindex="0" aria-label="The neuromanifold, under a random orthogonal projection. Drag, or use the arrow keys, to orbit; hold Shift to rotate the projection through a hidden dimension."></canvas>
-          </div>
-          <div class="nm-viewbar">
-            <button type="button" class="nm-btn nm-small" id="nm-new">New projection</button>
-          </div>
-          <p class="nm-cap" id="nm-rand-cap"></p>
+        <div class="nm-viewbar">
+          <button type="button" class="nm-btn nm-small" id="nm-new">New projection</button>
+          <button type="button" class="nm-btn nm-small" id="nm-pca">PCA</button>
         </div>
+        <p class="nm-cap" id="nm-cap"></p>
       </div>
 
       <div class="nm-display">
         <label><input type="checkbox" id="nm-lines" checked> Grid lines</label>
         <label><input type="checkbox" id="nm-xray"> X-ray</label>
       </div>
-      <p class="nm-legend">The surfaces are colored by the weights (<i>w</i><sub>1</sub>, <i>w</i><sub>2</sub>), as in the disk: hue for their direction and saturation for their size. The dark grid lines are the weight axes <i>w</i><sub>1</sub> = 0 and <i>w</i><sub>2</sub> = 0. When σ is even, the weights (±<i>w</i><sub>1</sub>, ±<i>w</i><sub>2</sub>) all give the same function, so they get the same color, and the colors repeat in the four quadrants of the disk.</p>
+      <p class="nm-legend">The surface is colored by the weights (<i>w</i><sub>1</sub>, <i>w</i><sub>2</sub>), as in the disk: hue for their direction and saturation for their size. The dark grid lines are the weight axes <i>w</i><sub>1</sub> = 0 and <i>w</i><sub>2</sub> = 0. When σ is even, the weights (±<i>w</i><sub>1</sub>, ±<i>w</i><sub>2</sub>) all give the same function, so they get the same color, and the colors repeat in the four quadrants of the disk.</p>
       <noscript><p>The neuromanifold viewer needs JavaScript.</p></noscript>
     </div>
   </div>
