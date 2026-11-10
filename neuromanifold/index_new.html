@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <title>Flat neuromanifold viewer</title>
+  <!-- Standalone preview of the flat neuromanifold widget; not linked from the main page yet. -->
+  <link rel="stylesheet" href="https://latex.vercel.app/style.css">
+  <link rel="stylesheet" href="neuromanifold_new.css">
+  <link rel="shortcut icon" type="image/x-icon" href="../img/favi.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body class="text-justify">
+
+  <div id="neuromanifold">
+    <p>Here you can visualize the learning dynamics of a shallow network with three neurons, each reading its own input, no biases, and monomial activation σ(<i>t</i>) = <i>t</i><sup><i>k</i></sup>:</p>
+    <p class="nm-eq"><i>f</i>(<i>x</i>) = <i>a</i><sub>1</sub>(<i>w</i><sub>1</sub><i>x</i><sub>1</sub>)<sup><i>k</i></sup> + <i>a</i><sub>2</sub>(<i>w</i><sub>2</sub><i>x</i><sub>2</sub>)<sup><i>k</i></sup> + <i>a</i><sub>3</sub>(<i>w</i><sub>3</sub><i>x</i><sub>3</sub>)<sup><i>k</i></sup> = <i>c</i><sub>1</sub><i>x</i><sub>1</sub><sup><i>k</i></sup> + <i>c</i><sub>2</sub><i>x</i><sub>2</sub><sup><i>k</i></sup> + <i>c</i><sub>3</sub><i>x</i><sub>3</sub><sup><i>k</i></sup>,</p>
+    <p>with <i>c</i><sub><i>i</i></sub> = <i>a</i><sub><i>i</i></sub><i>w</i><sub><i>i</i></sub><sup><i>k</i></sup>. The network is trained gradient descent on Σ(<i>c</i><sub><i>i</i></sub> − <i>c</i><sub><i>i</i></sub><sup>*</sup>)<sup>2</sup> to a random target <span class="nm-acc">◆</span>, optionally plus λ times the squared norm of the weights. Initialization  □ is random, with controllable scale σ.</p>
+
+    <div class="nm" role="group" aria-label="Flat neuromanifold viewer">
+      <div class="nm-controls">
+        <label class="nm-range" for="nm-degree">Activation degree: <i>k</i> = <output id="nm-degree-out" for="nm-degree">2</output></label>
+        <input type="range" id="nm-degree" min="1" max="5" step="1" value="2">
+      </div>
+      <p class="nm-status" id="nm-status" aria-live="polite"></p>
+
+      <div class="nm-main">
+        <div class="nm-side">
+          <div class="nm-net-box">
+            <svg class="nm-net" id="nm-net" viewBox="0 0 216 146" role="img" aria-label="The network, at the current step of training: the inputs x1, x2, x3, each read by its own neuron through the weight wi, and the output f, the sum of the neurons, each times its weight ai. Each edge is more opaque the larger its weight, and dashed when the weight is negative. A neuron fills with red as it activates."></svg>
+            <p class="nm-loss-cap">Weights: more opaque when larger, dashed when negative. Red: active neurons.</p>
+          </div>
+          <div class="nm-loss-box">
+            <canvas class="nm-loss" id="nm-loss" role="img" aria-label="The loss against the steps of gradient descent, both on log scales. Point at it to read the loss at a step."></canvas>
+            <p class="nm-loss-cap">Loss (log–log).</p>
+          </div>
+        </div>
+
+        <div class="nm-stage">
+          <canvas id="nm-view" tabindex="0" aria-label="The neuromanifold: the space of the coordinates c1, c2, c3, in a box. Drag, or use the arrow keys, to turn it. Drag the target to move it. Enter trains again from the same weights."></canvas>
+          <span class="nm-lbl" id="nm-lbl-1" aria-hidden="true"></span>
+          <span class="nm-lbl" id="nm-lbl-2" aria-hidden="true"></span>
+          <span class="nm-lbl" id="nm-lbl-3" aria-hidden="true"></span>
+        </div>
+        <div class="nm-display">
+          <label><input type="checkbox" id="nm-planes" checked> <span>Planes <i>c</i><sub><i>i</i></sub> = 0</span></label>
+        </div>
+        <div class="nm-train">
+          <div class="nm-train-btns">
+            <button type="button" class="nm-btn nm-small" id="nm-weights">New weights</button>
+            <button type="button" class="nm-btn nm-small" id="nm-target">New target</button>
+            <button type="button" class="nm-btn nm-small" id="nm-clear">Clear</button>
+          </div>
+          <label class="nm-range" for="nm-size">Initialization scale: σ = <output id="nm-size-out" for="nm-size"></output></label>
+          <input type="range" id="nm-size" min="-2" max="0.3" step="0.01" value="-1">
+          <label class="nm-range" for="nm-reg">ℓ<sup>2</sup> regularization: λ = <output id="nm-reg-out" for="nm-reg">0.00</output></label>
+          <input type="range" id="nm-reg" min="0" max="0.5" step="0.01" value="0">
+        </div>
+      </div>
+      <noscript><p>The neuromanifold viewer needs JavaScript.</p></noscript>
+    </div>
+  </div>
+
+  <script src="neuromanifold_new.js" defer></script>
+
+</body>
+
+</html>
