@@ -1,7 +1,7 @@
 [
   {
     "title": "Neuroalgebraic Geometry",
-    "description": "these works explore the (algebraic) geometry of function spaces parametrized by neural networks.",
+    "description": "(algebraic) geometry of function spaces parametrized by neural networks.",
     "papers": [
       {
         "title": "Polynomial Residual Networks are Generically Identifiable",
@@ -70,7 +70,7 @@
   },
   {
     "title": "Feature Learning and Emergence",
-    "description": "these works explore the dynamics of feature learning in neural networks, with a focus on group-theoretical Fourier features.",
+    "description": "learning dynamics of neural networks, with a focus on group-theoretical Fourier features.",
     "papers": [
       {
         "title": "Sequential Group Composition: A Window into the Mechanics of Deep Learning",
@@ -97,7 +97,7 @@
   },
   {
     "title": "Equivariant Deep Learning",
-    "description": "these works explore the interaction between symmetry and deep learning, with a focus on equivariant representation learning, and its applications to robotics.",
+    "description": "symmetry-based approaches, with a focus on equivariant representation learning, plus applications to robotics.",
     "papers": [
       {
         "title": "Neural Lattice Reduction: A Self-Supervised Geometric Deep Learning Approach",
@@ -146,7 +146,7 @@
   },
   {
     "title": "Computational Geometry",
-    "description": "these works concern high-dimensional Voronoi tessellations and Delaunay triangulations, with applications to density estimation and active learning.",
+    "description": "high-dimensional Voronoi tessellations and Delaunay triangulations, with applications to density estimation and active learning.",
     "papers": [
       {
         "title": "HyperSteiner: Computing Heuristic Hyperbolic Steiner Minimal Trees",
@@ -187,7 +187,7 @@
   },
   {
     "title": "Other",
-    "description": "these works concern various topics in pure mathematics, e.g., category theory and combinatorics.",
+    "description": "various topics in pure mathematics, e.g., category theory and combinatorics.",
     "papers": [
       {
         "title": "Rubik's Abstract Polytopes",
@@ -207,7 +207,7 @@
   },
   {
     "title": "Thesis",
-    "description": "I obtained my doctoral degree from KTH in 2024 under the supervision of Prof. Danica Kragic. Below you can download the thesis.",
+    "description": "I obtained my doctoral degree from KTH in 2024 under the supervision of Prof. Danica Kragic.",
     "papers": [
       {
         "title": "On Symmetries and Metrics in Geometric Inference",

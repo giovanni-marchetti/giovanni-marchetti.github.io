@@ -12,6 +12,48 @@
   figcaption {
   text-align: center;
   }
+  /* Collapsible publication topics */
+  #publications details {
+    margin: 0.8em 0;
+  }
+  #publications summary {
+    display: block;
+    list-style: none;
+    cursor: pointer;
+    position: relative;
+    padding-left: 1.5em;
+  }
+  #publications summary::-webkit-details-marker {
+    display: none;
+  }
+  /* The arrow: on each topic, and inline in the intro text (.pub-arrow) */
+  #publications summary::before,
+  .pub-arrow {
+    content: "";
+    width: 0.45em;
+    height: 0.45em;
+    border-right: 2px solid var(--link-visited);
+    border-bottom: 2px solid var(--link-visited);
+    transform: rotate(-45deg);
+  }
+  #publications summary::before {
+    position: absolute;
+    left: 0.2em;
+    top: 0.62em;
+    transition: transform 0.2s ease;
+  }
+  .pub-arrow {
+    display: inline-block;
+    margin: 0 0.3em 0 0.1em;
+    vertical-align: 0.05em;
+  }
+  #publications details[open] > summary::before {
+    transform: rotate(45deg);
+  }
+  #publications summary:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
   </style>
   <link rel="shortcut icon" type="image/x-icon" href="img/favi.ico">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -56,7 +98,7 @@
     <h2>
     Publications
     </h2>
-    <p>Below you can find a selection of my academic works, subdivided into topics. For a complete list, please visit my <a href="https://scholar.google.com/citations?user=ePYa2qAAAAAJ&hl=en">Google Scholar</a> profile. The symbol * denotes equal contribution.</p>
+    <p>Below is a selection of my academic works, clustered by topic. For a complete list, visit my <a href="https://scholar.google.com/citations?user=ePYa2qAAAAAJ&hl=en">Google Scholar</a> profile. Click <span class="pub-arrow" role="img" aria-label="the arrow"></span> to expand.</p>
     <div id="publications">
       <noscript><p>The list of publications needs JavaScript. You can also find it on <a href="https://scholar.google.com/citations?user=ePYa2qAAAAAJ&hl=en">Google Scholar</a>.</p></noscript>
     </div>
@@ -92,8 +134,9 @@
       .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(sections => {
         for (const sec of sections) {
-          const p = el("p");
-          p.append(el("b", sec.title), ": " + sec.description);
+          // Each topic is a <details> block: click the summary to show its papers.
+          const details = el("details"), summary = el("summary");
+          summary.append(el("b", sec.title), ": " + sec.description);
           const ul = el("ul");
           for (const paper of sec.papers) {
             if (paper.hidden) continue;
@@ -104,7 +147,8 @@
             li.append(paper.venue + ", " + paper.year);
             ul.append(li);
           }
-          root.append(p, ul);
+          details.append(summary, ul);
+          root.append(details);
         }
       })
       .catch(() => {
