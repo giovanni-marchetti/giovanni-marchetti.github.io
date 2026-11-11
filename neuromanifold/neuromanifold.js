@@ -1549,21 +1549,6 @@ function clearTraining() {
 }
 
 // ---------------------------------------------------------------- controls
-function segmented(container, items, current, onPick) {
-  const buttons = items.map(([value, label]) => {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.setAttribute('role', 'radio');
-    b.innerHTML = label;
-    b.addEventListener('click', () => { set(value); onPick(value); });
-    container.append(b);
-    return [value, b];
-  });
-  function set(value) { for (const [v, b] of buttons) b.setAttribute('aria-checked', String(v === value)); }
-  set(current);
-  return set;
-}
-
 const fmt = x => String(Math.round(x * 1000) / 1000);
 const supTerm = k => k === 0 ? '' : k === 1 ? '<i>t</i>' : `<i>t</i><sup>${k}</sup>`;
 
@@ -1616,7 +1601,12 @@ function init() {
     return;
   }
 
-  segmented($('nm-degree'), [2, 3, 4, 5].map(d => [d, String(d)]), deg, setDegree);
+  const degIn = $('nm-degree'), degOut = $('nm-degree-out');
+  degIn.addEventListener('input', () => {
+    const d = parseInt(degIn.value, 10);
+    degOut.textContent = d;
+    if (d !== deg) setDegree(d);
+  });
 
   const skipIn = $('nm-skip');
   skip = skipIn.checked;                        // as the browser may have restored it

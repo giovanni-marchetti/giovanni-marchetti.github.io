@@ -15,15 +15,15 @@
   <div id="neuromanifold">
     <p>A <b>neuromanifold</b> is the space of functions that a neural network computes as its weights vary. Below is the neuromanifold of a tiny residual network, with two layers of one neuron each, no biases, and a polynomial activation σ. It computes</p>
     <p class="nm-eq"><i>f</i>(<i>x</i>) = σ(<i>w</i><sub>2</sub>(σ(<i>w</i><sub>1</sub><i>x</i>) + <i>x</i>)) + σ(<i>w</i><sub>1</sub><i>x</i>) + <i>x</i>,</p>
-    <p>so as the weights (<i>w</i><sub>1</sub>, <i>w</i><sub>2</sub>) vary, <i>f</i> traces a surface in the space of polynomials of degree deg(σ)<sup>2</sup>. Without its skip connections, it is a plain network, computing</p>
-    <p class="nm-eq"><i>f</i>(<i>x</i>) = σ(<i>w</i><sub>2</sub>σ(<i>w</i><sub>1</sub><i>x</i>)).</p>
+    <p>so as the weights (<i>w</i><sub>1</sub>, <i>w</i><sub>2</sub>) vary, <i>f</i> traces a surface in the space of polynomials of degree deg(σ)<sup>2</sup>.</p>
     <p>Choose σ, and see the surface through a 3D projection, orthogonal for the Bombieri–Weyl inner product: a random one, or its top three principal components (PCA). You can rotate the projection through the hidden dimensions (Shift + drag). Features of the surface itself, such as its singularities, are there in every projection; artifacts of a projection move around as it rotates. You can also train the network: click on the disk of weights to run gradient descent from there, on the squared Bombieri–Weyl distance to a target <span class="nm-acc">◆</span> (a random function of the network, plus noise), optionally regularized by the squared norm of the weights, and follow its path on the disk and on the surface.</p>
 
     <div class="nm" role="group" aria-label="Neuromanifold viewer">
       <div class="nm-controls">
         <div class="nm-line">
-          <span class="nm-k">deg(σ) =</span>
-          <div class="nm-seg" role="radiogroup" aria-label="Degree of σ" id="nm-degree"></div>
+          <label class="nm-k" for="nm-degree">deg(σ) = <output id="nm-degree-out" for="nm-degree">2</output></label>
+          <input type="range" class="nm-deg" id="nm-degree" min="2" max="5" step="1" value="2" list="nm-degree-ticks" autocomplete="off">
+          <datalist id="nm-degree-ticks"><option value="2"></option><option value="3"></option><option value="4"></option><option value="5"></option></datalist>
           <button type="button" class="nm-btn" id="nm-random">Random σ</button>
         </div>
         <div class="nm-sigma" id="nm-sigma" role="group" aria-label="Coefficients of σ"></div>
@@ -51,6 +51,7 @@
 
         <div class="nm-stage">
           <canvas id="nm-view" tabindex="0" aria-label="The neuromanifold, under an orthogonal projection to 3D. Drag, or use the arrow keys, to orbit; hold Shift to rotate the projection through a hidden dimension."></canvas>
+          <p class="nm-cap" id="nm-cap"></p>
         </div>
         <div class="nm-viewbar">
           <button type="button" class="nm-btn nm-small" id="nm-new">Random projection</button>
@@ -61,7 +62,6 @@
           <label><input type="checkbox" id="nm-xray"> X-ray</label>
           <label><input type="checkbox" id="nm-probe" checked> Point</label>
         </div>
-        <p class="nm-cap" id="nm-cap"></p>
         <div class="nm-loss-box">
           <canvas class="nm-loss" id="nm-loss" role="img" aria-label="The loss against the steps of gradient descent, both on log scales."></canvas>
           <p class="nm-loss-cap">Loss (log–log). Dashed: lowest on the disk.</p>

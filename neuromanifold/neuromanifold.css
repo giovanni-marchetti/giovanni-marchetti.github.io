@@ -52,14 +52,7 @@
   gap: 6px 10px;
 }
 
-.nm-seg {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.nm-btn,
-.nm-seg button {
+.nm-btn {
   height: 2.25rem;
   padding: 0 14px;
   border: 1px solid var(--nm-line);
@@ -70,26 +63,12 @@
   white-space: nowrap;
 }
 
-.nm-seg button {
-  min-width: 2.25rem;
-  padding: 0 10px;
-  font-variant-numeric: tabular-nums;
-}
-
-.nm-btn:hover,
-.nm-seg button:hover {
+.nm-btn:hover {
   background: var(--nm-btn-hover);
 }
 
-.nm-btn:active,
-.nm-seg button:active {
+.nm-btn:active {
   transform: translateY(1px);
-}
-
-.nm-seg button[aria-checked="true"] {
-  color: var(--nm-accent);
-  background: var(--nm-accent-soft);
-  border-color: var(--nm-accent);
 }
 
 /* σ(t) = c_d t^d + ... + c_0 */
@@ -160,7 +139,7 @@
    disk centered on the view, the slider of the range R beside the display
    options of the view (with its label above it, beside the buttons), and the
    training (the noise of the target, and its buttons) under it, beside
-   the caption of the view and the plot of the loss. */
+   the plot of the loss. */
 .nm-main {
   display: grid;
   grid-template-columns: 216px minmax(0, 520px);   /* the disk with room for its labels; the view */
@@ -168,7 +147,6 @@
     "disk  stage"
     ".     bar"
     "range display"
-    "train cap"
     "train loss";
   justify-content: center;
   gap: 8px 24px;
@@ -304,6 +282,15 @@
   accent-color: var(--nm-accent);
 }
 
+/* the degree of σ: a short slider, with a tick at each degree */
+.nm input.nm-deg {
+  width: 120px;
+}
+
+#nm-degree-out {
+  font-variant-numeric: tabular-nums;
+}
+
 /* the view */
 .nm-stage {
   grid-area: stage;
@@ -342,8 +329,14 @@
   padding: 0 10px;
 }
 
+/* the caption of the view, inside it at the bottom */
 .nm-cap {
-  grid-area: cap;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8px;
+  padding: 0 12px;
+  pointer-events: none;           /* so that dragging over it still orbits */
   margin: 0;
   font-size: 0.9em;
   color: var(--nm-muted);
@@ -386,7 +379,7 @@
 @media (max-width: 620px) {
   .nm-main {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "disk" "label" "range" "train" "stage" "bar" "display" "cap" "loss";
+    grid-template-areas: "disk" "label" "range" "train" "stage" "bar" "display" "loss";
   }
 
   .nm-disk {
