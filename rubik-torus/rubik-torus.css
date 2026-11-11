@@ -16,7 +16,7 @@
   --rt-plastic: #3a3e44;                /* the lines between the tiles */
   --rt-veil: rgba(247, 249, 250, 0.66);
   --rt-frame: hsl(210, 20%, 98%);       /* same as the page background (--rt-bg) */
-  max-width: 400px;
+  max-width: 320px;
   margin: 1rem auto 0;
   color: var(--rt-fg);
   line-height: 1.45;
