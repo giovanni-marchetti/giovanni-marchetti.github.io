@@ -60,14 +60,15 @@ body {
   text-underline-offset: 4px;
 }
 
-/* Page title: centered italic, subtitle in small caps. */
+/* Page title: centered, in the small caps of the menu; subtitle in small caps. */
 main { margin-top: 2.6rem; }
 .page-title { text-align: center; margin-bottom: 2.2rem; }
 .page-title h1 {
   margin: 0;
   font-weight: 400;
-  font-style: italic;
-  font-size: 1.7rem;
+  font-variant: small-caps;
+  letter-spacing: .06em;
+  font-size: 1.5rem;
   line-height: 1.2;
   text-wrap: balance;
 }
@@ -101,6 +102,18 @@ a {
 }
 a:hover { text-decoration-color: var(--ink); }
 .stub { color: var(--muted); font-style: italic; }
+
+/* Opening paragraph of the home page (<p class="lede">): a raised initial in the accent, standing on the first
+   line's baseline, and the rest of the first term in small caps, as in a book. At 3.2em, the initial's cap height
+   is about two lines of text; line-height .72 makes the first line just tall enough for it. */
+.lede::first-letter {
+  font-size: 3.2em;
+  line-height: .72;
+  font-style: normal;
+  letter-spacing: .01em;
+  color: var(--orange-deep);
+}
+.lede > em:first-of-type { font-style: normal; font-variant: small-caps; letter-spacing: .05em; }
 
 /* Collapsible notes: click the summary line to open or close. The summary line of a note on the home page
    (<details class="note">) cannot be selected, so that clicking it never highlights it. */
@@ -353,6 +366,19 @@ tbody tr:last-child td { border-bottom: 1px solid var(--ink); }
   .ref-tag, .tag, .tag-count { transition: none; }
 }
 
+/* "Visualize and Play", on the home page: a <details> whose summary is a tag, as above, centred, with an orange
+   border; it shows and hides the neuromanifold viewer and the text that introduces it. While they are shown, the tag
+   is shaded, as a selected tag is. */
+.play { margin: 0 0 1rem; }
+/* The figure above it ends with its captions, which are invisible until a dictionary button is pointed at but keep
+   their room: so only a small margin between the two. */
+#nm-figure { margin-bottom: .6rem; }
+.play > summary.tag { display: block; width: fit-content; margin: 0 auto; list-style: none;
+  padding: .2rem .9rem .25rem; font-size: 1rem; }  /* a larger tag than those of the Literature page */
+.play > summary::-webkit-details-marker { display: none; }
+.tag.tag-accent { border-color: var(--orange-deep); }
+.play[open] > summary.tag { margin-bottom: 2.75rem; background: var(--shade); }  /* a blank line before the text */
+
 /* News: date column and text. */
 .news { list-style: none; padding: 0; }
 .news li { display: grid; grid-template-columns: 9em minmax(0, 1fr); gap: .8rem; }
@@ -383,7 +409,7 @@ figure img { display: block; width: 100%; height: auto; }
 /* Top drawing: the animated image (figures and grass) with the network drawn over it as vector graphics,
    at the scale of the image's pixels. The flash runs every 4 s: the bottom layer lights up, sparks run
    up the edges to the middle layer, which lights up, and then the top layer. */
-.hero { position: relative; }
+.hero { position: relative; width: 90%; margin-left: auto; margin-right: auto; }
 .hero-net { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .hero-net line { stroke: var(--ink); stroke-width: 2.345; }
 .hero-net .node { fill: var(--ink); animation: 4s linear infinite; }

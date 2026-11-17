@@ -31,7 +31,7 @@
     <h1>Neuroalgebraic Geometry</h1>
   </header>
 
-  <p><em>Neuroalgebraic geometry</em> (NeurAG) brings together algebraic geometry and deep learning. The goals are:</p>
+  <p class="lede">Neuroalgebraic Geometry brings together algebraic geometry and deep learning. The goals are:</p>
   <ul>
     <li>Using algebraic geometry to understand neural networks.</li>
     <li>Using deep learning to inspire fresh questions in geometry.</li>
@@ -89,19 +89,18 @@
     </svg>
   </figure>
 
-  <h2>Overview</h2>
-  <p>NeurAG studies the spaces of functions parametrized by polynomial machine learning models.</p>
-  <p>A model is a family of functions $f_\theta \colon X \to Y$, indexed by parameters $\theta$ in a parameter space $\Theta$ (usually Euclidean), and the parametrization map is $\varphi \colon \theta \mapsto f_\theta$. Its image $\M = \varphi(\Theta) \subset Y^X$ is called a <em>neuromanifold</em>. We assume that $f_\theta(x)$ is polynomial in both $x$ and $\theta$.</p>
+  <p>The central objects of study are the spaces of functions $\M$ parametrized by polynomial deep learning models.</p>
+ <!-- <p>A model is a family of functions $f_\theta \colon X \to Y$, indexed by parameters $\theta$ in a parameter space $\Theta$ (usually Euclidean), and the parametrization map is $\varphi \colon \theta \mapsto f_\theta$. Its image $\M = \varphi(\Theta) \subset Y^X$ is called a <em>neuromanifold</em>. We assume that $f_\theta(x)$ is polynomial in both $x$ and $\theta$.</p> -->
 
   <details class="note">
     <summary>Why polynomials?</summary>
     <ul>
       <li><em>They are general.</em> By the Weierstrass approximation theorem, polynomials can approximate any continuous function locally.</li>
-      <li><em>They are suitable for geometry.</em> For polynomial models, $\M$ lives in a finite-dimensional ambient space, which happens only for polynomials. By the Tarski–Seidenberg theorem, $\M$ is a semi-algebraic variety: it can be defined by polynomial equalities and inequalities.</li>
+      <li><em>They are suitable for geometry.</em> For polynomial models, $\M$ lives in a finite-dimensional ambient space, which happens only for polynomials. Crucially, $\M$ is a semi-algebraic variety: it can be defined by polynomial equalities and inequalities.</li>
     </ul>
   </details>
 
-  <p>Algebro-Geometric aspects of $\M$ can be translated into machine learning notions, and vice versa.</p>
+  <p>Geometric aspects of $\M$ can be translated into learning ones, and vice versa.</p>
   <!-- One button per entry: geometry on the left, deep learning on the right.
        Each button links to the corresponding section of the Primer (primer.html#id, where id is that of the section's
        heading; the Primer opens the section). -->
@@ -136,89 +135,96 @@
     </figcaption>
   </figure>
 
-  <h2>Visualize and Play</h2>
-  <p>Have fun with some toy neuromanifolds!</p>
-  <details class="note">
-    <summary>What is this?</summary>
-    <p>Consider a residual network (<a href="primer.html#ex-skip-connections">Example 6</a>) with two layers of one neuron each, no biases, and as activation a polynomial $\sigma \in \R[t]$ of degree $r$. It computes
-    $$
-    f_\theta(x) = \sigma\big(w_2 (\sigma(w_1 x) + x)\big) + \sigma(w_1 x) + x, \qquad \theta = (w_1, w_2) \in \R^2,
-    $$
-    and, without its skip connections, $f_\theta(x) = \sigma(w_2\, \sigma(w_1 x))$. In both cases, $\M$ lies in the ambient space $V = \R[x]_{\le r^2} \cong \R^{r^2 + 1}$. For generic $\sigma$, as $\theta$ ranges over the disk $w_1^2 + w_2^2 \le R^2$, $f_\theta$ traces a surface in $V$.</p>
+  <!-- "Visualize and Play": the summary, drawn as a tag of the Literature page with an orange border, shows and
+       hides the viewer, with the sentence and the note that introduce it. -->
+  <details class="play">
+    <summary class="tag tag-accent">Visualize and Play</summary>
 
-    <p>Choose $\sigma$, and see the surface through an orthogonal projection $V \to \R^3$, for the Bombieri–Weyl inner product $\langle x^i, x^j \rangle = \delta_{ij} \binom{r^2}{i}^{-1}$: a random one, or the projection onto the top three principal components of the surface (PCA). Drag to orbit, and Shift + drag to rotate the projection through the hidden dimensions. Features of the surface itself, such as its singularities, are there in every projection; artifacts of a projection move around as it rotates. Pointing at the disk of weights marks $f_\theta$ on the surface. Clicking trains the network from $\theta$, by gradient descent on the squared Bombieri–Weyl distance $\|f_\theta - f^*\|^2$ to a target $f^*$ <span class="nm-acc">◆</span>, a random function of the network plus noise (see <a href="primer.html#learning">Learning</a>), optionally regularized by a multiple of $\|\theta\|^2$. The path of the training is drawn on the disk and on the surface.</p>
+    <p>Have fun with some toy neuromanifolds!</p>
+    <details class="note">
+      <summary>What is this?</summary>
+      <p>Consider a residual network (<a href="primer.html#ex-skip-connections">Example 6</a>) with two layers of one neuron each, no biases, and as activation a polynomial $\sigma \in \R[t]$ of degree $r$. It computes
+      $$
+      f_\theta(x) = \sigma\big(w_2 (\sigma(w_1 x) + x)\big) + \sigma(w_1 x) + x, \qquad \theta = (w_1, w_2) \in \R^2,
+      $$
+      and, without its skip connections, $f_\theta(x) = \sigma(w_2\, \sigma(w_1 x))$. In both cases, $\M$ lies in the ambient space $V = \R[x]_{\le r^2} \cong \R^{r^2 + 1}$. For generic $\sigma$, as $\theta$ ranges over the disk $w_1^2 + w_2^2 \le R^2$, $f_\theta$ traces a surface in $V$.</p>
+
+      <p>Choose $\sigma$, and see the surface through an orthogonal projection $V \to \R^3$, for the Bombieri–Weyl inner product $\langle x^i, x^j \rangle = \delta_{ij} \binom{r^2}{i}^{-1}$: a random one, or the projection onto the top three principal components of the surface (PCA). Drag to orbit, and Shift + drag to rotate the projection through the hidden dimensions. Features of the surface itself, such as its singularities, are there in every projection; artifacts of a projection move around as it rotates. Pointing at the disk of weights marks $f_\theta$ on the surface. Clicking trains the network from $\theta$, by gradient descent on the squared Bombieri–Weyl distance $\|f_\theta - f^*\|^2$ to a target $f^*$ <span class="nm-acc">◆</span>, a random function of the network plus noise (see <a href="primer.html#learning">Learning</a>), optionally regularized by a multiple of $\|\theta\|^2$. The path of the training is drawn on the disk and on the surface.</p>
+    </details>
+
+    <!-- Neuromanifold viewer of a surface, run by neuromanifold/surface.js, which finds its parts by their ids (nm-...);
+         its styles are in neuromanifold/viewers.css. -->
+    <figure class="nm-viewer" id="nm-surface">
+      <div class="nm" role="group" aria-label="Neuromanifold viewer">
+        <div class="nm-controls">
+          <div class="nm-slider nm-deg">
+            <label for="nm-degree">$\deg \sigma$</label>
+            <input type="range" id="nm-degree" min="2" max="5" step="1" value="3" autocomplete="off" aria-label="Degree of σ">
+            <output id="nm-degree-out" for="nm-degree">3</output>
+          </div>
+          <div class="nm-line">
+            <div class="nm-sigma" id="nm-sigma" role="group" aria-label="Coefficients of σ"></div>
+            <button type="button" class="nm-btn" id="nm-random" aria-label="Random σ">Random</button>
+          </div>
+          <div class="nm-checks">
+            <label class="nm-check"><input type="checkbox" id="nm-skip" checked autocomplete="off"> <span>Skip connections</span></label>
+            <label class="nm-check"><input type="checkbox" id="nm-reg" autocomplete="off"> <span>$\ell^2$ regularization</span></label>
+          </div>
+        </div>
+        <p class="nm-status" id="nm-status" aria-live="polite"></p>
+
+        <div class="nm-main">
+          <div class="nm-disk">
+            <canvas id="nm-disk" tabindex="0" aria-label="The disk of weights. Point at it, or use the arrow keys, to mark the function of those weights in the view; Escape removes the mark. Click, or press Enter, to train the network from there."></canvas>
+            <span class="nm-disk-lbl nm-disk-w1" aria-hidden="true">$\theta_1$</span>
+            <span class="nm-disk-lbl nm-disk-w2" aria-hidden="true">$\theta_2$</span>
+          </div>
+          <div class="nm-slider nm-range">
+            <label for="nm-range">$R$</label>
+            <input type="range" id="nm-range" min="0.2" max="2" step="0.05" value="1" autocomplete="off" aria-label="Radius R of the disk of weights">
+            <output id="nm-range-out" for="nm-range">1.00</output>
+          </div>
+          <div class="nm-train">
+            <div class="nm-slider">
+              <label for="nm-noise">Noise <span class="nm-acc">◆</span></label>
+              <input type="range" id="nm-noise" min="0" max="1" step="0.05" value="0.3" autocomplete="off" aria-label="Noise of the target">
+              <output id="nm-noise-out" for="nm-noise">0.30</output>
+            </div>
+            <div class="nm-train-btns">
+              <button type="button" class="nm-btn" id="nm-target">New target</button>
+              <button type="button" class="nm-btn" id="nm-clear" disabled>Clear</button>
+            </div>
+          </div>
+
+          <div class="nm-stage">
+            <canvas id="nm-view" tabindex="0" aria-label="The neuromanifold, under an orthogonal projection to 3D. Drag, or use the arrow keys, to orbit; hold Shift to rotate the projection through a hidden dimension."></canvas>
+          </div>
+          <p class="nm-cap" id="nm-cap"></p>
+          <div class="nm-display">
+            <label><input type="checkbox" id="nm-lines" checked autocomplete="off"> Grid</label>
+            <label><input type="checkbox" id="nm-xray" autocomplete="off"> X-ray</label>
+            <label><input type="checkbox" id="nm-probe" checked autocomplete="off"> Point</label>
+          </div>
+          <div class="nm-viewbar">
+            <button type="button" class="nm-btn" id="nm-new">Random projection</button>
+            <button type="button" class="nm-btn" id="nm-pca">PCA</button>
+          </div>
+          <div class="nm-loss-box">
+            <canvas class="nm-loss" id="nm-loss" role="img" aria-label="The loss against the steps of gradient descent, both on log scales."></canvas>
+            <p class="nm-loss-cap">Loss (log–log). Dashed: lowest on the disk.</p>
+          </div>
+        </div>
+        <noscript><p>The neuromanifold viewer needs JavaScript.</p></noscript>
+      </div>
+    </figure>
   </details>
 
-  <!-- Neuromanifold viewer of a surface, run by neuromanifold/surface.js, which finds its parts by their ids (nm-...);
-       its styles are in neuromanifold/viewers.css. -->
-  <figure class="nm-viewer" id="nm-surface">
-    <div class="nm" role="group" aria-label="Neuromanifold viewer">
-      <div class="nm-controls">
-        <div class="nm-slider nm-deg">
-          <label for="nm-degree">$\deg \sigma$</label>
-          <input type="range" id="nm-degree" min="2" max="5" step="1" value="3" autocomplete="off" aria-label="Degree of σ">
-          <output id="nm-degree-out" for="nm-degree">3</output>
-        </div>
-        <div class="nm-line">
-          <div class="nm-sigma" id="nm-sigma" role="group" aria-label="Coefficients of σ"></div>
-          <button type="button" class="nm-btn" id="nm-random" aria-label="Random σ">Random</button>
-        </div>
-        <div class="nm-checks">
-          <label class="nm-check"><input type="checkbox" id="nm-skip" checked autocomplete="off"> <span>Skip connections</span></label>
-          <label class="nm-check"><input type="checkbox" id="nm-reg" autocomplete="off"> <span>$\ell^2$ regularization</span></label>
-        </div>
-      </div>
-      <p class="nm-status" id="nm-status" aria-live="polite"></p>
-
-      <div class="nm-main">
-        <div class="nm-disk">
-          <canvas id="nm-disk" tabindex="0" aria-label="The disk of weights. Point at it, or use the arrow keys, to mark the function of those weights in the view; Escape removes the mark. Click, or press Enter, to train the network from there."></canvas>
-          <span class="nm-disk-lbl nm-disk-w1" aria-hidden="true">$\theta_1$</span>
-          <span class="nm-disk-lbl nm-disk-w2" aria-hidden="true">$\theta_2$</span>
-        </div>
-        <div class="nm-slider nm-range">
-          <label for="nm-range">$R$</label>
-          <input type="range" id="nm-range" min="0.2" max="2" step="0.05" value="1" autocomplete="off" aria-label="Radius R of the disk of weights">
-          <output id="nm-range-out" for="nm-range">1.00</output>
-        </div>
-        <div class="nm-train">
-          <div class="nm-slider">
-            <label for="nm-noise">Noise <span class="nm-acc">◆</span></label>
-            <input type="range" id="nm-noise" min="0" max="1" step="0.05" value="0.3" autocomplete="off" aria-label="Noise of the target">
-            <output id="nm-noise-out" for="nm-noise">0.30</output>
-          </div>
-          <div class="nm-train-btns">
-            <button type="button" class="nm-btn" id="nm-target">New target</button>
-            <button type="button" class="nm-btn" id="nm-clear" disabled>Clear</button>
-          </div>
-        </div>
-
-        <div class="nm-stage">
-          <canvas id="nm-view" tabindex="0" aria-label="The neuromanifold, under an orthogonal projection to 3D. Drag, or use the arrow keys, to orbit; hold Shift to rotate the projection through a hidden dimension."></canvas>
-        </div>
-        <p class="nm-cap" id="nm-cap"></p>
-        <div class="nm-display">
-          <label><input type="checkbox" id="nm-lines" checked autocomplete="off"> Grid</label>
-          <label><input type="checkbox" id="nm-xray" autocomplete="off"> X-ray</label>
-          <label><input type="checkbox" id="nm-probe" checked autocomplete="off"> Point</label>
-        </div>
-        <div class="nm-viewbar">
-          <button type="button" class="nm-btn" id="nm-new">Random projection</button>
-          <button type="button" class="nm-btn" id="nm-pca">PCA</button>
-        </div>
-        <div class="nm-loss-box">
-          <canvas class="nm-loss" id="nm-loss" role="img" aria-label="The loss against the steps of gradient descent, both on log scales."></canvas>
-          <p class="nm-loss-cap">Loss (log–log). Dashed: lowest on the disk.</p>
-        </div>
-      </div>
-      <noscript><p>The neuromanifold viewer needs JavaScript.</p></noscript>
-    </div>
-  </figure>
-
+  <!-- News, hidden for now.
   <h2>News</h2>
   <ul class="news">
     <li><time datetime="2026-11">November 2026</time><span>The website is under construction.</span></li>
   </ul>
+  -->
 </main>
 
 <footer class="site-footer">
