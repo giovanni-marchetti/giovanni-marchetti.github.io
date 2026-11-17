@@ -1,0 +1,706 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.05in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{fact}[theorem]{Fact}
+\theoremstyle{definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{remark}[theorem]{Remark}
+
+\numberwithin{equation}{section}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prob}{\mathbf{P}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\fs}{f^{\star}}
+\newcommand{\Ch}{\widehat{C}}
+\newcommand{\cN}{\mathcal{N}}
+\newcommand{\cM}{\mathcal{M}}
+\newcommand{\psitwo}[1]{\lVert #1\rVert_{\psi_2}}
+\DeclareMathOperator{\vol}{vol}
+\DeclareMathOperator{\codim}{codim}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\Gr}{Gr}
+\DeclareMathOperator{\St}{St}
+\DeclareMathOperator{\mult}{mult}
+\DeclareMathOperator{\diam}{diam}
+\DeclareMathOperator{\rad}{rad}
+\DeclareMathOperator{\SO}{SO}
+\DeclareMathOperator{\Ort}{O}
+\DeclareMathOperator{\spn}{span}
+\newcommand{\Cmd}{C_{\mathrm{md}}}
+\newcommand{\CD}{C_{\mathrm{D}}}
+\newcommand{\Cw}{C_{\mathrm{w}}}
+\newcommand{\cso}{c_{\mathrm{so}}}
+\newcommand{\CH}{C_{\mathrm{H}}}
+
+\title{Uniform concentration over algebraic varieties\\ and the sample complexity of algebraic models}
+\author{Draft notes}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let $Y\subset\C^N$ be an algebraic variety of dimension $k$ and degree $\delta$, let $X\subset Y\cap\R^N$, let $\fs\in\R^N$, and let $H\ni\fs$ be the affine subspace cut out by $n$ i.i.d.\ random hyperplanes through $\fs$. We prove that, with probability at least $1-C^{k+1}\delta^{C}e^{-cn\eps^2/K^4}$, where $K$ is the sub-Gaussian constant of the distribution of the hyperplanes ($K\asymp1$ for Gaussian hyperplanes), a suitably normalised squared distance from $f$ to $H$ equals $|f-\fs|^2$ up to a factor $1\pm\eps$, simultaneously for all $f\in X$. Hence $n\gtrsim K^4\eps^{-2}(k+1+\log\delta)$ samples suffice, with no explicit dependence on the ambient dimension $N$. This sharpens, by a logarithmic factor and by a different method, a recent sketching bound of Zhang and Kileel. We give an \emph{empirical} version, in which the hyperplanes are $\{\langle a_i,\cdot-\fs\rangle=0\}$ with $a_i$ i.i.d.\ isotropic sub-Gaussian and the normalised distance is $\frac1n\sum_i\langle a_i,f-\fs\rangle^2$, and an \emph{intrinsic} version, in which $H$ is Haar distributed and the normalised distance is $\frac Nn\,d(f,H)^2$ (with a projective, Fubini--Study form). The only algebro-geometric input is a covering bound for the real points of complex algebraic cones, $\cN(T,r)\le\delta(1+2/r)^{2(k+1)}$, which follows from Lelong's monotonicity theorem and the volume of cones. In the learning-theoretic reading, $X$ is a neuromanifold, $\fs$ the target, $H$ the set of interpolants of the data, and the result is a uniform law of large numbers for the squared loss over the neuromanifold. In that reading, the constant $K$ (or the spikiness constant of Theorem~\ref{thm:bounded}) depends on the data distribution and on the function space, and may grow with them.
+\end{abstract}
+
+\noindent\emph{Status of these notes.} The proofs are complete modulo the classical results quoted as Facts and the standard inequalities of Dudley, Sudakov and Hoeffding. The ingredients of the covering bound of Proposition~\ref{prop:packing} are classical: Lelong's monotonicity theorem and the volume of cones (more generally, Stoll's theorem on the volume growth of affine varieties; see Remark~\ref{rem:stoll}). Degree-based covering bounds for complex projective varieties appear in \cite{BurgisserCucker}, with terms depending on the ambient dimension (cf.\ \cite[Table~1]{ZhangKileel}); we have not found the $N$-free bound stated explicitly. The closest result to Theorem~\ref{thm:main} is a sketching bound of Zhang and Kileel \cite{ZhangKileel25}, discussed in Section~\ref{sec:strategy}. Constants are not optimised.
+
+\tableofcontents
+
+\section{Setting and main results}\label{sec:setting}
+
+\subsection{Conventions}
+
+\paragraph{Varieties and degree.}
+A \emph{variety} is a complex algebraic set, i.e.\ a Zariski closed subset of $\C^M$ or of $\PP^M=\PP^M_\C$, not necessarily irreducible. If $W\subset\PP^M$ is irreducible of dimension $m$, its degree $\deg W$ is the number of points of $W\cap\Lambda$ for a generic linear subspace $\Lambda\subset\PP^M$ of codimension $m$. The degree of an irreducible affine variety $W\subset\C^M$ is the degree of its projective closure in $\PP^M\supset\C^M=\{x_0\neq0\}$. For an arbitrary variety, $\dim W$ is the maximal dimension of an irreducible component and
+\[
+\deg W:=\sum_{i}\deg W_i,
+\]
+where the sum runs over \emph{all} irreducible components $W_i$ of $W$, including lower-dimensional ones. The degree is invariant under projective linear and affine automorphisms, and does not change when $\PP^M$ (resp.\ $\C^M$) is linearly embedded into a larger projective (resp.\ affine) space.
+
+A variety $\Gamma\subset\C^N$ is a \emph{cone} if $\lambda\Gamma\subset\Gamma$ for all $\lambda\in\C$. If $\Gamma\neq\{0\}$, then every irreducible component of $\Gamma$ is a cone different from $\{0\}$ (the connected group $\C^*$ preserves each component, and $0$ lies in the closure of every orbit). We write $\PP(\Gamma)\subset\PP^{N-1}$ for the projectivisation; then $\dim\Gamma=\dim\PP(\Gamma)+1$ and $\deg\Gamma=\deg\PP(\Gamma)$, componentwise (the projective closure of an irreducible cone is the projective cone over its projectivisation, which has the same degree). The \emph{affine cone} over a projective variety $Z\subset\PP^{N-1}$ is $\{0\}\cup\{v\neq0:[v]\in Z\}$.
+
+We regard $\R^N\subset\C^N$, and for $\Gamma\subset\C^N$ we write $\Gamma(\R):=\Gamma\cap\R^N$. The Hermitian norm $|\cdot|$ of $\C^N$ restricts to the Euclidean norm of $\R^N$. We write $B(z,r)$ and $\bar B(z,r)$ for open and closed balls in $\C^N$, and $S^{N-1}$ for the unit sphere of $\R^N$. For a projective variety $Y\subset\PP^N$ we write $Y(\R):=Y\cap\PP^N(\R)$.
+
+\paragraph{Coverings and packings.}
+Let $K$ be a subset of a pseudo-metric space and $r>0$. A subset $F\subset K$ is an \emph{$r$-net} of $K$ if every point of $K$ is within distance $r$ of $F$, and $\cN(K,r)$ is the minimal cardinality of an $r$-net. A set is \emph{$r$-separated} if distinct points are at distance $\ge r$, and $\cM(K,r)$ is the maximal cardinality of an $r$-separated subset of $K$. A maximal $r$-separated subset of $K$ is an $r$-net of $K$, hence
+\begin{equation}\label{eq:net-sep}
+\cN(K,r)\le\cM(K,r),\qquad\text{and}\qquad\cM(K',r)\le\cM(K,r)\ \text{ for }K'\subset K.
+\end{equation}
+
+\paragraph{Gaussian width and sub-Gaussian norms.}
+For a bounded set $T\subset\R^N$ let $w(T):=\E\sup_{t\in T}\langle g,t\rangle$, where $g\sim N(0,I_N)$. The supremum over $T$ equals the supremum over its closure, and over a countable dense subset of it, so there are no measurability issues. For a real random variable $\xi$, $\psitwo{\xi}:=\inf\{s>0:\E\exp(\xi^2/s^2)\le2\}$. For a random vector $a\in\R^N$, $\psitwo{a}:=\sup_{|v|=1}\psitwo{\langle a,v\rangle}$. Since $e^x\ge1+x$, we have $\E\xi^2\le\psitwo{\xi}^2$.
+
+\subsection{Random affine subspaces through a point}\label{sec:randomH}
+
+Let $V=\R^N$ with its standard inner product. We identify a linear form on $V$ with the vector $a\in\R^N$ representing it. Let $\nu$ be a Borel probability measure on $\R^N$, the ``one-dimensional'' distribution: a random hyperplane through $\fs$ is $\{f:\langle a,f-\fs\rangle=0\}$ with $a\sim\nu$. We use the assumptions
+\begin{itemize}
+\item[(A1)] \emph{isotropy:} $\E_{a\sim\nu}\langle a,v\rangle^2=|v|^2$ for all $v\in\R^N$;
+\item[(A2)] \emph{sub-Gaussianity:} $K:=\psitwo{a}<\infty$ for $a\sim\nu$.
+\end{itemize}
+Assumption (A1) is a normalisation. If $\E aa^\top$ is non-degenerate, then (A1) holds once the inner product is replaced by $\langle u,v\rangle_\nu:=\E\langle a,u\rangle\langle a,v\rangle$. Under (A1), $K\ge1$. For $\nu=N(0,I_N)$, $K=K_g$ is an absolute constant.
+
+Let $a_1,\dots,a_n$ be i.i.d.\ with law $\nu$, let $A$ be the $n\times N$ matrix with rows $a_i^\top$, and let
+\[
+H:=\fs+\ker A=\big\{f\in\R^N:\ \langle a_i,f\rangle=\langle a_i,\fs\rangle,\ i=1,\dots,n\big\}.
+\]
+Suppose $n\le N$ and $\nu$ gives zero mass to hyperplanes. Then almost surely $\codim H=n$, and the law of $H$ is the push-forward of $\nu^{\otimes n}$ under $(a_1,\dots,a_n)\mapsto\fs+\spn(a_1,\dots,a_n)^\perp$. Equivalently, it is the push-forward under the Pl\"ucker-type map $(a_i)_i\mapsto[a_1\wedge\dots\wedge a_n]\in\Gr(n,\R^N)$. This is the ``product measure'' on the Grassmannian, and for $\nu=N(0,I_N)$ it is the $\Ort(N)$-invariant measure. We compare
+\[
+d_A(f)^2:=\frac1n\,|A(f-\fs)|^2=\frac1n\sum_{i=1}^n\langle a_i,f-\fs\rangle^2\qquad\text{with}\qquad|f-\fs|^2 .
+\]
+The function $d_A$ vanishes exactly on $H$: it is the distance from $f$ to $H$ measured through the data map $\frac1{\sqrt n}A$. It is \emph{not} a function of $H$ alone. When $\rank A=n$, the orthogonal distance is
+\[
+d(f,H)^2=(f-\fs)^\top A^\top(AA^\top)^{-1}A(f-\fs),
+\]
+and this coincides with $d_A(f)^2$ for all $f$ if and only if $AA^\top=nI_n$.
+
+\begin{remark}[On the formulation]\label{rem:formulation}
+Two features of the statements below are forced.
+\begin{enumerate}
+\item[(i)] Both $d_A(f)^2$ and $|f-\fs|^2$ are quadratic in $f-\fs$, while $X$ is in general unbounded. Along a line in $X$ their difference typically grows quadratically, so no additive error bound can hold uniformly on $X$; we prove a \emph{relative} one. The relative error depends only on the direction $[f-\fs]\in\PP^{N-1}$, so the relevant geometric object is the projection of $Y$ from $\fs$ (Lemma~\ref{lem:cone}). In the projective formulation (Corollary~\ref{cor:proj}) all distances are at most $1$, and the relative bound implies an additive one.
+\item[(ii)] For a uniformly distributed $H\ni\fs$ of codimension $n$, $\E\,d(f,H)^2=\frac nN|f-\fs|^2$, since $H$ ``sees'' only $n$ of the $N$ directions. This is the reason for the factor $\frac Nn$ in Theorem~\ref{thm:haar}.
+\end{enumerate}
+\end{remark}
+
+\begin{remark}[Learning-theoretic dictionary]\label{rem:dictionary}
+Let $\mu$ be a probability measure on an input space $\mathcal X$, and let $V$ be an $N$-dimensional space of real functions on $\mathcal X$ on which $\|g\|_{L^2(\mu)}$ is a norm. Fix an $L^2(\mu)$-orthonormal basis $\varphi_1,\dots,\varphi_N$ of $V$ and identify $V\cong\R^N$. For $x\sim\mu$ let $a(x):=(\varphi_1(x),\dots,\varphi_N(x))$, so that $\langle a(x),g\rangle=g(x)$, and let $\nu$ be the law of $a(x)$. Then:
+\begin{itemize}
+\item (A1) holds automatically, and $|f-\fs|^2=\|f-\fs\|_{L^2(\mu)}^2$ is the population risk of $f$ for the target $\fs$;
+\item for a sample $x_1,\dots,x_n$ with noiseless labels $y_i=\fs(x_i)$, $H=\{f\in V:f(x_i)=y_i\ \forall i\}$ is the set of interpolants;
+\item $d_A(f)^2=\frac1n\sum_i(f(x_i)-y_i)^2$ is the empirical risk;
+\item the model, i.e.\ the neuromanifold, is $X\subset V$.
+\end{itemize}
+The measure $\nu$ is supported on the image of $\mathcal X$ under $x\mapsto a(x)$, which is a Veronese-type variety when $V$ consists of polynomials. Assumption (A2) is restrictive in this setting; Theorem~\ref{thm:bounded} replaces it by a boundedness assumption.
+\end{remark}
+
+\subsection{Main results}
+
+\begin{theorem}[Empirical version]\label{thm:main}
+There are absolute constants $c_0,C_0,c,C>0$ such that the following holds. Let $Y\subset\C^N$ be a non-empty variety of dimension $k$ and degree $\delta$, let $X\subset Y(\R)$ and $\fs\in\R^N$. Let $\nu$ satisfy (A1) and (A2), let $n\ge1$ and $\eps\in(0,1]$. Then, with probability at least
+\begin{equation}\label{eq:main-prob}
+1-3\exp\!\Big(-\Big(\frac{c_0\,\eps\sqrt n}{K^2}-C_0\sqrt{k+1+\log\delta}\Big)_+^2\Big),
+\end{equation}
+we have, simultaneously for all $f\in X$,
+\begin{equation}\label{eq:main}
+\big|\,d_A(f)^2-|f-\fs|^2\,\big|\ \le\ \eps\,|f-\fs|^2 .
+\end{equation}
+In particular, the failure probability is at most $C^{k+1}\delta^{C}\exp(-c\,n\eps^2/K^4)$, and it is at most $\eta\in(0,1)$ provided
+\begin{equation}\label{eq:main-n}
+n\ \ge\ C\,K^4\,\eps^{-2}\big(k+1+\log\delta+\log(3/\eta)\big).
+\end{equation}
+\end{theorem}
+
+\begin{theorem}[Intrinsic version]\label{thm:haar}
+There are absolute constants $c,C>0$ such that the following holds. Let $Y$, $X$ and $\fs$ be as in Theorem~\ref{thm:main} and $1\le n\le N$. Let $H_0\subset\R^N$ be a uniformly distributed (i.e.\ $\Ort(N)$-invariant) random linear subspace of codimension $n$, let $H:=\fs+H_0$, and let $d(f,H)$ be the Euclidean distance. If $\eps\in(0,1]$ and $n\ge C\eps^{-2}(k+1+\log\delta)$, then, with probability at least $1-\exp(-cn\eps^2)$, simultaneously for all $f\in X$,
+\begin{equation}\label{eq:haar}
+\Big|\,\frac Nn\,d(f,H)^2-|f-\fs|^2\,\Big|\ \le\ \eps\,|f-\fs|^2 .
+\end{equation}
+In particular, for all $n\in\{1,\dots,N\}$ and $\eps\in(0,1]$ the failure probability is at most $C^{k+1}\delta^{C}e^{-cn\eps^2}$.
+\end{theorem}
+
+\begin{corollary}[Projective version]\label{cor:proj}
+There are absolute constants $c,C>0$ such that the following holds. Let $Y\subset\PP^N$ be a non-empty projective variety of dimension $k$ and degree $\delta$, let $X\subset Y(\R)$ and $\fs\in\PP^N(\R)$. Let $H\subset\PP^N(\R)$ be a random projective linear subspace of codimension $n\in\{1,\dots,N\}$ through $\fs$, distributed according to the probability measure invariant under the stabiliser of $\fs$ in $\Ort(N+1)$. Let $d([x],[y])=\sin\angle(x,y)$ be the chordal Fubini--Study distance and $d(f,H)=\min_{h\in H}d(f,h)$. If $\eps\in(0,1]$ and $n\ge C\eps^{-2}(k+1+\log\delta)$, then with probability at least $1-e^{-cn\eps^2}$, for all $f\in X$,
+\[
+\Big|\,\frac Nn\,d(f,H)^2-d(f,\fs)^2\,\Big|\ \le\ \eps\,d(f,\fs)^2\ \le\ \eps .
+\]
+\end{corollary}
+
+\begin{corollary}[Polynomial parametrisations]\label{cor:param}
+Let $\Phi:\R^m\to\R^N$ be a polynomial map whose coordinates have degree at most $D\ge1$, and let $Y\subset\C^N$ be the Zariski closure of $\Phi(\R^m)$. Then $Y$ is irreducible, $k:=\dim Y\le m$ and $\deg Y\le D^{k}$. Consequently Theorems~\ref{thm:main} and~\ref{thm:haar} apply to every $X\subset\Phi(\R^m)$, and $k+1+\log\delta\le(k+1)(1+\log D)$.
+\end{corollary}
+
+\begin{example}[Polynomial networks]\label{ex:nets}
+Let $f_\theta(x)=W_L\,\sigma(W_{L-1}\,\sigma(\cdots\sigma(W_1x+b_1)\cdots)+b_{L-1})+b_L$, with $\sigma(z)=z^r$ applied coordinatewise, $r\ge2$, $x\in\R^d$, and parameters $\theta=(W_\ell,b_\ell)_\ell\in\R^m$ (the biases may be omitted). Then $f_\theta$ lies in the space $V$ of polynomials of degree at most $r^{L-1}$ on $\R^d$. By induction on the layers, the pre-activations of layer $\ell$ are polynomials in $\theta$ of degree $D_\ell=rD_{\ell-1}+1$, with $D_1=1$. Hence $\theta\mapsto f_\theta$ is polynomial of degree $D_L=\frac{r^L-1}{r-1}\le r^L$. By Corollary~\ref{cor:param}, with $X=\{f_\theta\}$ the neuromanifold,
+\[
+n\ \ge\ C K^4\eps^{-2}\big((\dim X+1)(1+L\log r)+\log(3/\eta)\big)
+\]
+samples suffice in Theorem~\ref{thm:main}, where $K$ is the sub-Gaussian constant of the law of $a(x)$ in Remark~\ref{rem:dictionary}. This parallels the classical VC and pseudo-dimension bounds of order $m\log D$ for classes with $m$ parameters entering polynomially with degree $D$, which come from Warren's theorem~\cite{Warren,GoldbergJerrum}. Here the dimension of the neuromanifold replaces the number of parameters, and the width does not enter the logarithm.
+
+The ambient dimension $N=\binom{d+r^{L-1}}{d}$ does not enter \emph{explicitly}, but $K$ depends on $\mu$ and $V$ and may grow with $N$. For instance, for univariate polynomials of degree at most $q$ under the uniform distribution on $[-1,1]$, Markov's inequality applied to the Christoffel--Darboux kernel shows $K\ge cN/\sqrt{\log N}$, with $N=q+1$; and $K=\infty$ for Gaussian inputs as soon as $r^{L-1}\ge2$. Theorem~\ref{thm:bounded} replaces $K$ by the model-relative constant $M$, which can be much smaller, at the price of a polynomial dependence on the failure probability: there, $n\ge CM^2(\eta\eps)^{-2}(\dim X+1)(1+L\log r)$ suffices. However, $M$ can itself be large, and Remark~\ref{rem:spiky} shows that this cost is genuine for relative bounds.
+\end{example}
+
+\begin{corollary}[Uniformly over targets]\label{cor:uniform}
+There is an absolute constant $C>0$ such that, in the setting of Theorem~\ref{thm:main}, if $n\ge CK^4\eps^{-2}(k+1+\log\delta+\log(3/\eta))$, then with probability at least $1-\eta$, for all $f,g\in X$,
+\[
+\Big|\,\frac1n|A(f-g)|^2-|f-g|^2\,\Big|\ \le\ \eps\,|f-g|^2 .
+\]
+In particular, a single draw of $a_1,\dots,a_n$ makes \eqref{eq:main} hold simultaneously for all targets $\fs\in X$.
+\end{corollary}
+
+A variant of Theorem~\ref{thm:main} for bounded (not necessarily sub-Gaussian) $\nu$ is Theorem~\ref{thm:bounded}; remarks on sharpness and exact recovery are in Section~\ref{sec:remarks}.
+
+\subsection{Strategy, and comparison with previous work}\label{sec:strategy}
+
+All statements reduce to a uniform bound over the compact set $T:=\Ch(\R)\cap S^{N-1}$, where $\Ch$ is the \emph{cone of directions} of $Y$ seen from $\fs$ (Lemma~\ref{lem:cone}). Its components have dimension at most $k+1$, and its degree is at most $\delta$. The only algebro-geometric input is Proposition~\ref{prop:packing}:
+\[
+\cN(T,r)\le\delta\,(1+2/r)^{2(k+1)}\qquad(r>0).
+\]
+Its proof is a volumetric packing argument in $\C^N$. Lelong's monotonicity theorem gives a lower bound $\vol(\Gamma\cap B(t,\rho))\ge\omega\rho^{2p}$ at \emph{every} point $t$ of every irreducible component $\Gamma$ of $\Ch$, where $p=\dim\Gamma$. The volume of a cone gives the upper bound $\deg(\Gamma)\,\omega R^{2p}$. Dudley's inequality turns the covering bound into $w(T)\lesssim\sqrt{k+1}+\sqrt{\log\delta}$ (Corollary~\ref{cor:width}). Standard results then finish the proofs: the matrix deviation inequality for Theorem~\ref{thm:main}, and a Gaussian comparison plus concentration on $\SO(N)$ for Theorem~\ref{thm:haar}.
+
+\paragraph{Covering numbers.} Real-algebraic covering bounds \cite{YomdinComte,ZhangKileel} are stated in terms of the number of variables and the degrees of the defining polynomials. For instance, \cite[Table~1]{ZhangKileel} bounds the logarithm of the $\eps$-covering number of the image of a polynomial map $\R^m\to\R^N$ of degree $D$, intersected with the unit ball, by $m\log(1/\eps)+O(m\log D+m\log N)$, where $m$ is the number of parameters. Such bounds contain terms growing with $N$. Moreover, the set $T$ to which we apply Dudley's inequality is the semialgebraic set of normalised directions, not a polynomial image, so they would have to be adapted. Over $\R$ no lower bound on local volume is available, since real points can be arbitrarily thin; passing to $\C$ is what provides it. For complex projective varieties, \cite[Table~1]{ZhangKileel} lists a bound from \cite{BurgisserCucker} of the form $2n\log(1/\eps)+O(N\log d+n\log N)$, in terms of the degree $d$ of defining equations. For fixed $K$, $N$ can only enter our bounds through $\delta$, and it does so exactly when the variety spreads over many ambient directions. For example, the $s$-sparse vectors in $\R^N$ form a union of $\binom Ns$ coordinate planes, so $\log\delta\approx s\log(eN/s)$, recovering the classical sample complexity of sparse recovery.
+
+\paragraph{Sketching varieties.} The closest result to Theorem~\ref{thm:main} is due to Zhang and Kileel \cite[Thm.~2.7 and Example~2.9]{ZhangKileel25}. Let $V\subset\R^N$ be contained in an irreducible variety of degree $D$ and dimension $n$, and let $S=m^{-1/2}G$, where $G$ is an $m\times N$ matrix with independent, mean-zero, unit-variance sub-Gaussian entries of $\psi_2$-norm at most $K$. Then, with probability at least $1-\eta$, $|Sx|^2=(1\pm\eps)|x|^2$ for all $x\in V$, as soon as $m\ge C\eps^{-2}K^2(\log D+n\log(Cn)+\log(1/\eta))$; there is no dependence on $N$.
+\begin{itemize}
+\item \emph{Their method.} The proof bounds the size of a norming set for polynomials of degree at most $4$ on $V$, using a result of Altschuler and Parrilo \cite{AltschulerParrilo} based on Hilbert functions. It then needs only tail bounds for a single vector, which makes it applicable to many structured sketches (fast Johnson--Lindenstrauss, sparse, tensor-structured).
+\item \emph{Consequence.} Applied to $V=Y-\fs$, it gives a statement of the type of Theorem~\ref{thm:main}, with $n\log(Cn)$ in place of $k$.
+\item \emph{What these notes add.} The dependence $k+\log\delta$, which is optimal in both terms (Remark~\ref{rem:sharp}); the covering bound of Proposition~\ref{prop:packing}, which holds at every scale and in every Euclidean seminorm, and is used in this form in Theorem~\ref{thm:bounded}; and the intrinsic, projective and learning-theoretic formulations.
+\end{itemize}
+
+\section{Algebraic and metric preliminaries}\label{sec:prelim}
+
+\begin{fact}[B\'ezout inequality]\label{fact:bezout}
+Let $V_1,\dots,V_r\subset\PP^M$ be varieties. Then the sum of the degrees of the irreducible components of $V_1\cap\dots\cap V_r$ is at most $\prod_i\deg V_i$ \cite[Example~8.4.6]{Fulton}, \cite{Heintz}. The same holds for affine varieties in $\C^M$ \cite{Heintz}. In particular:
+\begin{itemize}
+\item if $\Lambda\subset\PP^M$ is a linear subspace, then $W\cap\Lambda$ has at most $\deg W$ isolated points;
+\item the common zero set in $\C^k$ of $k$ polynomials of degree at most $D$ has at most $D^k$ isolated points.
+\end{itemize}
+\end{fact}
+
+\begin{lemma}[Projection from a point]\label{lem:projection}
+Let $W\subset\PP^M$ be an irreducible variety and $p\in\PP^M$ a point with $W\neq\{p\}$. Let $\Pi\subset\PP^M$ be a hyperplane with $p\notin\Pi$, and $\pi_p:\PP^M\setminus\{p\}\to\Pi$ the linear projection from $p$. Then $W':=\overline{\pi_p(W\setminus\{p\})}$ is irreducible, $\dim W'\le\dim W$ and $\deg W'\le\deg W$.
+\end{lemma}
+
+\begin{proof}
+Since $W\setminus\{p\}$ is a non-empty open subset of $W$, it is irreducible, so $W'$ is irreducible and $\dim W'\le\dim W$. For a linear subspace $\Lambda'\subset\Pi$, let $J(\Lambda')\subset\PP^M$ be the linear span of $p$ and $\Lambda'$. Then $\pi_p^{-1}(\Lambda')=J(\Lambda')\setminus\{p\}$, and the codimension of $J(\Lambda')$ in $\PP^M$ equals the codimension of $\Lambda'$ in $\Pi$. Let $\pi:=\pi_p|_{W\setminus\{p\}}$ and $m:=\dim W'$.
+
+\emph{Case 1: $\dim W'=\dim W$.} Then $\pi:W\setminus\{p\}\to W'$ is a dominant morphism between irreducible varieties of the same dimension. By Chevalley's theorem and the theorem on the dimension of fibres, there is a non-empty open set $U\subset W'$ with $U\subset\pi(W\setminus\{p\})$ such that $\pi^{-1}(u)$ is finite for all $u\in U$. Let $\Lambda'\subset\Pi$ be a generic linear subspace of codimension $m$ in $\Pi$. Then $W'\cap\Lambda'$ consists of exactly $\deg W'$ points, all lying in $U$, because $\dim(W'\setminus U)<m$. Hence $W\cap J(\Lambda')\subset\{p\}\cup\pi^{-1}(W'\cap\Lambda')$ is finite and contains at least $\deg W'$ points. Since $J(\Lambda')$ has codimension $m=\dim W$, Fact~\ref{fact:bezout} gives $\deg W'\le\#\big(W\cap J(\Lambda')\big)\le\deg W$.
+
+\emph{Case 2: $\dim W'<\dim W$.} By the theorem on the dimension of fibres, every non-empty fibre of $\pi$ has positive dimension. A fibre has the form $W\cap(\ell\setminus\{p\})$ for a line $\ell\ni p$. If it is infinite, then $\ell\subset W$, since $W\cap\ell$ is closed in the irreducible curve $\ell$. Hence the line $\ell_{p,w}$ through $p$ and $w$ lies in $W$ for every $w\in W\setminus\{p\}$. Since $\pi_p(w)\in\ell_{p,w}\subset W$, we get $\pi(W\setminus\{p\})=W\cap\Pi$. Thus $W'=W\cap\Pi$, $W=\bigcup_{q\in W'}\ell_{p,q}$, and $m=\dim W-1$. Let $\Lambda'\subset\Pi$ be a generic linear subspace of codimension $m$ in $\Pi$, so that $W'\cap\Lambda'=\{q_1,\dots,q_s\}$ with $s=\deg W'$. A line $\ell_{p,q}$ with $q\in W'$ lies in $J(\Lambda')$ if $q\in\Lambda'$, and meets it only in $p$ otherwise. Hence $W\cap J(\Lambda')=\bigcup_j\ell_{p,q_j}$. Let $\Pi''$ be a hyperplane not containing $p$. Then $\Lambda:=J(\Lambda')\cap\Pi''$ is a linear subspace of codimension $m+1=\dim W$, and $W\cap\Lambda=\{\ell_{p,q_j}\cap\Pi''\}_{j=1}^s$ consists of exactly $s$ points, because distinct lines through $p$ meet only at $p\notin\Pi''$. By Fact~\ref{fact:bezout}, $\deg W'=s\le\deg W$.
+\end{proof}
+
+\begin{lemma}[Linear images and products]\label{lem:linear}
+\begin{enumerate}
+\item[(a)] Let $V\subset\C^a$ be a variety and $\varphi:\C^a\to\C^b$ an affine-linear map. Then $\overline{\varphi(V)}$ has dimension at most $\dim V$ and degree at most $\deg V$ (cf.\ \cite{Heintz}). If $V$ is a cone and $\varphi$ is linear, then $\overline{\varphi(V)}$ is a cone.
+\item[(b)] For varieties $V\subset\C^a$ and $W\subset\C^b$, $\deg(V\times W)\le\deg V\cdot\deg W$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(a) The closure of $\varphi(V)$ is the union of the closures of the images of the components of $V$. Its irreducible components are among these closures, so we may assume $V$ irreducible. Write $\varphi=\mathrm{pr}\circ\psi\circ j$, where:
+\begin{itemize}
+\item $j:\C^a\to\C^{a+b}$, $v\mapsto(v,0)$;
+\item $\psi(v,u):=(v,u+\varphi(v))$ is an affine automorphism of $\C^{a+b}$;
+\item $\mathrm{pr}:\C^{a+b}\to\C^b$ forgets the first $a$ coordinates.
+\end{itemize}
+The variety $\psi(j(V))$ has the same dimension and degree as $V$. The map $\mathrm{pr}$ is a composition of $a$ maps that each forget one coordinate, so it suffices to treat $\rho:\C^M\to\C^{M-1}$, $(x_1,x')\mapsto x'$. In $\PP^M\supset\C^M=\{x_0\neq0\}$, the map $\rho$ is the restriction of the projection $\pi_p$ from the point at infinity $p=[0:1:0:\dots:0]$ to the hyperplane $\Pi=\{x_1=0\}\cong\PP^{M-1}$. Let $W\subset\C^M$ be irreducible with projective closure $\overline W$. Then $W$ is dense in $\overline W\setminus\{p\}$, so $\rho(W)=\pi_p(W)$ is dense in $\pi_p(\overline W\setminus\{p\})$. Hence the projective closure of the affine variety $\overline{\rho(W)}$ is $\overline{\pi_p(\overline W\setminus\{p\})}$, and Lemma~\ref{lem:projection} applies. If $V$ is a cone and $\varphi$ is linear, then $\varphi(V)$ is invariant under scalars, and so is its closure.
+
+(b) Since $V\times W=(V\times\C^b)\cap(\C^a\times W)$, Fact~\ref{fact:bezout} (affine version) gives $\deg(V\times W)\le\deg(V\times\C^b)\,\deg(\C^a\times W)$. It remains to show $\deg(V\times\C^b)=\deg V$, and we may assume $V$ irreducible of dimension $p$. A generic affine subspace $\Lambda\subset\C^{a+b}$ of dimension $a-p$ meets $\{0\}\times\C^b$ only trivially in direction. It therefore projects injectively onto an affine subspace $\mathrm{pr}_1(\Lambda)\subset\C^a$ of codimension $p$, which is generic. The projection $\mathrm{pr}_1$ maps $(V\times\C^b)\cap\Lambda$ bijectively onto $V\cap\mathrm{pr}_1(\Lambda)$, which has $\deg V$ points. Since $V\times\C^b$ is irreducible of dimension $p+b=\codim\Lambda$, it follows that $\deg(V\times\C^b)=\deg V$.
+\end{proof}
+
+\begin{lemma}[The cone of directions]\label{lem:cone}
+Let $Y\subset\C^N$ be a variety of dimension $k$ and degree $\delta$, and let $\fs\in\C^N$ with $Y\not\subset\{\fs\}$. Let $Z\subset\PP^{N-1}$ be the Zariski closure of $\{[f-\fs]:f\in Y\setminus\{\fs\}\}$, and $\Ch\subset\C^N$ the affine cone over $Z$. Then:
+\begin{itemize}
+\item $f-\fs\in\Ch$ for every $f\in Y$;
+\item $\Ch=-\Ch$;
+\item every irreducible component of $\Ch$ has dimension at most $k+1$;
+\item $\deg\Ch=\deg Z\le\delta$.
+\end{itemize}
+\end{lemma}
+
+\begin{proof}
+Let $Y_1,\dots,Y_s$ be the irreducible components of $Y$ and $W_i\subset\PP^N$ their projective closures, so that $\sum_i\deg W_i=\delta$. Let $p:=[1:\fs]$ and $\Pi:=\{x_0=0\}\cong\PP^{N-1}$. For $f\in\C^N\setminus\{\fs\}$, the line through $p$ and $[1:f]$ meets $\Pi$ in $[0:f-\fs]$, i.e.\ $\pi_p([1:f])=[f-\fs]$. If $Y_i\neq\{\fs\}$, then $Y_i\setminus\{\fs\}$ is a non-empty open subset of the irreducible $W_i\setminus\{p\}$, hence dense in it. Therefore the closure of $\{[f-\fs]:f\in Y_i\setminus\{\fs\}\}$ equals $W_i':=\overline{\pi_p(W_i\setminus\{p\})}$, and $Z=\bigcup_iW_i'$, the union running over $i$ with $Y_i\neq\{\fs\}$. By Lemma~\ref{lem:projection}, each $W_i'$ is irreducible of dimension at most $k$ and degree at most $\deg W_i$. The irreducible components of $Z$ are among the $W_i'$, so $\deg Z\le\sum_i\deg W_i'\le\delta$. The irreducible components of $\Ch$ are the cones over the components of $Z$, of dimension at most $k+1$, and $\deg\Ch=\deg Z$ by our conventions. Finally, if $f\in Y\setminus\{\fs\}$ then $[f-\fs]\in Z$, i.e.\ $f-\fs\in\Ch$; also $0\in\Ch$, and $\Ch=-\Ch$ because $\Ch$ is a cone.
+\end{proof}
+
+\begin{fact}[Lelong, Thie]\label{fact:lelong}
+Let $A\subset\C^N$ be a closed analytic subset of pure dimension $p\ge1$ and $a\in A$. Let $\vol_{2p}$ denote the $2p$-dimensional Hausdorff measure, normalised to agree with Lebesgue measure on real $2p$-planes, and $\omega_{2p}=\pi^p/p!$ the volume of the unit ball of $\R^{2p}$. Then the function
+\[
+r\longmapsto\frac{\vol_{2p}\big(A\cap B(a,r)\big)}{\omega_{2p}\,r^{2p}}
+\]
+is non-decreasing on $(0,\infty)$ \cite{Lelong}. Its limit as $r\to0$ is the multiplicity $\mult_a(A)\ge1$ \cite{Thie}; see also \cite{Chirka,Demailly}. For algebraic $A$ this is the algebraic (Hilbert--Samuel) multiplicity, i.e.\ the degree of the projectivised tangent cone of $A$ at $a$ regarded as a scheme, its components counted with their multiplicities \cite[Lecture~20]{Harris}, \cite[Ch.~5]{Mumford}. In particular, $\vol_{2p}(A\cap B(a,r))\ge\omega_{2p}r^{2p}$ for every $r>0$.
+\end{fact}
+
+\begin{lemma}[Volume of cones]\label{lem:conevol}
+Let $\Gamma\subset\C^N$ be an irreducible cone of dimension $p\ge1$. Then $\vol_{2p}(\Gamma\cap B(0,R))=\deg(\Gamma)\,\omega_{2p}R^{2p}$ for every $R>0$.
+\end{lemma}
+
+\begin{proof}
+Let $\Theta(R):=\vol_{2p}(\Gamma\cap B(0,R))/(\omega_{2p}R^{2p})$. For $\lambda>0$, the dilation $z\mapsto\lambda z$ maps $\Gamma\cap B(0,R)$ bijectively onto $\Gamma\cap B(0,\lambda R)$ and multiplies $\vol_{2p}$ by $\lambda^{2p}$, so $\Theta$ is constant. By Fact~\ref{fact:lelong} at $a=0$, this constant equals $\lim_{R\to0}\Theta(R)=\mult_0(\Gamma)$. The ideal $I(\Gamma)$ is homogeneous and radical. Being homogeneous, it coincides with its ideal of initial forms, so the tangent cone of $\Gamma$ at $0$, as a scheme, is defined by $I(\Gamma)$. Being radical, this scheme is the reduced variety $\Gamma$. Hence $\mult_0(\Gamma)=\deg\PP(\Gamma)=\deg\Gamma$. (Alternatively, combine Wirtinger's theorem $\vol(\PP(\Gamma))=\deg\PP(\Gamma)\cdot\vol(\PP^{p-1})$ for the Fubini--Study metric \cite{GriffithsHarris} with integration over the Hopf fibration.)
+\end{proof}
+
+\begin{proposition}[Packing bound for cones]\label{prop:packing}
+Let $\Gamma\subset\C^N$ be a cone, $\Gamma\neq\{0\}$, whose irreducible components have dimension at most $p$, and let $\delta:=\deg\Gamma$. Then for all $R,r>0$, every $r$-separated subset of $\Gamma\cap\bar B(0,R)$ has at most
+\[
+\delta\,\big(1+2R/r\big)^{2p}
+\]
+elements. Consequently, $\cN(K,r)\le\delta(1+2R/r)^{2p}$ for every $K\subset\Gamma\cap\bar B(0,R)$, in particular for every $K\subset\Gamma(\R)\cap\bar B(0,R)$, where distances are Euclidean.
+\end{proposition}
+
+\begin{proof}
+Let $\Gamma_1,\dots,\Gamma_q$ be the irreducible components of $\Gamma$, with dimensions $1\le p_j\le p$ and degrees $\delta_j$, so that $\sum_j\delta_j=\delta$. Let $t_1,\dots,t_s\in\Gamma\cap\bar B(0,R)$ be $r$-separated. For each $i$ choose $j(i)$ with $t_i\in\Gamma_{j(i)}$, and let $I_j:=\{i:j(i)=j\}$. The open balls $B(t_i,r/2)$ are pairwise disjoint and contained in $B(0,R+r/2)$. Apply Fact~\ref{fact:lelong} to the pure $p_j$-dimensional analytic set $\Gamma_j$ at the points $t_i$, $i\in I_j$, and Lemma~\ref{lem:conevol} to $\Gamma_j$:
+\[
+|I_j|\;\omega_{2p_j}\Big(\frac r2\Big)^{2p_j}\ \le\ \sum_{i\in I_j}\vol_{2p_j}\big(\Gamma_j\cap B(t_i,\tfrac r2)\big)\ \le\ \vol_{2p_j}\big(\Gamma_j\cap B(0,R+\tfrac r2)\big)\ =\ \delta_j\,\omega_{2p_j}\Big(R+\frac r2\Big)^{2p_j}.
+\]
+Hence $|I_j|\le\delta_j(1+2R/r)^{2p_j}\le\delta_j(1+2R/r)^{2p}$, and $s=\sum_j|I_j|\le\delta(1+2R/r)^{2p}$. The last statement follows from \eqref{eq:net-sep}. Note that an $r$-separated subset of $K\subset\R^N$ is also $r$-separated in $\C^N$, because $|\cdot|$ restricts to the Euclidean norm.
+\end{proof}
+
+\begin{corollary}[Gaussian width]\label{cor:width}
+There is an absolute constant $\Cw$ such that the following holds. Let $\Gamma\subset\C^N$ be a cone, $\Gamma\neq\{0\}$, whose components have dimension at most $p$, and let $\delta=\deg\Gamma$. Then every $T\subset\Gamma(\R)\cap S^{N-1}$ satisfies
+\[
+w(T)\ \le\ \Cw\big(\sqrt p+\sqrt{\log\delta}\big).
+\]
+\end{corollary}
+
+\begin{proof}
+By Dudley's inequality \cite[Thm.~8.1.3]{Vershynin}, $w(T)\le\CD\int_0^\infty\sqrt{\log\cN(T,r)}\,dr$ for an absolute constant $\CD$. Since $T\subset S^{N-1}$, we have $\cN(T,r)=1$ for $r\ge2$. For $0<r<2$, Proposition~\ref{prop:packing} with $R=1$ gives $\cN(T,r)\le\delta(1+2/r)^{2p}\le\delta(4/r)^{2p}$. Therefore
+\[
+\int_0^2\sqrt{\log\delta+2p\log(4/r)}\,dr\ \le\ 2\sqrt{\log\delta}+\sqrt{2p}\int_0^2\sqrt{\log(4/r)}\,dr .
+\]
+The substitution $r=4e^{-s}$ gives
+\[
+\int_0^2\sqrt{\log(4/r)}\,dr=4\int_{\log2}^\infty\sqrt s\,e^{-s}ds\le4\,\Gamma(\tfrac32)=2\sqrt\pi .
+\]
+Hence $w(T)\le\CD\big(2\sqrt{\log\delta}+2\sqrt{2\pi p}\big)$, and we may take $\Cw:=2\sqrt{2\pi}\,\CD$.
+\end{proof}
+
+\begin{remark}[Arbitrary affine varieties]\label{rem:stoll}
+Let $V\subset\C^N$ be a pure $p$-dimensional affine variety and $a\in V$. The ratio in Fact~\ref{fact:lelong} then increases to the density of $V$ at infinity, which equals $\deg V$ by Stoll's theorem \cite{Stoll}; see also \cite{Chirka}. Hence $\vol_{2p}(V\cap B(a,R))\le\deg V\cdot\omega_{2p}R^{2p}$ for all $a\in V$ and $R>0$; Lemma~\ref{lem:conevol} is the case of a cone and $a=0$. The proof of Proposition~\ref{prop:packing} then shows the following, for any $c\in\C^N$ and $R,r>0$: every $r$-separated subset of $V\cap\bar B(c,R)$ has at most $\deg V\,(1+4R/r)^{2p}$ elements. (Run the argument in $B(a,2R+r/2)$ for some $a\in V\cap\bar B(c,R)$; for non-pure $V$, argue componentwise.) This gives covering bounds for varieties with exponent $2\dim V$, rather than the exponent $2(\dim V+1)$ obtained by applying Proposition~\ref{prop:packing} to the cone over $V$. We have used Stoll's theorem only through secondary sources.
+\end{remark}
+
+\begin{remark}[Why complexify]\label{rem:complex}
+The real dimension of $\Ch$ is $2(k+1)$, roughly twice the dimension of $T$; this only affects constants. The point of complexifying is Fact~\ref{fact:lelong}. A real algebraic set has no lower bound on local volume, since real points may form arbitrarily thin ovals. For complex analytic sets, Lelong's theorem gives such a bound uniformly at every point, singular points included.
+\end{remark}
+
+\section{Proof of Theorem~\ref{thm:main}}\label{sec:proof-main}
+
+\begin{fact}[Matrix deviation inequality]\label{fact:md}
+There is an absolute constant $\Cmd\ge1$ with the following property \cite[Thm.~1.4]{LMPV}; see also \cite[Exercise~9.1.8]{Vershynin}, \cite{Gordon} for Gaussian matrices, and \cite{MPT}. Let $A$ be an $n\times N$ random matrix whose rows $a_i$ are independent, with $\E a_ia_i^\top=I_N$ and $\psitwo{a_i}\le K$; no centring is required. Then for every bounded $T\subset\R^N$ and every $u\ge0$, with probability at least $1-3e^{-u^2}$,
+\[
+\sup_{x\in T}\big|\,|Ax|-\sqrt n\,|x|\,\big|\ \le\ \Cmd K^2\big(w(T)+u\,\rad(T)\big),\qquad\rad(T):=\sup_{x\in T}|x| .
+\]
+(In fact \cite[Thm.~1.4]{LMPV} gives probability at least $1-e^{-u^2}$, and \cite[Exercise~9.1.8]{Vershynin} gives $1-2e^{-u^2}$; we state the weaker form, which suffices below.)
+\end{fact}
+
+\begin{proposition}\label{prop:dev}
+Let $A$ be as in Fact~\ref{fact:md}, let $T\subset S^{N-1}$ be compact, and let $\eps\in(0,1]$. Then
+\[
+\Prob\Big(\sup_{t\in T}\Big|\frac{|At|^2}{n}-1\Big|>\eps\Big)\ \le\ 3\exp\!\Big(-\Big(\frac{\eps\sqrt n}{3\Cmd K^2}-w(T)\Big)_+^2\Big).
+\]
+\end{proposition}
+
+\begin{proof}
+Let $u:=\eps\sqrt n/(3\Cmd K^2)-w(T)$. If $u<0$, the right-hand side equals $3$ and there is nothing to prove. Otherwise, apply Fact~\ref{fact:md} with this $u$ and $\rad(T)=1$. With probability at least $1-3e^{-u^2}$, for all $t\in T$ we have $\big||At|/\sqrt n-1\big|\le\Cmd K^2(w(T)+u)/\sqrt n=\eps/3$, and then
+\[
+\Big|\frac{|At|^2}{n}-1\Big|=\Big|\frac{|At|}{\sqrt n}-1\Big|\cdot\Big(\frac{|At|}{\sqrt n}+1\Big)\le\frac\eps3\Big(2+\frac\eps3\Big)\le\eps .\qedhere
+\]
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+If $X\subset\{\fs\}$ there is nothing to prove, so assume otherwise; then $Y\not\subset\{\fs\}$. Let $\Ch$ be the cone of Lemma~\ref{lem:cone}, whose components have dimension at most $k+1$ and whose degree is at most $\delta$, and let $T:=\Ch(\R)\cap S^{N-1}$. This set is compact. For $f\in X\setminus\{\fs\}$, the vector $t_f:=(f-\fs)/|f-\fs|$ lies in $T$ by Lemma~\ref{lem:cone}, and
+\[
+d_A(f)^2-|f-\fs|^2=|f-\fs|^2\Big(\frac{|At_f|^2}{n}-1\Big).
+\]
+Hence, on the event $\big\{\sup_{t\in T}\big||At|^2/n-1\big|\le\eps\big\}$, inequality \eqref{eq:main} holds for all $f\in X$; for $f=\fs$ both sides vanish. By Corollary~\ref{cor:width} with $p=k+1$,
+\[
+w(T)\le\Cw\big(\sqrt{k+1}+\sqrt{\log\delta}\big)\le\sqrt2\,\Cw\sqrt{k+1+\log\delta}.
+\]
+Proposition~\ref{prop:dev} now gives \eqref{eq:main-prob} with $c_0:=1/(3\Cmd)$ and $C_0:=\sqrt2\,\Cw$.
+
+For the consequences, put $\alpha:=c_0\eps\sqrt n/K^2$ and $\beta:=C_0\sqrt{k+1+\log\delta}$, and use $(\alpha-\beta)_+^2\ge\alpha^2/2-\beta^2$. The failure probability is then at most
+\[
+3e^{\beta^2-\alpha^2/2}=3e^{C_0^2(k+1)}\,\delta^{C_0^2}\,e^{-c_0^2n\eps^2/(2K^4)}\le C^{k+1}\delta^Ce^{-cn\eps^2/K^4},
+\]
+with $C\ge\max(3e^{C_0^2},C_0^2)$ and $c:=c_0^2/2$. Finally, $3e^{-(\alpha-\beta)_+^2}\le\eta$ as soon as $\alpha\ge\beta+\sqrt{\log(3/\eta)}$. This follows from $\alpha^2\ge2\beta^2+2\log(3/\eta)$, which holds under \eqref{eq:main-n} if $C\ge2\max(C_0^2,1)/c_0^2$.
+\end{proof}
+
+\section{Proof of Theorem~\ref{thm:haar}}\label{sec:proof-haar}
+
+Let $\St:=\{W_0\in\R^{n\times N}:W_0W_0^\top=I_n\}$ be the Stiefel manifold. The group $\Ort(N)$ acts transitively on $\St$ by right multiplication; let $\sigma_{\St}$ be the unique invariant probability measure. For a subspace $E$, $P_E$ denotes the orthogonal projection onto $E$.
+
+\begin{lemma}[Gaussian polar decomposition]\label{lem:polar}
+Let $1\le n\le N$ and let $G$ be an $n\times N$ matrix with i.i.d.\ $N(0,1)$ entries. Almost surely $\rank G=n$; put $S:=(GG^\top)^{1/2}$ and $W:=S^{-1}G$. Then:
+\begin{itemize}
+\item $W\in\St$;
+\item $S$ and $W$ are independent, and $W\sim\sigma_{\St}$;
+\item the row space $E$ of $G$ (which equals that of $W$) is uniformly distributed on $\Gr(n,N)$;
+\item $\E[S^2]=N\,I_n$.
+\end{itemize}
+\end{lemma}
+
+\begin{proof}
+We have $WW^\top=S^{-1}GG^\top S^{-1}=I_n$. For fixed $O\in\Ort(N)$, the matrix $GO$ has the same law as $G$, and replacing $G$ by $GO$ maps $(S,W)$ to $(S,WO)$. Let $O'$ be Haar distributed on $\Ort(N)$ and independent of $G$. Conditioning on $O'$ shows that $(S,WO')$ has the same law as $(S,W)$. Conditionally on $G$, the matrix $WO'$ has law $\sigma_{\St}$, since $\sigma_{\St}$ is the push-forward of Haar measure under the orbit map of any point. Hence $(S,WO')$, and therefore $(S,W)$, has law $\mathcal L(S)\otimes\sigma_{\St}$.
+
+The map $W_0\mapsto$ (row space of $W_0$) is equivariant, because the row space of $W_0O$ is $O^\top$ applied to the row space of $W_0$. So the law of $E$ is $\Ort(N)$-invariant. Finally, $(GG^\top)_{ij}=\langle g_i,g_j\rangle$, whose expectation is $N\delta_{ij}$.
+\end{proof}
+
+\begin{lemma}[Comparison with Gaussian matrices]\label{lem:compare}
+Let $T\subset S^{N-1}$ be compact, let $E$ be uniformly distributed on $\Gr(n,N)$, and let $G$ be as in Lemma~\ref{lem:polar}. Then
+\[
+\E\sup_{t\in T}\Big|\frac Nn|P_Et|^2-1\Big|\ \le\ \E\sup_{t\in T}\Big|\frac{|Gt|^2}{n}-1\Big| .
+\]
+\end{lemma}
+
+\begin{proof}
+By Lemma~\ref{lem:polar} we may take $E$ to be the row space of $G=SW$. Then $P_E=W^\top W$ and $|P_Et|=|Wt|$. For every $W_0\in\St$ and $t\in\R^N$,
+\[
+\int|sW_0t|^2\,d\mathcal L(S)(s)=(W_0t)^\top\E[S^2](W_0t)=N|W_0t|^2 .
+\]
+Hence for every $W_0\in\St$,
+\[
+\sup_{t\in T}\Big|\frac Nn|W_0t|^2-1\Big|=\sup_{t\in T}\Big|\int\Big(\frac{|sW_0t|^2}{n}-1\Big)d\mathcal L(S)(s)\Big|\le\int\sup_{t\in T}\Big|\frac{|sW_0t|^2}{n}-1\Big|\,d\mathcal L(S)(s).
+\]
+Integrating over $W_0\sim\sigma_{\St}$ and using the independence of $S$ and $W$ (Tonelli), the right-hand side becomes $\E\sup_t\big||SWt|^2/n-1\big|=\E\sup_t\big||Gt|^2/n-1\big|$.
+\end{proof}
+
+\begin{fact}[Concentration on $\SO(N)$]\label{fact:SO}
+There is an absolute constant $\cso>0$ with the following property \cite{GromovMilman}; see also \cite{Ledoux}, \cite[Thm.~5.17]{Meckes}. Let $N\ge3$, let $U$ be Haar distributed on $\SO(N)$, and let $F:\SO(N)\to\R$ be $L$-Lipschitz with respect to the Hilbert--Schmidt distance $\|U-U'\|_{HS}$. Then $\Prob\big(F(U)\ge\E F(U)+s\big)\le\exp(-\cso Ns^2/L^2)$ for all $s>0$.
+\end{fact}
+
+\begin{proposition}\label{prop:haar}
+There are absolute constants $c_3,C_3>0$ such that the following holds. Let $1\le n\le N$, let $T\subset S^{N-1}$ be compact, let $E$ be uniformly distributed on $\Gr(n,N)$, and let $\eps\in(0,1]$. If $n\ge C_3(w(T)+1)^2/\eps^2$, then
+\[
+\Prob\Big(\sup_{t\in T}\Big|\frac Nn|P_Et|^2-1\Big|>\eps\Big)\le\exp(-c_3n\eps^2).
+\]
+\end{proposition}
+
+\begin{proof}
+Write $w:=w(T)$ and $\beta:=(w+1)/\sqrt n$, and define
+\[
+\mathrm{Dev}_2:=\sup_{t\in T}\Big|\frac Nn|P_Et|^2-1\Big|,\qquad\mathrm{Dev}_1:=\sup_{t\in T}\Big|\sqrt{\tfrac Nn}\,|P_Et|-1\Big| .
+\]
+
+\emph{Step 1: $\E\,\mathrm{Dev}_2\le C_4(\beta+\beta^2)$ for an absolute constant $C_4\ge1$.} (Compare \cite[Exercise~9.1.11]{Vershynin}.) Let $G$ be as in Lemma~\ref{lem:polar}, $\Delta:=\sup_{t\in T}\big||Gt|/\sqrt n-1\big|$, and $a:=\Cmd K_g^2/\sqrt n$. By Fact~\ref{fact:md}, $\Prob(\Delta>a(w+u))\le3e^{-u^2}$ for $u\ge0$. Thus $\zeta:=(\Delta/a-w)_+$ satisfies $\Prob(\zeta>u)\le\min(1,3e^{-u^2})$, so that
+\[
+\E\zeta^2\le\int_0^\infty2u\min(1,3e^{-u^2})\,du=1+\log3<3,\qquad\E\zeta<\sqrt3,
+\]
+and $\Delta\le a(w+\zeta)$. Since $|x^2-1|\le2|x-1|+|x-1|^2$ for $x\ge0$,
+\[
+\E\sup_{t\in T}\Big|\frac{|Gt|^2}{n}-1\Big|\le2\E\Delta+\E\Delta^2\le2a(w+\sqrt3)+2a^2(w^2+3)\le2\sqrt3\,a(w+1)+6a^2(w+1)^2 .
+\]
+With $a=\Cmd K_g^2/\sqrt n$ and Lemma~\ref{lem:compare}, this gives Step~1 with $C_4:=\max(2\sqrt3\,\Cmd K_g^2,\,6\Cmd^2K_g^4)$.
+
+\emph{Step 2: concentration.} Since $|x-1|\le|x^2-1|$ for $x\ge0$, $\E\,\mathrm{Dev}_1\le\E\,\mathrm{Dev}_2$. Assume $N\ge2$ (we will see below that $N\ge3$). Then $\SO(N)$ acts transitively on $\Gr(n,N)$ for $1\le n\le N-1$, and trivially if $n=N$. So we may write $E=UE_0$ with $U$ Haar on $\SO(N)$ and $E_0=\spn(e_1,\dots,e_n)$. Then $|P_Et|=|P_{E_0}U^\top t|$, and for $U,U'\in\SO(N)$,
+\[
+|\mathrm{Dev}_1(U)-\mathrm{Dev}_1(U')|\le\sqrt{\tfrac Nn}\,\sup_{t\in T}\big|P_{E_0}(U-U')^\top t\big|\le\sqrt{\tfrac Nn}\,\|U-U'\|_{HS},
+\]
+so $\mathrm{Dev}_1$ is $\sqrt{N/n}$-Lipschitz as a function of $U$. By Fact~\ref{fact:SO}, $\Prob(\mathrm{Dev}_1\ge\E\,\mathrm{Dev}_1+s)\le\exp(-\cso ns^2)$ for $N\ge3$.
+
+\emph{Step 3: conclusion.} Let $C_3:=144C_4^2$ and assume $n\ge C_3(w+1)^2/\eps^2$. Then $N\ge n\ge144$, and $\beta\le\eps/(12C_4)\le1/12$. Hence $\E\,\mathrm{Dev}_1\le\E\,\mathrm{Dev}_2\le C_4\beta(1+\beta)\le\frac{\eps}{12}\cdot\frac{13}{12}\le\frac\eps6$. With $s=\eps/6$ in Step~2, $\Prob(\mathrm{Dev}_1\ge\eps/3)\le\exp(-\cso n\eps^2/36)$. On the event $\{\mathrm{Dev}_1<\eps/3\}$, the inequality $|x^2-1|\le2|x-1|+|x-1|^2$ gives $\mathrm{Dev}_2\le2\,\mathrm{Dev}_1+\mathrm{Dev}_1^2<\frac{2\eps}3+\frac\eps9<\eps$. The claim follows with $c_3:=\cso/36$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:haar}]
+Assume $X\not\subset\{\fs\}$ and let $T$ and $t_f$ be as in the proof of Theorem~\ref{thm:main}. The subspace $E:=H_0^\perp$ is uniformly distributed on $\Gr(n,N)$, and $d(f,H)=|P_E(f-\fs)|$. Hence
+\[
+\frac Nn\,d(f,H)^2-|f-\fs|^2=|f-\fs|^2\Big(\frac Nn|P_Et_f|^2-1\Big).
+\]
+By Corollary~\ref{cor:width}, $(w(T)+1)^2\le2w(T)^2+2\le C'(k+1+\log\delta)$ with $C':=4\Cw^2+2$. Proposition~\ref{prop:haar} therefore gives the main claim with $C:=C_3C'$ and $c:=c_3$.
+
+For the last claim, let $n_0:=C(k+1+\log\delta)/\eps^2$. If $n\ge n_0$, the failure probability is at most $e^{-cn\eps^2}$. If $n<n_0$, then
+\[
+e^{-cn\eps^2}>e^{-cC(k+1+\log\delta)}=\big(e^{-cC}\big)^{k+1}\delta^{-cC},
+\]
+so $\widetilde C^{\,k+1}\delta^{\widetilde C}e^{-cn\eps^2}\ge1$ whenever $\widetilde C\ge\max(e^{cC},cC,1)$. With this $\widetilde C$, the bound $\widetilde C^{\,k+1}\delta^{\widetilde C}e^{-cn\eps^2}$ holds for all $n$.
+\end{proof}
+
+\section{Proofs of the corollaries}\label{sec:corollaries}
+
+\begin{proof}[Proof of Corollary~\ref{cor:proj}]
+Let $u\in\R^{N+1}$ be a unit vector with $\fs=[u]$, and $V_u:=u^\perp\subset\R^{N+1}$, so $V_u\cong\R^N$. Its complexification $V_u^\C$ is the orthogonal complement of $u$ for the bilinear form $x^\top y$. The map $\pi([x]):=[x-(x^\top u)u]$ is the linear projection from $\fs$ onto the hyperplane $\PP(V_u^\C)\cong\PP^{N-1}$. Assume $X\not\subset\{\fs\}$. By Lemma~\ref{lem:projection}, applied componentwise exactly as in the proof of Lemma~\ref{lem:cone}, the variety $Z:=\overline{\pi(Y\setminus\{\fs\})}$ has dimension at most $k$ and degree at most $\delta$. Its affine cone $\Ch\subset V_u^\C$ has components of dimension at most $k+1$ and degree at most $\delta$. Let $T:=\Ch(\R)\cap S(V_u)$, a compact set.
+
+For $f=[x]\in X\setminus\{\fs\}$ with $x\in\R^{N+1}$ a unit vector, put $y:=x-(x^\top u)u\in V_u$. Then $y\ne0$, $[y]\in Z$, so $y/|y|\in T$, and $d(f,\fs)^2=1-(x^\top u)^2=|y|^2$. Let $\widehat H\subset\R^{N+1}$ be the linear subspace with $H=\PP(\widehat H)$. Then $u\in\widehat H$, and $E:=\widehat H^\perp\subset V_u$ has dimension $n$. The stabiliser of $\fs$ in $\Ort(N+1)$ acts on $V_u$ through all of $\Ort(V_u)$, and $\widehat H\mapsto\widehat H^\perp$ is equivariant, so $E$ is uniformly distributed on $\Gr(n,V_u)$. Moreover, $\min_{h\in H}\sin^2\angle(x,h)=1-|P_{\widehat H}x|^2=|P_Ex|^2=|P_Ey|^2$, where the last equality uses $E\subset V_u$. Hence
+\[
+\frac Nn\,d(f,H)^2-d(f,\fs)^2=|y|^2\Big(\frac Nn\Big|P_E\frac{y}{|y|}\Big|^2-1\Big).
+\]
+Proposition~\ref{prop:haar} in $V_u\cong\R^N$, together with Corollary~\ref{cor:width}, gives the claim as in the proof of Theorem~\ref{thm:haar}. The final inequality holds because $d\le1$.
+\end{proof}
+
+\begin{proof}[Proof of Corollary~\ref{cor:param}]
+Let $\Phi_\C:\C^m\to\C^N$ be the complexification. Since $\R^m$ is Zariski dense in $\C^m$ and $\Phi_\C$ is Zariski continuous, $Y=\overline{\Phi(\R^m)}=\overline{\Phi_\C(\C^m)}$. This is irreducible as the closure of the image of an irreducible variety. In characteristic $0$, its dimension $k$ equals the generic rank of the Jacobian of $\Phi_\C$, so $k\le m$.
+
+Choose $\theta_0$ with $\rank d\Phi_{\theta_0}=k$ and a $k$-dimensional linear subspace $L_0\subset\C^m$ with $L_0\cap\ker d\Phi_{\theta_0}=0$, and put $M:=\theta_0+L_0\cong\C^k$. Then $\Phi|_M$ has injective differential at $\theta_0$, so $\overline{\Phi(M)}$ is an irreducible closed subset of $Y$ of dimension $k$, and therefore equals $Y$. By Chevalley's theorem and the dimension of fibres, there is a non-empty open $U\subset Y$ such that $U\subset\Phi(M)$ and $(\Phi|_M)^{-1}(y)$ is finite for $y\in U$.
+
+Let $L\subset\C^N$ be a generic affine subspace of codimension $k$, $L=\{y:\lambda_j(y)=c_j,\ j=1,\dots,k\}$. Then $Y\cap L$ consists of $\deg Y$ points, all in $U$, because $\dim(Y\setminus U)<k$. The set $\Sigma:=(\Phi|_M)^{-1}(L)$ satisfies $\Phi(\Sigma)=Y\cap L\subset U$. Hence $\Sigma$ is finite, and $|\Sigma|\ge\deg Y$. On the other hand, $\Sigma$ is the common zero set in $M\cong\C^k$ of the $k$ polynomials $\lambda_j\circ\Phi|_M-c_j$, of degree at most $D$, so Fact~\ref{fact:bezout} gives $|\Sigma|\le D^k$.
+
+Finally, $k+1+\log\delta\le k+1+k\log D\le(k+1)(1+\log D)$.
+\end{proof}
+
+\begin{proof}[Proof of Corollary~\ref{cor:uniform}]
+Let $\mathcal D:=\overline{\{f-g:f,g\in Y\}}$, the closure of the image of $Y\times Y$ under the linear map $(f,g)\mapsto f-g$. By Lemma~\ref{lem:linear}, $\dim\mathcal D\le2k$ and $\deg\mathcal D\le\deg(Y\times Y)\le\delta^2$. Apply Theorem~\ref{thm:main} to the variety $\mathcal D$, the set $X-X\subset\mathcal D(\R)$ and the point $0$ in place of $\fs$. The sample condition becomes $n\ge CK^4\eps^{-2}(2k+1+2\log\delta+\log(3/\eta))$, which is implied by the stated condition after doubling $C$. The conclusion is the displayed inequality for all $h=f-g\in X-X$.
+\end{proof}
+
+\section{Bounded sampling functionals}\label{sec:bounded}
+
+In the setting of Remark~\ref{rem:dictionary}, (A2) fails for most polynomial models; for instance, with Gaussian inputs and degree $\ge2$, $\langle a(x),v\rangle=v(x)$ is not sub-Gaussian. For bounded inputs it holds with a constant that may be large. The covering bound of Proposition~\ref{prop:packing} applies in every Euclidean seminorm, because linear images of cones are again cones with no larger dimension and degree (Lemma~\ref{lem:linear}). This allows a Rudelson-type argument under a boundedness assumption.
+
+\begin{theorem}[Bounded functionals]\label{thm:bounded}
+There is an absolute constant $C>0$ such that the following holds. Let $Y$, $X$ and $\fs$ be as in Theorem~\ref{thm:main}, with $X\not\subset\{\fs\}$. Let
+\[
+T_X:=\overline{\{(f-\fs)/|f-\fs|:\ f\in X\setminus\{\fs\}\}}\subset S^{N-1}.
+\]
+Let $\nu$ satisfy (A1), and assume $M:=\sup_{t\in T_X}\|\langle a,t\rangle\|_{L^\infty(\nu)}<\infty$. Then
+\[
+\E\sup_{t\in T_X}\Big|\frac{|At|^2}{n}-1\Big|\ \le\ C(\beta+\beta^2),\qquad\beta:=M\sqrt{\frac{k+1+\log\delta}{n}} .
+\]
+Consequently, for $\eps\in(0,1]$, \eqref{eq:main} holds for all $f\in X$ with probability at least $1-C(\beta+\beta^2)/\eps$. In the setting of Remark~\ref{rem:dictionary},
+\[
+M=\sup_{f\in X\setminus\{\fs\}}\frac{\|f-\fs\|_{L^\infty(\mu)}}{\|f-\fs\|_{L^2(\mu)}}
+\]
+is a ``spikiness'' constant of the model relative to the target.
+\end{theorem}
+
+\begin{proof}
+Let $T_0\subset T_X$ be countable and dense. Outside a $\nu$-null set, $|\langle a,t\rangle|\le M$ for all $t\in T_0$, hence, by continuity of $t\mapsto\langle a,t\rangle$, for all $t\in T_X$. We may assume this holds for $a_1,\dots,a_n$. Put
+\[
+\Delta:=\sup_{t\in T_X}\Big|\frac{|At|^2}{n}-1\Big|,\qquad R:=\sup_{t\in T_X}|At| ,
+\]
+so that $R^2\le n(1+\Delta)$ and $\Delta\le M^2+1$. By Lemma~\ref{lem:cone}, $T_X\subset\Ch(\R)$.
+
+\emph{Step 1: symmetrisation.} By (A1), $\E\langle a,t\rangle^2=1$ for $t\in T_X$. Let $(a_i')$ be an independent copy of $(a_i)$, and let $\gamma_i$ be i.i.d.\ Rademacher signs independent of both. We use three facts: Jensen's inequality, conditionally on $(a_i)$; the invariance of the joint law under exchanging $a_i$ and $a_i'$; and the triangle inequality. They give (cf.\ \cite[Exercise~6.4.4]{Vershynin})
+\begin{align*}
+\E\Delta&\le\frac1n\,\E\sup_{t\in T_X}\Big|\sum_{i=1}^n\big(\langle a_i,t\rangle^2-\langle a_i',t\rangle^2\big)\Big|\\
+&=\frac1n\,\E\sup_{t\in T_X}\Big|\sum_{i=1}^n\gamma_i\big(\langle a_i,t\rangle^2-\langle a_i',t\rangle^2\big)\Big|
+\le\frac2n\,\E\sup_{t\in T_X}\Big|\sum_{i=1}^n\gamma_i\langle a_i,t\rangle^2\Big| .
+\end{align*}
+
+\emph{Step 2: conditional chaining.} Fix $a_1,\dots,a_n$ and let $Q_t:=\sum_i\gamma_i\langle a_i,t\rangle^2$. By Hoeffding's inequality \cite[Prop.~2.6.1]{Vershynin}, $\psitwo{Q_s-Q_t}\le\CH\,\rho(s,t)$, where
+\[
+\rho(s,t):=\Big(\sum_i(\langle a_i,s\rangle^2-\langle a_i,t\rangle^2)^2\Big)^{1/2}\le2M\,|A(s-t)| .
+\]
+Indeed, $\langle a_i,s\rangle^2-\langle a_i,t\rangle^2=\langle a_i,s-t\rangle\,\langle a_i,s+t\rangle$, and $|\langle a_i,s+t\rangle|\le2M$.
+
+Let $\Ch_A\subset\C^n$ be the closure of $A(\Ch)$, where $A$ also denotes its complexification. Part~(a) of Lemma~\ref{lem:linear} shows that $\Ch_A$ is a cone whose components have dimension at most $k+1$, and that $\deg\Ch_A\le\delta$. If $R=0$ then $Q\equiv0$; otherwise $A(T_X)\subset\Ch_A\cap\bar B(0,R)$. Let $At_1,\dots,At_q$ be a maximal $r'$-separated family in $A(T_X)$. Then the points $t_j$ form an $r'$-net of $T_X$ for the pseudo-metric $|A(s-t)|$, hence a $2Mr'$-net for $\rho$. Moreover, Proposition~\ref{prop:packing} gives $q\le\delta\,(1+2R/r')^{2(k+1)}$. Taking $r'=r/(2M)$, we obtain
+\[
+\cN(T_X,\rho,r)\le\delta\Big(1+\frac{4MR}{r}\Big)^{2(k+1)},\qquad\diam_\rho(T_X)\le4MR .
+\]
+Fix $t_0\in T_X$. Then
+\[
+\sup_t|Q_t|\le|Q_{t_0}|+\sup_t(Q_t-Q_{t_0})+\sup_t(Q_{t_0}-Q_t),
+\]
+and both suprema on the right are non-negative. The processes $Q$ and $-Q$ have mean zero and the same sub-Gaussian increments, so we may apply Dudley's inequality \cite[Thm.~8.1.3]{Vershynin} to each of them on the pseudo-metric space $(T_X,\rho)$ (equivalently, on its metric quotient). With the substitution $r=4MRx$, this gives
+\begin{align*}
+\E_\gamma\sup_{t\in T_X}|Q_t|-\E_\gamma|Q_{t_0}|
+&\le2\CD'\int_0^{4MR}\sqrt{\log\cN(T_X,\rho,r)}\,dr\\
+&\le8\CD'MR\Big(\sqrt{\log\delta}+\sqrt{2(k+1)}\int_0^1\sqrt{\log(1+1/x)}\,dx\Big),
+\end{align*}
+where $\CD'$ is an absolute constant. The last integral is at most $\int_0^1\sqrt{\log(2/x)}\,dx\le2\Gamma(\tfrac32)=\sqrt\pi$. Moreover, $\E_\gamma|Q_{t_0}|\le\big(\sum_i\langle a_i,t_0\rangle^4\big)^{1/2}\le M\big(\sum_i\langle a_i,t_0\rangle^2\big)^{1/2}\le MR$. Since $k+1+\log\delta\ge1$, it follows that
+\[
+\E_\gamma\sup_{t\in T_X}|Q_t|\le C_6\,MR\sqrt{k+1+\log\delta}
+\]
+for an absolute constant $C_6$.
+
+\emph{Step 3.} Combining Steps 1 and 2, and using $R\le\sqrt{n(1+\Delta)}$ and Jensen's inequality,
+\[
+\E\Delta\le\frac{2C_6M\sqrt{k+1+\log\delta}}{n}\,\E R\le2C_6\,\beta\,\E\sqrt{1+\Delta}\le2C_6\,\beta\sqrt{1+\E\Delta}.
+\]
+If $x\le a\sqrt{1+x}$ with $x,a\ge0$, then $x\le a+a^2$; this gives the bound with $C:=2C_6+4C_6^2$. The final claim follows from Markov's inequality and the reduction in the proof of Theorem~\ref{thm:main}.
+\end{proof}
+
+\section{Remarks}\label{sec:remarks}
+
+\begin{remark}[Sharpness of the dependence on $k$ and $\delta$]\label{rem:sharp}
+Take $\nu=N(0,I_N)$.
+\begin{enumerate}
+\item[(a)] \emph{Subspaces} ($\delta=1$). If $Y=\fs+L$ with $L$ the complexification of a real $k$-dimensional subspace $L_\R$, then $T$ is the unit sphere of $L_\R$. Let $B$ be the $n\times k$ Gaussian matrix representing $A|_{L_\R}$ in an orthonormal basis, and $W:=B^\top B/n-I_k$. Then $\sup_{t\in T}\big||At|^2/n-1\big|=\|W\|_{op}$.
+\begin{itemize}
+\item A direct computation gives $\E\|W\|_F^2=k(k+1)/n$.
+\item $\|W\|_F^2$ is a polynomial of degree $4$ in Gaussian variables, so hypercontractivity gives $\E\|W\|_F^4\le C(\E\|W\|_F^2)^2$.
+\item The Paley--Zygmund inequality then yields $\|W\|_{op}\ge\|W\|_F/\sqrt k\ge\sqrt{k/(2n)}$ with probability at least an absolute constant $c>0$.
+\end{itemize}
+Hence $n\ge k/(2\eps^2)$ is necessary for \eqref{eq:main} to hold with probability larger than $1-c$. Asymptotically, $\|W\|_{op}\to2\sqrt y+y$ almost surely when $k/n\to y\in(0,1)$ \cite{Geman,YBK}.
+\item[(b)] \emph{Unions of lines} ($k=1$). If $Y=\bigcup_{j=1}^\delta(\fs+\C e_j)$ with $\delta\le N$, then the $|Ae_j|^2$ are i.i.d.\ $\chi^2_n$. Stirling's formula, applied to the $\chi^2_n$ density on $[n(1+\eps),\,n(1+\eps)+2\sqrt n]$, gives $\Prob(\chi^2_n\ge n(1+\eps))\ge c\,e^{-Cn\eps^2}$ for all $n\ge1$ and $\eps\in(0,1]$. Therefore
+\[
+\Prob\big(\max_j|Ae_j|^2/n-1\le\eps\big)\le\exp\big(-c\,\delta\,e^{-Cn\eps^2}\big),
+\]
+which is small unless $n\gtrsim\log\delta/\eps^2$.
+\item[(c)] \emph{The Gaussian width of the Veronese cone.} Let $Y$ be the cone over the Veronese variety $\nu_d(\PP^{m-1})\subset\PP(\mathrm{Sym}^d\C^m)$, with the Frobenius inner product. This is the neuromanifold of a single neuron $x\mapsto a\,(w\cdot x)^d$. Here $k=m$ and $\delta=d^{m-1}$; take $\fs=0$, so that $T\supset\{x^{\otimes d}:x\in S^{m-1}\}$. Corollary~\ref{cor:width} gives $w(T)^2\lesssim m+(m-1)\log d$. Conversely, let $d\ge3$, $r:=\sqrt{2/d}$, and let $P\subset S^{m-1}$ be maximal with $\min(|x-y|,|x+y|)\ge r$ for distinct $x,y\in P$.
+\begin{itemize}
+\item A cap of chordal radius $r$ has normalised measure at most $\frac12r^{m-1}$. (Project the upper hemisphere onto the equatorial ball: the image measure has a radially non-decreasing density.) The double caps around the points of $P$ cover the sphere, so $|P|\ge r^{-(m-1)}=(d/2)^{(m-1)/2}$.
+\item For distinct $x,y\in P$ we have $|\langle x,y\rangle|\le1-1/d$, hence $|x^{\otimes d}-y^{\otimes d}|^2=2-2\langle x,y\rangle^d\ge2-2/e>1$.
+\end{itemize}
+Sudakov's minoration \cite[Thm.~7.4.1]{Vershynin} then gives $w(T)\ge c\sqrt{(m-1)\log(d/2)}$. Thus the term $\log\delta$ in Corollary~\ref{cor:width} cannot be removed.
+\end{enumerate}
+\end{remark}
+
+\begin{remark}[Exact recovery]\label{rem:recovery}
+Qualitatively, far fewer samples suffice for \emph{exact} recovery from noiseless data. Let $Z$ be as in Lemma~\ref{lem:cone}, so $\dim Z\le k$, and suppose $n>\dim Z$ (e.g.\ $n\ge k+1$) and $\nu$ is absolutely continuous. Then almost surely $\ker A\cap\Ch=\{0\}$, hence $X\cap H\subset\{\fs\}$: the target is the only interpolant in the model. To see this, consider the incidence variety
+\[
+\big\{(a,[v])\in(\C^N)^n\times Z:\ a_i^\top v=0\ \forall i\big\}.
+\]
+Its fibres over $Z$ have dimension $n(N-1)$, so it has dimension at most $\dim Z+n(N-1)<nN$. Its projection to $(\C^N)^n$ is therefore a proper Zariski closed set (closed because $Z$ is projective), whose real points form a Lebesgue null set.
+
+The same dimension count works for evaluation functionals at points $x_1,\dots,x_n\in\R^d$ drawn from an absolutely continuous $\mu$, when $V$ consists of polynomials. For each $[v]\in Z$, the zero set of the non-zero polynomial $v$ is a hypersurface, so the bad configurations form a set of dimension at most $\dim Z+n(d-1)<nd$. Theorem~\ref{thm:main} is the stable, quantitative counterpart of this; the price is the factor $\eps^{-2}$ and the term $\log\delta$.
+\end{remark}
+
+\begin{remark}[Evaluation sampling: spikiness is a genuine cost]\label{rem:spiky}
+For evaluation functionals (Remark~\ref{rem:dictionary}), the constants $K$ and $M$ are not artefacts of the proofs: uniform \emph{relative} concentration can require far more samples than $\dim X+\log\deg X$. Consider the following setting:
+\begin{itemize}
+\item $x$ is uniform on $S^{m-1}$, with $m\ge2$;
+\item $V$ is the space of homogeneous polynomials of degree $d$ on $\R^m$;
+\item $X=\{a\,(w\cdot x)^d\}$ is the single-neuron neuromanifold, i.e.\ the real points of the Veronese cone, with $k=m$ and $\delta=d^{m-1}$;
+\item $\fs=0$.
+\end{itemize}
+For $f_w:=(w\cdot x)^d$ with $|w|=1$, log-convexity of $\Gamma$ gives
+\[
+\|f_w\|^2_{L^2(\mu)}=\E x_1^{2d}=\frac{\Gamma(\frac m2)\,\Gamma(d+\frac12)}{\sqrt\pi\,\Gamma(d+\frac m2)}\ \ge\ \frac{\Gamma(\frac m2)}{\sqrt\pi}\Big(d+\frac m2\Big)^{-\frac{m-1}2}.
+\]
+This quantity does not depend on $w$.
+
+Now fix an arbitrary sample $x_1,\dots,x_n$, and define $\theta$ by $e^{-d\theta^2}=\frac14\|f_w\|^2_{L^2(\mu)}$, so that
+\[
+\theta^2\le\frac{m-1}{2d}\log\Big(d+\frac m2\Big)+\frac1d\log\frac{4\sqrt\pi}{\Gamma(m/2)} .
+\]
+Assume $\theta\le\pi/2$ and $n\theta^{m-1}<1$.
+\begin{itemize}
+\item By the projection argument of Remark~\ref{rem:sharp}(c), each double cap $\{w:|\langle w,x_i\rangle|>\cos\theta\}$ has normalised measure at most $\sin^{m-1}\theta\le\theta^{m-1}$. So the $n$ double caps do not cover the sphere, and there is a unit $w$ with $|\langle w,x_i\rangle|\le\cos\theta$ for all $i$.
+\item For this $w$, $d_A(f_w)^2\le\cos^{2d}\theta\le e^{-d\theta^2}=\frac14|f_w|^2$.
+\end{itemize}
+Hence, for every sample of size $n<\theta^{-(m-1)}$, which is roughly $n<\big(cd/(m\log d)\big)^{(m-1)/2}$, even the lower half of \eqref{eq:main} fails with $\eps=\frac12$.
+
+For comparison:
+\begin{itemize}
+\item Theorem~\ref{thm:main} with Gaussian $\nu$ needs only $n\gtrsim m\log d$.
+\item In Theorem~\ref{thm:bounded}, $M^2=\sup_w\|f_w\|_\infty^2/\|f_w\|^2_{L^2(\mu)}\le\frac{\sqrt\pi}{\Gamma(m/2)}(d+\frac m2)^{(m-1)/2}$, so for fixed $m$ that theorem is sharp here up to logarithmic factors.
+\item Additive (non-relative) bounds do not pay this price, since an error of size $e^{-d\theta^2}\ll1$ is invisible to them.
+\end{itemize}
+\end{remark}
+
+\begin{remark}[What is not covered]\label{rem:notcovered}
+\begin{enumerate}
+\item[(a)] \emph{Heavy tails.} For realisable learning only a lower inequality $d_A(f)^2\ge c|f-\fs|^2$ is needed. Mendelson's small-ball method \cite{Mendelson} gives such bounds under a small-ball condition $\inf_{t\in T}\Prob(|\langle a,t\rangle|\ge\kappa)\ge\rho$. For log-concave input distributions, polynomial models satisfy one by the Carbery--Wright inequality \cite{CarberyWright}, but with $\kappa$ or $\rho$ degrading exponentially in the degree. Remark~\ref{rem:spiky} shows that such a cost cannot be avoided in general. What the one-sided route does remove is the need for upper-tail control; for instance, $K=\infty$ for Gaussian inputs. We have not worked this out.
+\item[(b)] \emph{Label noise.} If $y_i=\fs(x_i)+\xi_i$, the empirical risk equals
+\[
+d_A(f)^2-\frac2n\sum_i\xi_i\langle a_i,f-\fs\rangle+\frac1n\sum_i\xi_i^2 .
+\]
+The last term does not depend on $f$. The cross term, however, is linear in $|f-\fs|$, while the right-hand side of \eqref{eq:main} is quadratic. Hence no purely relative bound of the form \eqref{eq:main} can hold near $\fs$, and one needs a localised or additive statement. Such a statement controls the multiplier process $t\mapsto\frac1n\sum_i\xi_i\langle a_i,t\rangle$ on $T$, for sub-Gaussian noise presumably through the same Gaussian width. We do not pursue this here.
+\end{enumerate}
+\end{remark}
+
+\begin{thebibliography}{99}
+
+\bibitem{AltschulerParrilo}
+J.~M. Altschuler and P.~A. Parrilo, Kernel approximation on algebraic varieties, \emph{SIAM J. Appl. Algebra Geom.} 7 (2023), 1--28.
+
+\bibitem{BurgisserCucker}
+P. B\"urgisser and F. Cucker, \emph{Condition: The Geometry of Numerical Algorithms}, Grundlehren Math. Wiss. 349, Springer, 2013.
+
+\bibitem{CarberyWright}
+A. Carbery and J. Wright, Distributional and $L^q$ norm inequalities for polynomials over convex bodies in $\R^n$, \emph{Math. Res. Lett.} 8 (2001), 233--248.
+
+\bibitem{Chirka}
+E.~M. Chirka, \emph{Complex Analytic Sets}, Kluwer, Dordrecht, 1989.
+
+\bibitem{Demailly}
+J.-P. Demailly, \emph{Complex Analytic and Differential Geometry}, book manuscript, Institut Fourier, 2012, Chapter~III.
+
+\bibitem{Fulton}
+W. Fulton, \emph{Intersection Theory}, 2nd ed., Springer, 1998.
+
+\bibitem{Geman}
+S. Geman, A limit theorem for the norm of random matrices, \emph{Ann. Probab.} 8 (1980), 252--261.
+
+\bibitem{GoldbergJerrum}
+P.~W. Goldberg and M.~R. Jerrum, Bounding the Vapnik--Chervonenkis dimension of concept classes parameterized by real numbers, \emph{Machine Learning} 18 (1995), 131--148.
+
+\bibitem{Gordon}
+Y. Gordon, On Milman's inequality and random subspaces which escape through a mesh in $\R^n$, in: \emph{Geometric Aspects of Functional Analysis (1986/87)}, Lecture Notes in Math. 1317, Springer, 1988, 84--106.
+
+\bibitem{GriffithsHarris}
+P. Griffiths and J. Harris, \emph{Principles of Algebraic Geometry}, Wiley, 1978.
+
+\bibitem{GromovMilman}
+M. Gromov and V.~D. Milman, A topological application of the isoperimetric inequality, \emph{Amer. J. Math.} 105 (1983), 843--854.
+
+\bibitem{Harris}
+J. Harris, \emph{Algebraic Geometry: A First Course}, Graduate Texts in Math. 133, Springer, 1992.
+
+\bibitem{Heintz}
+J. Heintz, Definability and fast quantifier elimination in algebraically closed fields, \emph{Theoret. Comput. Sci.} 24 (1983), 239--277.
+
+\bibitem{Ledoux}
+M. Ledoux, \emph{The Concentration of Measure Phenomenon}, Math. Surveys Monogr. 89, AMS, 2001.
+
+\bibitem{Lelong}
+P. Lelong, Int\'egration sur un ensemble analytique complexe, \emph{Bull. Soc. Math. France} 85 (1957), 239--262.
+
+\bibitem{LMPV}
+C. Liaw, A. Mehrabian, Y. Plan and R. Vershynin, A simple tool for bounding the deviation of random matrices on geometric sets, in: \emph{Geometric Aspects of Functional Analysis (2014--2016)}, Lecture Notes in Math. 2169, Springer, 2017, 277--299.
+
+\bibitem{Meckes}
+E.~S. Meckes, \emph{The Random Matrix Theory of the Classical Compact Groups}, Cambridge University Press, 2019.
+
+\bibitem{Mendelson}
+S. Mendelson, Learning without concentration, \emph{J. ACM} 62 (2015), no.~3, Art.~21.
+
+\bibitem{MPT}
+S. Mendelson, A. Pajor and N. Tomczak-Jaegermann, Reconstruction and subgaussian operators in asymptotic geometric analysis, \emph{Geom. Funct. Anal.} 17 (2007), 1248--1282.
+
+\bibitem{Mumford}
+D. Mumford, \emph{Algebraic Geometry I: Complex Projective Varieties}, Springer, 1976.
+
+\bibitem{Stoll}
+W. Stoll, The growth of the area of a transcendental analytic set. I, II, \emph{Math. Ann.} 156 (1964), 47--78 and 144--170.
+
+\bibitem{Thie}
+P.~R. Thie, The Lelong number of a point of a complex analytic set, \emph{Math. Ann.} 172 (1967), 269--312.
+
+\bibitem{Vershynin}
+R. Vershynin, \emph{High-Dimensional Probability}, Cambridge University Press, 2018 (first edition; all pointers refer to it).
+
+\bibitem{Warren}
+H.~E. Warren, Lower bounds for approximation by nonlinear manifolds, \emph{Trans. Amer. Math. Soc.} 133 (1968), 167--178.
+
+\bibitem{YBK}
+Y.~Q. Yin, Z.~D. Bai and P.~R. Krishnaiah, On the limit of the largest eigenvalue of the large dimensional sample covariance matrix, \emph{Probab. Theory Related Fields} 78 (1988), 509--521.
+
+\bibitem{YomdinComte}
+Y. Yomdin and G. Comte, \emph{Tame Geometry with Application in Smooth Analysis}, Lecture Notes in Math. 1834, Springer, 2004.
+
+\bibitem{ZhangKileel}
+Y. Zhang and J. Kileel, Covering number of real algebraic varieties and beyond: improved bounds and applications, arXiv:2311.05116.
+
+\bibitem{ZhangKileel25}
+Y. Zhang and J. Kileel, Norming sets for tensor and polynomial sketching, arXiv:2506.05174.
+
+\end{thebibliography}
+
+\end{document}

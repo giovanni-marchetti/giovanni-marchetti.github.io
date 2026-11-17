@@ -1,0 +1,262 @@
+/* The two neuromanifold viewers: the surface of a residual network (surface.js, in <figure class="nm-viewer"
+   id="nm-surface">, at the end of the home page, under "Visualize and Play") and the flat neuromanifold of a shallow
+   network (flat.js, in <figure class="nm-viewer" id="nm-flat">, at the end of the section "Feature learning" of the
+   Primer). This file comes after assets/style.css, whose colors it uses.
+
+   Everything is scoped to the figures. The rules for .nm-viewer are shared: the box, the controls, the view and the
+   plot of the loss. Then come the layout of each viewer, under its id. The controls look like the dictionary above
+   them, with outlines, slightly rounded corners and a shade when hovered, but in the dark grey --nm-control instead of
+   ink. The scripts take the colors of the canvases from the custom properties --nm-ink, --nm-paper, --nm-accent and
+   --nm-dot below, from --nm-front and --nm-back (in :root, in assets/style.css) for the two sides of the surface, and
+   from --nm-plane for the planes of the flat viewer. The whole viewer sits in a box outlined like the dictionary: an
+   ink line with rounded corners. */
+.nm-viewer {
+  --nm-control: var(--muted);       /* the controls: outlines, checks, sliders */
+  --nm-ink: var(--ink);             /* lines, and the marks in ink */
+  --nm-paper: var(--paper);         /* background, and halos */
+  --nm-accent: var(--orange-deep);  /* the training: its path, its target and its loss */
+  --nm-dot: var(--orange);          /* the weights of the training; in the flat viewer, also the active neurons */
+  --nm-plane: var(--nm-back);       /* the planes of the flat viewer, translucent */
+  margin: 2rem 0;
+  padding: 1.2rem;
+  border: 1px solid var(--ink);
+  border-radius: 6px;
+}
+@media (max-width: 600px) { .nm-viewer { padding: .8rem; } }
+.nm-acc { color: var(--orange-deep); }  /* the sign of the target, also in the text */
+.nm-viewer .nm { font-size: .9rem; line-height: 1.4; -webkit-tap-highlight-color: transparent; }
+.nm-viewer .nm p { margin: 0; text-align: center; hyphens: manual; }
+.nm-viewer button, .nm-viewer input { font: inherit; color: inherit; }
+.nm-viewer :focus-visible { outline: 1px solid var(--nm-control); outline-offset: 2px; }
+
+/* Above the views: the slider of the degree of σ; in the surface viewer, then its coefficients, with the button of a
+   random σ after them, and the checkboxes of the skip connections and of the regularization, side by side. */
+.nm-viewer .nm-controls { display: flex; flex-direction: column; align-items: center; gap: .6rem; }
+.nm-viewer .nm-line { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .4rem .8rem; }
+.nm-viewer .nm-btn {
+  height: 1.6rem;
+  padding: 0 .7rem;
+  border: 1px solid var(--nm-control);
+  border-radius: 3px;
+  background: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  white-space: nowrap;
+  transition: background-color .15s;
+}
+.nm-viewer .nm-btn:hover, .nm-viewer .nm-btn:focus-visible { background: var(--shade); }
+.nm-viewer .nm-btn:disabled { color: var(--muted); border-color: var(--rule); background: none; cursor: default; }
+/* σ(t) = c_d t^d + ... + c_0, with a field for each coefficient, wide enough for a value such as −0.25, and narrow
+   enough that at degree 5 the button of a random σ still fits after them. */
+.nm-viewer .nm-sigma { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .3rem .2rem; }
+.nm-viewer .nm-sigma-lhs { margin-right: .2rem; white-space: nowrap; }
+.nm-viewer .nm-term { display: inline-flex; align-items: center; gap: .15rem; white-space: nowrap; }
+.nm-viewer .nm-plus { margin: 0 .1rem; }
+.nm-viewer .nm-num {
+  width: 2.6em;
+  height: 1.6rem;
+  padding: 0 .2rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: none;
+  text-align: right;
+  font-variant-numeric: lining-nums tabular-nums;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.nm-viewer .nm-num::-webkit-outer-spin-button,
+.nm-viewer .nm-num::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.nm-viewer .nm-num:hover { border-color: var(--muted); }
+.nm-viewer .nm-num:focus-visible { outline: none; border-color: var(--nm-control); }
+.nm-viewer .nm-check, .nm-viewer .nm-display label { display: inline-flex; align-items: center; gap: .4rem; cursor: pointer; }
+.nm-viewer .nm-checks { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .3rem 1.1rem; }
+.nm-viewer input[type="checkbox"] { margin: 0; accent-color: var(--nm-control); }
+/* Sliders: a hairline, with a dot as the neurons of the networks, in the grey of the controls. */
+.nm-viewer input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 1.2rem;
+  margin: 0;
+  background: none;
+  cursor: pointer;
+}
+.nm-viewer input[type="range"]::-webkit-slider-runnable-track { height: 1px; background: var(--nm-control); }
+.nm-viewer input[type="range"]::-moz-range-track { height: 1px; background: var(--nm-control); }
+.nm-viewer input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  margin-top: -5.5px;
+  border: none;
+  border-radius: 50%;
+  background: var(--nm-control);
+  transition: box-shadow .15s;
+}
+.nm-viewer input[type="range"]::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: none;
+  border-radius: 50%;
+  background: var(--nm-control);
+  transition: box-shadow .15s;
+}
+.nm-viewer input[type="range"]:hover::-webkit-slider-thumb { box-shadow: 0 0 0 5px var(--shade); }
+.nm-viewer input[type="range"]:hover::-moz-range-thumb { box-shadow: 0 0 0 5px var(--shade); }
+.nm-viewer input[type="range"]:focus-visible { outline: none; }
+.nm-viewer input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 2px var(--paper), 0 0 0 3px var(--nm-control); }
+.nm-viewer input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 2px var(--paper), 0 0 0 3px var(--nm-control); }
+.nm-viewer output { font-variant-numeric: lining-nums tabular-nums; }
+/* A slider on one line: its name, the hairline, its value. */
+.nm-viewer .nm-slider { display: grid; grid-template-columns: auto minmax(0, 1fr) 2.2em; align-items: center; gap: .55rem; width: 100%; }
+.nm-viewer .nm-slider label { white-space: nowrap; }
+.nm-viewer .nm-slider output { text-align: right; }
+/* The degree of σ: a short slider, with a tick at each degree (where the centre of the dot stops, from 6px inside one
+   end to 6px inside the other), and its value close to it. The degrees are 2 to 5 in the surface viewer, and 1 to 5
+   in the flat one. */
+.nm-viewer .nm-deg { width: min(100%, 12rem); grid-template-columns: auto minmax(0, 1fr) auto; }
+.nm-viewer .nm-deg input { --tick: linear-gradient(var(--nm-control), var(--nm-control)); }
+#nm-surface .nm-deg input {
+  background:
+    var(--tick) 6px 50% / 1px 7px no-repeat,
+    var(--tick) calc(6px + (100% - 12px) / 3) 50% / 1px 7px no-repeat,
+    var(--tick) calc(6px + (100% - 12px) * 2 / 3) 50% / 1px 7px no-repeat,
+    var(--tick) calc(100% - 6px) 50% / 1px 7px no-repeat;
+}
+#nm-flat .nm-deg input {
+  background:
+    var(--tick) 6px 50% / 1px 7px no-repeat,
+    var(--tick) calc(6px + (100% - 12px) / 4) 50% / 1px 7px no-repeat,
+    var(--tick) calc(6px + (100% - 12px) / 2) 50% / 1px 7px no-repeat,
+    var(--tick) calc(6px + (100% - 12px) * 3 / 4) 50% / 1px 7px no-repeat,
+    var(--tick) calc(100% - 6px) 50% / 1px 7px no-repeat;
+}
+.nm-viewer .nm-status { margin-top: .8rem; color: var(--muted); }
+.nm-viewer .nm-status:empty { display: none; }
+
+/* The parts that both viewers have: the training, beside the controls of the view; the buttons; the view, a square
+   without a frame; the display options and the buttons under it; and the plot of the loss, across the whole width. */
+.nm-viewer .nm-main { display: grid; gap: 8px 24px; }
+/* The training spans two rows, and lays its two lines on them as a subgrid, so that each keeps level with its
+   neighbour among the controls of the view. */
+.nm-viewer .nm-train { grid-area: train; display: grid; grid-template-rows: subgrid; }
+.nm-viewer .nm-train-btns { display: flex; flex-wrap: wrap; justify-content: center; gap: .4rem; }
+.nm-viewer .nm-stage {
+  grid-area: stage;
+  position: relative;
+  aspect-ratio: 1 / 1;
+}
+.nm-viewer .nm-stage canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: grab;
+}
+.nm-viewer .nm-stage canvas.nm-grabbing { cursor: grabbing; }
+.nm-viewer .nm-viewbar { grid-area: bar; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .4rem; }
+.nm-viewer .nm-display { grid-area: display; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .3rem 1.1rem; }
+.nm-viewer .nm-loss-box { grid-area: loss; margin-top: .2rem; display: flex; flex-direction: column; gap: .3rem; }
+.nm-viewer .nm-loss { display: block; width: 100%; height: 120px; }
+.nm-viewer .nm-loss-cap { font-size: .9em; color: var(--muted); }
+.nm-viewer .nm-nogl .nm-main { display: none; }   /* without WebGL 2 (surface) or a 2D canvas (flat) */
+@media (prefers-reduced-motion: reduce) {
+  .nm-viewer .nm-btn { transition: none; }
+  .nm-viewer input[type="range"]::-webkit-slider-thumb { transition: none; }
+  .nm-viewer input[type="range"]::-moz-range-thumb { transition: none; }
+}
+
+/* The surface viewer (surface.js). The disk of weights beside the view, on rows that keep them level: the disk centred
+   on the view; under the disk the slider of the radius R, beside the caption of the view; and then the training (the
+   noise of the target, and its buttons), its two lines level with the two lines of the controls of the view (its
+   display options, and its buttons, level with those of the training); under both, across the whole width, the plot
+   of the loss. */
+#nm-surface .nm-main {
+  grid-template-columns: 216px minmax(0, 1fr);   /* the disk with room for its labels; the view */
+  grid-template-areas:
+    "disk  stage"
+    "range cap"
+    "train display"
+    "train bar"
+    "loss  loss";
+  margin-top: 0;                /* the view and the disk have room enough above them, inside the view */
+}
+#nm-surface .nm-disk {
+  grid-area: disk;
+  align-self: center;
+  position: relative;
+  width: 190px;
+  height: 190px;
+  margin: 16px 22px 16px 4px;   /* room for the labels of the axes, and as much below as above */
+}
+#nm-surface .nm-disk canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;           /* so that the focus ring is round */
+  touch-action: none;
+  cursor: crosshair;
+}
+#nm-surface .nm-disk-lbl { position: absolute; line-height: 1; color: var(--muted); pointer-events: none; }
+#nm-surface .nm-disk-w1 { left: 100%; top: 50%; transform: translate(6px, -50%); }
+#nm-surface .nm-disk-w2 { left: 50%; bottom: 100%; transform: translate(-50%, -6px); }
+#nm-surface .nm-range { grid-area: range; align-self: center; }
+#nm-surface .nm-cap { grid-area: cap; align-self: center; font-size: .9em; color: var(--muted); text-wrap: balance; }
+/* Narrow screens: one column, the disk and its controls above the view. */
+@media (max-width: 600px) {
+  #nm-surface .nm-main {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "disk" "range" "train" "stage" "cap" "display" "bar" "loss";
+    margin-top: 1rem;           /* here the disk comes first, and the label of its axis rises above it */
+  }
+  #nm-surface .nm-disk { justify-self: center; }
+  #nm-surface .nm-range, #nm-surface .nm-train { justify-self: center; width: min(100%, 280px); }
+  #nm-surface .nm-train { display: flex; flex-direction: column; gap: .4rem; margin-top: .6rem; }
+  #nm-surface .nm-stage { margin-top: 8px; }
+}
+
+/* The flat viewer (flat.js). The network beside the view, centred on it, with its caption under it; under the network
+   the training (the scale of the initial weights, and the regularization), its two lines level with the display
+   option of the view and with the buttons of the training, under the view; under both, across the whole width, the
+   plot of the loss. */
+#nm-flat .nm-main {
+  grid-template-columns: 216px minmax(0, 1fr);   /* the network, as wide as its drawing; the view */
+  grid-template-areas:
+    "net   stage"
+    "train display"
+    "train bar"
+    "loss  loss";
+  margin-top: .4rem;
+}
+#nm-flat .nm-train .nm-slider { grid-template-columns: auto minmax(0, 1fr) 2.6em; }   /* values such as 0.012 */
+/* The network: an svg in the style of the network at the top of the page (the classes nm-node and nm-edge of
+   assets/style.css), with its labels placed over it by the script, in % of the drawing. */
+#nm-flat .nm-net-box { grid-area: net; align-self: center; display: flex; flex-direction: column; gap: .5rem; }
+#nm-flat .nm-net-stage { position: relative; }
+#nm-flat .nm-net { display: block; width: 100%; height: auto; overflow: visible; }
+#nm-flat .nm-net .nm-edge { stroke-width: 1.8; }
+#nm-flat .nm-net .nm-edge-base { stroke: var(--rule); stroke-width: 1; }
+/* The nodes: dark grey (--nm-off) with an ink rim; the neurons turn orange as they activate (filled by the script). */
+#nm-flat .nm-net { --nm-off: var(--muted); }
+#nm-flat .nm-net .nm-node { fill: var(--nm-off); stroke: var(--nm-ink); stroke-width: 1; }
+#nm-flat .nm-net-lbl { position: absolute; transform: translate(-50%, -50%); line-height: 1; white-space: nowrap; pointer-events: none; }
+#nm-flat .nm-net-lbl.nm-weight { font-size: .85em; color: var(--muted); }
+#nm-flat .nm-net-cap { font-size: .9em; color: var(--muted); text-wrap: balance; }
+/* The labels of the axes of the view, placed by the script. */
+#nm-flat .nm-lbl { position: absolute; left: 0; top: 0; line-height: 1; white-space: nowrap; pointer-events: none; }
+#nm-flat .nm-loss { cursor: crosshair; }   /* pointing at the plot reads off the loss */
+/* Narrow screens: one column, the view first, then its controls, the training, and the network. */
+@media (max-width: 600px) {
+  #nm-flat .nm-main {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "stage" "display" "bar" "train" "net" "loss";
+  }
+  #nm-flat .nm-train, #nm-flat .nm-net-box { justify-self: center; width: min(100%, 280px); }
+  #nm-flat .nm-train { display: flex; flex-direction: column; gap: .4rem; margin-top: .6rem; }
+  #nm-flat .nm-net-box { margin-top: 1rem; }
+  #nm-flat .nm-net-stage { width: min(100%, 216px); margin: 0 auto; }   /* the network at the size it is drawn for */
+}

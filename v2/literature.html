@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Literature · Neuroalgebraic Geometry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/mathjax-config.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="site-nav" aria-label="Main">
+    <a href="index.html">Home</a>
+    <a href="primer.html">Primer</a>
+    <a href="literature.html" aria-current="page">Literature</a>
+    <a href="open-problems.html">Open problems</a>
+    <a href="community.html">Community</a>
+  </nav>
+</header>
+
+<main>
+  <header class="page-title">
+    <h1>Literature</h1>
+  </header>
+
+  <!-- The papers and their tags are listed in papers.js, and assets/literature.js writes the papers into this list,
+       and above it the tags that filter them (see README.md). -->
+  <ol class="refs" id="papers"></ol>
+  <script src="papers.js"></script>
+  <script src="assets/literature.js"></script>
+</main>
+
+<footer class="site-footer">
+  <span>Neuroalgebraic Geometry</span>
+  <span>Maintained by the community</span>
+  <a href="community.html">Contribute</a>
+</footer>
+
+</body>
+</html>

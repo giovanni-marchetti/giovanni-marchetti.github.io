@@ -1,0 +1,409 @@
+/* Style A, "Book": one centered reading column, EB Garamond with small caps, black on white, no color accent. */
+
+:root {
+  --paper: #FDFDFB;
+  --ink: #141414;
+  --muted: #5C5C5C;
+  --rule: #D6D6D2;
+  --shade: #F1F1EC;   /* background of a hovered button */
+  --orange: #E3876D;  /* the one accent, taken from the animated drawing */
+  --orange-deep: #C2593C;  /* the same accent, darker, for lines and labels */
+  --nm-front: #EDEDE8;  /* the two sides of a neuromanifold, in the figure and in the viewer of the home page */
+  --nm-back: #D3D3CD;
+  --link-line: rgba(20, 20, 20, .35);
+  --measure: 640px;   /* width of the reading column, about 65 characters */
+  --serif: "EB Garamond", Garamond, "Times New Roman", serif;
+}
+
+* { box-sizing: border-box; }
+html { font-size: 20px; }
+@media (max-width: 600px) { html { font-size: 18px; } }
+
+body {
+  margin: 0;
+  padding: 0 1rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  line-height: 1.55;
+}
+
+.site-header, main, .site-footer {
+  max-width: var(--measure);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Header: the menu in small caps, centered, a hairline below. */
+.site-header {
+  margin-top: 2.6rem;
+  padding-bottom: .8rem;
+  border-bottom: 1px solid var(--rule);
+  text-align: center;
+}
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .1rem 1.1rem;
+  margin-top: .3rem;
+  font-variant: small-caps;
+  letter-spacing: .06em;
+  font-size: .9rem;
+}
+.site-nav a { color: var(--muted); text-decoration: none; }
+.site-nav a:hover,
+.site-nav a[aria-current="page"] {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+/* Page title: centered italic, subtitle in small caps. */
+main { margin-top: 2.6rem; }
+.page-title { text-align: center; margin-bottom: 2.2rem; }
+.page-title h1 {
+  margin: 0;
+  font-weight: 400;
+  font-style: italic;
+  font-size: 1.7rem;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+.page-title p {
+  margin: .5rem 0 0;
+  text-align: center;
+  font-size: .9rem;
+  color: var(--muted);
+  font-variant: small-caps;
+  letter-spacing: .08em;
+}
+
+/* Running text. */
+h2 {
+  margin: 2.4rem 0 .6rem;
+  font-weight: 400;
+  font-size: 1.05rem;
+  font-variant: small-caps;
+  letter-spacing: .08em;
+}
+h3 { margin: 1.8rem 0 .4rem; font-weight: 400; font-style: italic; font-size: 1rem; }
+p { margin: 0 0 1rem; text-align: justify; hyphens: auto; }
+ul, ol { margin: 0 0 1rem; padding-left: 1.3rem; }
+li { margin-bottom: .3rem; }
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--link-line);
+}
+a:hover { text-decoration-color: var(--ink); }
+.stub { color: var(--muted); font-style: italic; }
+
+/* Collapsible notes: click the summary line to open or close. The summary line of a note on the home page
+   (<details class="note">) cannot be selected, so that clicking it never highlights it. */
+details { margin: 0 0 1rem; }
+summary { cursor: pointer; }
+details[open] > summary { margin-bottom: .4rem; }
+.note > summary { -webkit-user-select: none; user-select: none; }
+/* Collapsible sections (Primer): the h2 is the summary line, after the triangle, and keeps its spacing.
+   Closed sections stack closer, like a table of contents. */
+details.section { margin: 0; }
+details.section > summary { margin: 2.4rem 0 .6rem; }
+details.section > summary > h2 { display: inline; }
+details.section:not([open]) > summary { margin-bottom: 0; }
+details.section:not([open]) + details.section > summary { margin-top: 1.2rem; }
+
+/* Math ignores the surrounding small caps and letter-spacing; display math scrolls inside its own box on narrow screens. */
+mjx-container { font-variant: normal; letter-spacing: normal; }
+mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+
+/* Theorem-like blocks, as in a book: small-caps label, italic statement (upright in definitions and examples). */
+.theorem, .definition, .example, .proof { margin: 1.2rem 0; }
+.theorem { font-style: italic; }
+.theorem .label, .definition .label, .example .label {
+  font-style: normal;
+  font-variant: small-caps;
+  letter-spacing: .05em;
+}
+/* A proof is a <details>, closed at first. Its summary line is "Proof.", in italics; once open, the summary runs
+   into the first paragraph, as in a book. */
+.proof > summary { font-style: italic; }
+.proof[open] > summary { float: left; margin: 0 .3em 0 0; }
+.proof > :last-child::after { content: "\220E"; float: right; }
+
+/* "Dangerous bend" (Bourbaki, Knuth's TeXbook): a subtle point, marked by a road sign in the left margin, or at the
+   start of the text when the screen is too narrow for a margin. The sign is the svg in the url below. */
+.bend { position: relative; margin: 1.2rem 0; }
+.bend::before {
+  content: "";
+  position: absolute; left: -2.6rem; top: .15rem;
+  width: 1.5rem; height: 2.25rem;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 60' fill='none' stroke='%23141414' stroke-width='2.2'%3E%3Cpath d='M20 2 38 20 20 38 2 20Z' stroke-linejoin='round'/%3E%3Cpath d='M20 38V59'/%3E%3Cpath d='M16 30V23L24 17V10' stroke-width='3.6'/%3E%3C/svg%3E") no-repeat center / contain;
+}
+@media (max-width: 780px) {
+  .bend::before { position: static; float: left; margin: .25rem .6rem 0 0; }
+}
+
+/* Tables with rules above and below only. */
+table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.4rem; font-size: .92em; }
+thead th {
+  font-weight: 400;
+  font-variant: small-caps;
+  letter-spacing: .05em;
+  text-align: left;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+th, td { padding: .3rem .6rem .3rem 0; vertical-align: top; }
+tbody tr:last-child td { border-bottom: 1px solid var(--ink); }
+
+/* Dictionary: a column of buttons, each split into a geometry half and a deep-learning half. The buttons are
+   stacked flush, and every line between them is black; only the corners of the stack are rounded. Each line is
+   drawn once (a button after the first has no top border), so that it keeps the same weight at every zoom level.
+   A hovered button is shaded. (It does not lift: that would open a gap in the outline.) */
+.dictionary { display: grid; margin: 1rem 0 1.4rem; font-size: .92em; }
+.dictionary-head, .dict-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  text-align: center;
+}
+.dictionary-head { font-weight: 700; margin-bottom: .6rem; }
+.dictionary-head > span { padding: 0 .8rem; }
+.dict-entry {
+  border: 1px solid var(--ink);
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: background-color .15s;
+}
+.dict-entry + .dict-entry { border-top: none; }
+.dictionary-head + .dict-entry { border-radius: 6px 6px 0 0; }
+.dict-entry:last-child { border-radius: 0 0 6px 6px; }
+.dict-entry > span { padding: .5rem .8rem; align-content: center; }
+.dict-entry > span + span { border-left: 1px solid var(--rule); transition: border-color .15s; }
+.dict-entry:hover, .dict-entry:focus-visible { background: var(--shade); }
+.dict-entry:hover > span + span, .dict-entry:focus-visible > span + span { border-left-color: var(--ink); }
+@media (prefers-reduced-motion: reduce) {
+  .dict-entry, .dict-entry > span { transition: none; }
+}
+
+/* Network and neuromanifold figure, drawn by assets/neuromanifold.js: flat greys, ink lines, one orange point.
+   The two sides of the surface get the greys --nm-front and --nm-back (in :root, as the viewer below uses them
+   too); the grey below is for a removed neuron, and --accent is the orange of the highlighted arrows and lines. */
+.nm-figure { margin: 2.6rem 0 2rem; --nm-faded: #C4C4BE;
+  --accent: color-mix(in srgb, var(--orange-deep) 70%, var(--orange)); }
+.nm-stage { position: relative; }
+.nm-figure svg { display: block; width: 100%; height: auto; overflow: visible; }
+.nm-edge { stroke: var(--ink); stroke-width: 1.4; }
+.nm-node { fill: var(--ink); }
+.nm-arrow .nm-shaft { fill: none; stroke: var(--ink); stroke-width: 1.3; }
+.nm-arrow .nm-head { fill: var(--ink); }
+.nm-face { stroke-width: .5; stroke-linejoin: round; }
+.nm-front { fill: var(--nm-front); stroke: var(--nm-front); }
+.nm-back { fill: var(--nm-back); stroke: var(--nm-back); }
+.nm-mesh { stroke: var(--ink); stroke-width: .75; stroke-linecap: round; }
+.nm-contour { stroke: var(--ink); stroke-width: 1.4; stroke-linecap: round; }
+.nm-point { fill: var(--orange); stroke: var(--ink); stroke-width: 1; }
+.nm-label { position: absolute; transform: translate(-50%, -50%); line-height: 1; }
+
+/* Highlights and extra objects, in the orange of the animation's flash. */
+.nm-plane.nm-face { fill: var(--orange); fill-opacity: .25; stroke: none; }
+.nm-plane.nm-mesh { stroke: var(--orange); stroke-width: .7; }
+.nm-plane.nm-contour { stroke: var(--orange-deep); stroke-width: 1.2; }
+.nm-curve { fill: none; stroke: var(--orange-deep); stroke-width: 2.4; stroke-linecap: round; }
+.nm-singular .nm-curve { stroke: var(--accent); stroke-width: 4; }
+.nm-glow { fill: none; stroke: color-mix(in srgb, var(--orange) 85%, white); stroke-width: 9; stroke-linecap: round; opacity: .7; filter: url(#nm-blur); }
+.nm-label.nm-extra { color: var(--orange-deep); }
+.nm-label.nm-grad { color: var(--ink); }
+.nm-cross { fill: none; stroke: var(--orange-deep); stroke-width: 2.6; stroke-linecap: round; }
+.nm-accent .nm-shaft { stroke: var(--accent); stroke-width: 2.8; stroke-linejoin: round; }
+.nm-accent .nm-head { fill: var(--accent); }
+.nm-flow { --accent: color-mix(in srgb, var(--orange-deep) 50%, var(--orange)); }
+.nm-flow .nm-shaft { stroke-width: 4; }  /* dashed by the script (see `dash` in SCENE) */
+.nm-target .nm-dot { fill: var(--accent); }
+.nm-target .nm-halo { fill: url(#nm-halo); }
+.nm-halo-in { stop-color: var(--orange); stop-opacity: .6; }
+.nm-halo-out { stop-color: var(--orange); stop-opacity: 0; }
+
+/* "Singularities / Subnetworks": the removed neuron and its edges turn grey. */
+.nm-pruned { transition: fill .3s, stroke .3s; }
+#nm-figure[data-topic="singularities"] .nm-edge.nm-pruned { stroke: var(--nm-faded); }
+#nm-figure[data-topic="singularities"] .nm-node.nm-pruned { fill: var(--nm-faded); }
+
+/* Captions under the figure, one per dictionary entry, stacked in the same place. */
+.nm-caption { display: grid; margin-top: .6rem; font-size: .92rem; text-align: center; }
+.nm-caption > * { grid-area: 1 / 1; }
+
+/* Extras appear while the dictionary button with their topic is hovered (data-topic is set by the script). */
+.nm-extra { opacity: 0; transition: opacity .3s; }
+#nm-figure[data-topic="hyperplane"] .nm-on-hyperplane,
+#nm-figure[data-topic="singularities"] .nm-on-singularities,
+#nm-figure[data-topic="fibers"] .nm-on-fibers,
+#nm-figure[data-topic="gradient-flow"] .nm-on-gradient-flow,
+#nm-figure[data-topic="dimension"] .nm-on-dimension { opacity: 1; }
+/* Parts with class nm-off-<topic> disappear meanwhile. */
+.nm-off-fibers { transition: opacity .3s; }
+#nm-figure[data-topic="fibers"] .nm-off-fibers { opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .nm-extra, .nm-pruned, .nm-off-fibers { transition: none; } }
+
+/* The MLP on the Primer page: a static svg with the classes above, so that it looks like the network on the
+   home page. It is 400 units wide and shown at one unit per pixel, as the home figure is at full width, centred.
+   The cusp in "Singularities" is laid out the same way. */
+.mlp-figure, .cusp-figure { margin: 1.6rem 0; }
+.mlp-figure .nm-stage, .cusp-figure .nm-stage { max-width: 400px; margin: 0 auto; }
+
+/* The cusp: the curve in ink and, in the orange of the planes of the home figure (.nm-plane), the Voronoi cell of
+   its singular point, which is unbounded and fades out through the mask in the svg. */
+.cusp-curve { fill: none; stroke: var(--ink); stroke-width: 1.8; stroke-linejoin: round; }
+.vor-cell { fill: var(--orange); fill-opacity: .4; }
+.vor-edge { fill: none; stroke: var(--orange-deep); stroke-width: 1.2; }
+.vor-label { color: var(--orange-deep); }  /* like the labels of the orange objects in the home figure */
+
+/* Bibliography: hanging indent, titles in italics. On the Literature page (assets/literature.js), an entry
+   has its tags below it, in small caps; the entry a link leads to is shaded. */
+.refs { list-style: none; padding: 0; }
+.refs li { padding-left: 1.5em; text-indent: -1.5em; margin-bottom: .9rem; scroll-margin-top: 1rem; }
+.refs cite { font-style: italic; }
+.refs li > div { text-indent: 0; margin-top: .1rem; }
+.ref-tags { color: var(--muted); font-size: .85rem; font-variant: small-caps; letter-spacing: .04em; }
+.refs li:target { background: var(--shade); box-shadow: 0 0 0 .4rem var(--shade); border-radius: 2px; }
+
+/* The tags under an entry are buttons that select the tag, like the tags above the list (Filters, below), but they
+   look like the text around them until the pointer is on one; a selected tag is in ink. */
+.ref-tag {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition: color .15s, text-decoration-color .15s;
+}
+.ref-tag[aria-pressed="true"] { color: var(--ink); }
+.ref-tag:focus-visible { outline: 1px solid var(--muted); outline-offset: 2px; }
+
+/* Filters, above the list of the Literature page (assets/literature.js): a column for each kind of tag, side by side,
+   its name in small caps at the top and its tags under it, one per line, outlined, with the slightly rounded corners
+   of the buttons of the viewer on the home page, and filled in very light gray with a black border when selected;
+   they have only these two looks, and do not change under the pointer or when tapped. In each tag, in old-style
+   figures, the number of papers it would show; a tag that would show none is dashed. Under the columns, a hairline.
+   On narrow screens, the kinds of tag are one under the other, each name above its tags, which wrap. */
+.filters {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.8rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--rule);
+}
+.filter-row { min-width: 0; }
+.filter-name {
+  display: block;
+  margin-bottom: .35rem;
+  color: var(--muted);
+  font-size: .85rem;
+  font-variant: small-caps;
+  letter-spacing: .05em;
+}
+.filter-tags { display: flex; flex-direction: column; align-items: flex-start; gap: .4rem; }
+.tag {
+  padding: .1rem .6rem .15rem;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: .85rem;
+  font-variant: small-caps;
+  letter-spacing: .04em;
+  line-height: 1.3;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: background-color .15s, border-color .15s, color .15s;
+}
+.tag-count { color: var(--muted); font-variant-numeric: oldstyle-nums; transition: color .15s; }
+.tag.tag-none { color: var(--muted); border-style: dashed; }
+.tag[aria-pressed="true"] { background: var(--shade); border: 1px solid var(--ink); color: var(--ink); }
+.tag:focus-visible { outline: 1px solid var(--muted); outline-offset: 2px; }
+/* Hover effects only where there is a pointer, so that a tapped tag does not stay underlined on a touch screen. */
+@media (hover: hover) {
+  .ref-tag:hover { color: var(--ink); text-decoration-color: var(--link-line); }
+}
+@media (max-width: 600px) {
+  .filters { display: block; }
+  .filter-row { margin-bottom: .7rem; }
+  .filter-row:last-child { margin-bottom: 0; }
+  .filter-name { margin-bottom: .25rem; }
+  .filter-tags { flex-direction: row; flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ref-tag, .tag, .tag-count { transition: none; }
+}
+
+/* News: date column and text. */
+.news { list-style: none; padding: 0; }
+.news li { display: grid; grid-template-columns: 9em minmax(0, 1fr); gap: .8rem; }
+.news time { color: var(--muted); font-variant-numeric: oldstyle-nums; }
+@media (max-width: 600px) { .news li { grid-template-columns: minmax(0, 1fr); gap: 0; } }
+
+/* Footer: small caps, centered, a hairline above. */
+.site-footer {
+  margin-top: 4rem;
+  margin-bottom: 2.5rem;
+  padding-top: .9rem;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .2rem 1.2rem;
+  font-variant: small-caps;
+  letter-spacing: .05em;
+  font-size: .8rem;
+  color: var(--muted);
+}
+.site-footer a { color: inherit; }
+
+/* Figures: images scale down to the column width. */
+figure { margin: 1.6rem 0 2rem; }
+figure img { display: block; width: 100%; height: auto; }
+
+/* Top drawing: the animated image (figures and grass) with the network drawn over it as vector graphics,
+   at the scale of the image's pixels. The flash runs every 4 s: the bottom layer lights up, sparks run
+   up the edges to the middle layer, which lights up, and then the top layer. */
+.hero { position: relative; }
+.hero-net { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.hero-net line { stroke: var(--ink); stroke-width: 2.345; }
+.hero-net .node { fill: var(--ink); animation: 4s linear infinite; }
+.hero-net .halo { fill: var(--orange); opacity: 0; filter: url(#hero-blur); animation: 4s linear infinite; }
+.hero-net .spark { fill: none; stroke: var(--orange); stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: .35 2; stroke-dashoffset: .35; opacity: 0; animation: 4s linear infinite; }
+.hero-net .spark.glow { stroke-width: 7; filter: url(#hero-blur); }
+.hero-net .spark.core { stroke-width: 2; }
+.hero-net .n0 { animation-name: hero-n0; } .hero-net .h0 { animation-name: hero-h0; }
+.hero-net .n1 { animation-name: hero-n1; } .hero-net .h1 { animation-name: hero-h1; }
+.hero-net .n2 { animation-name: hero-n2; } .hero-net .h2 { animation-name: hero-h2; }
+.hero-net .s01 { animation-name: hero-s01; } .hero-net .s12 { animation-name: hero-s12; }
+@keyframes hero-n0 { 0% { fill: #141414; } 4%, 10% { fill: #E3876D; } 17%, 100% { fill: #141414; } }
+@keyframes hero-n1 { 0%, 14% { fill: #141414; } 17%, 25% { fill: #E3876D; } 31%, 100% { fill: #141414; } }
+@keyframes hero-n2 { 0%, 33% { fill: #141414; } 36%, 42% { fill: #E3876D; } 52%, 100% { fill: #141414; } }
+@keyframes hero-h0 { 0% { opacity: 0; } 4%, 10% { opacity: .7; } 17%, 100% { opacity: 0; } }
+@keyframes hero-h1 { 0%, 14% { opacity: 0; } 17%, 25% { opacity: .7; } 31%, 100% { opacity: 0; } }
+@keyframes hero-h2 { 0%, 33% { opacity: 0; } 36%, 42% { opacity: .7; } 52%, 100% { opacity: 0; } }
+@keyframes hero-s01 { 0%, 8% { stroke-dashoffset: .35; opacity: 0; } 9% { stroke-dashoffset: .35; opacity: 1; }
+  18% { stroke-dashoffset: -1; opacity: 1; } 19%, 100% { stroke-dashoffset: -1; opacity: 0; } }
+@keyframes hero-s12 { 0%, 26% { stroke-dashoffset: .35; opacity: 0; } 27% { stroke-dashoffset: .35; opacity: 1; }
+  36% { stroke-dashoffset: -1; opacity: 1; } 37%, 100% { stroke-dashoffset: -1; opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .hero-net * { animation: none; } }

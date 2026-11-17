@@ -1,0 +1,209 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.05in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{fact}[theorem]{Fact}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prob}{\mathbf{P}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\fs}{f^{\star}}
+\newcommand{\Ch}{\widehat{C}}
+\newcommand{\cN}{\mathcal{N}}
+\DeclareMathOperator{\vol}{vol}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\Gr}{Gr}
+\DeclareMathOperator{\St}{St}
+\DeclareMathOperator{\mult}{mult}
+\DeclareMathOperator{\SO}{SO}
+\DeclareMathOperator{\Ort}{O}
+\DeclareMathOperator{\spn}{span}
+\newcommand{\Cmd}{C_{\mathrm{md}}}
+\newcommand{\CD}{C_{\mathrm{D}}}
+\newcommand{\Cw}{C_{\mathrm{w}}}
+\newcommand{\cso}{c_{\mathrm{so}}}
+
+\title{Uniform concentration over algebraic varieties\\ and the sample complexity of algebraic models}
+\author{Draft notes}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Setting and result}
+
+\paragraph{Varieties.} A \emph{variety} is a Zariski closed subset of $\C^M$ or $\PP^M=\PP^M_\C$, not necessarily irreducible. If $W\subset\PP^M$ is irreducible of dimension $m$, $\deg W$ is the number of points of $W\cap\Lambda$ for a generic linear subspace $\Lambda$ of codimension $m$; if $W\subset\C^M$ is irreducible, $\deg W$ is the degree of its closure in $\PP^M\supset\C^M=\{x_0\ne0\}$. In general, $\dim W$ is the maximal dimension of a component and $\deg W$ is the sum of the degrees of \emph{all} irreducible components. The \emph{affine cone} over $Z\subset\PP^{N-1}$ is $\{0\}\cup\{v\ne0:[v]\in Z\}\subset\C^N$.
+
+\paragraph{Notation.} We regard $\R^N\subset\C^N$ and put $\Gamma(\R):=\Gamma\cap\R^N$ for $\Gamma\subset\C^N$. $|\cdot|$ is the Hermitian norm, which restricts to the Euclidean one, $B(z,r)\subset\C^N$ is the open ball, and $S^{N-1}$ is the unit sphere of $\R^N$. For $T\subset\R^N$, $\cN(T,r)$ is the minimal size of an \emph{$r$-net} $F\subset T$ (every point of $T$ is within distance $r$ of $F$), and $w(T):=\E\sup_{t\in T}\langle g,t\rangle$, $g\sim N(0,I_N)$, is the Gaussian width. $\Gr(n,N)$ is the Grassmannian of $n$-planes in $\R^N$, $P_E$ is the orthogonal projection onto $E$, and a random subspace is \emph{uniform} if its law is $\Ort(N)$-invariant.
+
+\begin{theorem}\label{thm:haar}
+There are absolute constants $c,C>0$ such that the following holds. Let $Y\subset\C^N$ be a non-empty variety of dimension $k$ and degree $\delta$, let $X\subset Y(\R)$, $\fs\in\R^N$ and $1\le n\le N$, and let $H:=\fs+H_0$, where $H_0\subset\R^N$ is a uniform random linear subspace of codimension $n$. If $\eps\in(0,1]$ and $n\ge C\eps^{-2}(k+1+\log\delta)$, then with probability at least $1-e^{-cn\eps^2}$, for all $f\in X$,
+\[
+\Big|\,\frac Nn\,d(f,H)^2-|f-\fs|^2\,\Big|\le\eps\,|f-\fs|^2,
+\]
+where $d$ is the Euclidean distance. In particular, for all $n\in\{1,\dots,N\}$ and $\eps\in(0,1]$ the failure probability is at most $C^{k+1}\delta^Ce^{-cn\eps^2}$.
+\end{theorem}
+
+\section{Covering numbers of cones}
+
+\begin{fact}[B\'ezout]\label{fact:bezout}
+If $W\subset\PP^M$ is a variety and $\Lambda\subset\PP^M$ a linear subspace, then $W\cap\Lambda$ has at most $\deg W$ isolated points \cite[Example~8.4.6]{Fulton}, \cite{Heintz}.
+\end{fact}
+
+\begin{lemma}[Projection from a point]\label{lem:projection}
+Let $W\subset\PP^M$ be irreducible, $p\in\PP^M$ with $W\ne\{p\}$, $\Pi\subset\PP^M$ a hyperplane with $p\notin\Pi$, and $\pi:\PP^M\setminus\{p\}\to\Pi$ the projection from $p$. Then $W':=\overline{\pi(W\setminus\{p\})}$ is irreducible, $\dim W'\le\dim W$ and $\deg W'\le\deg W$.
+\end{lemma}
+
+\begin{proof}
+$W'$ is irreducible of dimension $m\le\dim W$, being the closure of the image of the irreducible variety $W\setminus\{p\}$ under $\pi_W:=\pi|_{W\setminus\{p\}}$. Let $\Lambda'\subset\Pi$ be a generic linear subspace of codimension $m$ in $\Pi$, so that $W'\cap\Lambda'$ consists of $\deg W'$ points.
+
+If $m=\dim W$, there is a dense open $U\subset W'$ with $U\subset\pi(W\setminus\{p\})$ over which $\pi_W$ has finite fibres (Chevalley's theorem and the dimension of fibres), and $W'\cap\Lambda'\subset U$ since $\dim(W'\setminus U)<m$. The span $J$ of $p$ and $\Lambda'$ satisfies $\pi^{-1}(\Lambda')=J\setminus\{p\}$, so $W\cap J\subset\{p\}\cup\pi_W^{-1}(W'\cap\Lambda')$ is finite with at least $\deg W'$ points; by Fact~\ref{fact:bezout}, $\deg W'\le\deg W$.
+
+If $m<\dim W$, every non-empty fibre $W\cap(\ell\setminus\{p\})$ of $\pi_W$, with $\ell\ni p$ a line, is infinite (dimension of fibres), so $\ell\subset W$. Hence $\pi(W\setminus\{p\})\subset W\cap\Pi$, and since $\pi$ fixes $\Pi$, $W'=W\cap\Pi$. Thus $W\cap\Lambda'=W'\cap\Lambda'$ has $\deg W'$ points, and $\deg W'\le\deg W$ by Fact~\ref{fact:bezout}.
+\end{proof}
+
+\begin{lemma}[Cone of directions]\label{lem:cone}
+Let $Y\subset\C^N$ be a variety of dimension $k$ and degree $\delta$, $\fs\in\C^N$ with $Y\not\subset\{\fs\}$, $Z\subset\PP^{N-1}$ the Zariski closure of $\{[f-\fs]:f\in Y\setminus\{\fs\}\}$, and $\Ch\subset\C^N$ the affine cone over $Z$. Then $\dim Z\le k$, $\deg Z\le\delta$, and $f-\fs\in\Ch$ for all $f\in Y$.
+\end{lemma}
+
+\begin{proof}
+The last claim is clear. Let $W_i\subset\PP^N$ be the closures of the components $Y_i$ of $Y$, so $\sum_i\deg W_i=\delta$, and let $\pi$ be the projection from $p:=[1:\fs]$ to $\Pi:=\{x_0=0\}\cong\PP^{N-1}$, so that $\pi([1:f])=[f-\fs]$. If $Y_i\ne\{\fs\}$, then $Y_i\setminus\{\fs\}$ is dense in $W_i\setminus\{p\}$; hence $Z$ is the union of the $W_i':=\overline{\pi(W_i\setminus\{p\})}$ over such $i$. The components of $Z$ are among the $W_i'$, so Lemma~\ref{lem:projection} gives $\dim Z\le k$ and $\deg Z\le\sum_i\deg W_i'\le\delta$.
+\end{proof}
+
+\begin{fact}[Lelong, Thie]\label{fact:lelong}
+Let $A\subset\C^N$ be a closed analytic subset of pure dimension $p\ge1$, $a\in A$, $\vol_{2p}$ the $2p$-dimensional Hausdorff measure (normalised to agree with Lebesgue measure on real $2p$-planes), and $\omega_{2p}$ the volume of the unit ball of $\R^{2p}$. Then $r\mapsto\vol_{2p}(A\cap B(a,r))/(\omega_{2p}r^{2p})$ is non-decreasing on $(0,\infty)$ \cite{Lelong}, with limit $\mult_a(A)\ge1$ as $r\to0$ \cite{Thie}, see also \cite{Chirka}; in particular $\vol_{2p}(A\cap B(a,r))\ge\omega_{2p}r^{2p}$. For algebraic $A$, $\mult_a(A)$ is the degree of the projectivised tangent cone of $A$ at $a$, as a scheme \cite[Lecture~20]{Harris}.
+\end{fact}
+
+\begin{lemma}[Volume of cones]\label{lem:conevol}
+If $\Gamma\subset\C^N$ is the affine cone over an irreducible $Z\subset\PP^{N-1}$ of dimension $p-1$, then $\vol_{2p}(\Gamma\cap B(0,R))=\deg(Z)\,\omega_{2p}R^{2p}$ for all $R>0$.
+\end{lemma}
+
+\begin{proof}
+Dilations $z\mapsto\lambda z$, $\lambda>0$, preserve $\Gamma$ and scale $\vol_{2p}$ by $\lambda^{2p}$, so the ratio in Fact~\ref{fact:lelong} at $a=0$ is constant, equal to $\mult_0(\Gamma)$. Since the ideal of $\Gamma$ is homogeneous, it is its own ideal of initial forms; so the tangent cone of $\Gamma$ at $0$ is the reduced scheme $\Gamma$, whose projectivisation $Z$ has degree $\deg Z$.
+\end{proof}
+
+\begin{proposition}[Covering numbers and Gaussian width]\label{prop:cover}
+There is an absolute constant $\Cw$ such that the following holds. Let $Z\subset\PP^{N-1}$ be a non-empty variety with $\dim Z\le k$ and $\deg Z\le\delta$, let $\Gamma$ be its affine cone, and let $T\subset\Gamma(\R)\cap S^{N-1}$. Then
+\[
+\cN(T,r)\le\delta\,(1+2/r)^{2(k+1)}\quad(r>0)\qquad\text{and}\qquad w(T)\le\Cw\sqrt{k+1+\log\delta}.
+\]
+\end{proposition}
+
+\begin{proof}
+The components of $\Gamma$ are the affine cones $\Gamma_j$ over the components $Z_j$ of $Z$, of dimension $p_j:=\dim Z_j+1\le k+1$. Let $t_1,\dots,t_s\in T$ be $r$-separated ($|t_i-t_l|\ge r$ for $i\ne l$), assign each $t_i$ to a component $\Gamma_{j(i)}\ni t_i$, and let $I_j:=\{i:j(i)=j\}$. The balls $B(t_i,r/2)$ are disjoint and contained in $B(0,1+r/2)$, so by Fact~\ref{fact:lelong} and Lemma~\ref{lem:conevol},
+\[
+|I_j|\,\omega_{2p_j}\big(\tfrac r2\big)^{2p_j}\le\sum_{i\in I_j}\vol_{2p_j}\big(\Gamma_j\cap B(t_i,\tfrac r2)\big)\le\vol_{2p_j}\big(\Gamma_j\cap B(0,1+\tfrac r2)\big)=\deg(Z_j)\,\omega_{2p_j}\big(1+\tfrac r2\big)^{2p_j}.
+\]
+Hence $s\le\sum_j\deg(Z_j)(1+2/r)^{2p_j}\le\delta(1+2/r)^{2(k+1)}$; as a maximal $r$-separated subset of $T$ is an $r$-net, this proves the first bound. For the second, $\cN(T,r)=1$ for $r\ge2$ and $\cN(T,r)\le\delta(4/r)^{2(k+1)}$ for $r<2$. Dudley's inequality \cite[Thm.~8.1.3]{Vershynin}, with an absolute constant $\CD$, and $\int_0^2\sqrt{\log(4/r)}\,dr=4\int_{\log2}^\infty\sqrt s\,e^{-s}ds\le2\sqrt\pi$ give
+\[
+w(T)\le\CD\int_0^2\sqrt{\log\cN(T,r)}\,dr\le\CD\big(2\sqrt{\log\delta}+2\sqrt{2\pi(k+1)}\big)\le4\sqrt\pi\,\CD\sqrt{k+1+\log\delta}.\qedhere
+\]
+\end{proof}
+
+\section{Random subspaces}
+
+Throughout, $1\le n\le N$, $G$ is an $n\times N$ matrix with i.i.d.\ $N(0,1)$ entries, and $\sigma_{\St}$ is the $\Ort(N)$-invariant probability measure on the Stiefel manifold $\St:=\{W_0\in\R^{n\times N}:W_0W_0^\top=I_n\}$, on which $\Ort(N)$ acts transitively by right multiplication.
+
+\begin{fact}[Matrix deviation inequality]\label{fact:md}
+There is an absolute constant $\Cmd\ge1$ such that for all $T\subset S^{N-1}$ and $u\ge0$, with probability at least $1-3e^{-u^2}$, $\sup_{t\in T}\big||Gt|-\sqrt n\big|\le\Cmd(w(T)+u)$ \cite[Thm.~1.4]{LMPV}, \cite[Exercise~9.1.8]{Vershynin}; cf.\ \cite{Gordon}.
+\end{fact}
+
+\begin{lemma}[Gaussian polar decomposition]\label{lem:polar}
+Almost surely $\rank G=n$; put $S:=(GG^\top)^{1/2}$ and $W:=S^{-1}G$. Then $W\in\St$, $\E S^2=NI_n$, $S$ and $W$ are independent with $W\sim\sigma_{\St}$, and the row space $E$ of $G$ is uniform on $\Gr(n,N)$.
+\end{lemma}
+
+\begin{proof}
+Clearly $WW^\top=I_n$ and $\E GG^\top=NI_n$. For $O\in\Ort(N)$, $GO$ has the law of $G$, and replacing $G$ by $GO$ maps $(S,W,E)$ to $(S,WO,O^\top E)$; this proves the claim on $E$. If $O'$ is Haar on $\Ort(N)$ and independent of $G$, it follows that $(S,W)\overset{d}{=}(S,WO')$; since $WO'\sim\sigma_{\St}$ conditionally on $G$, $(S,W)\sim\mathcal L(S)\otimes\sigma_{\St}$.
+\end{proof}
+
+\begin{lemma}[Gaussian comparison]\label{lem:compare}
+If $T\subset S^{N-1}$ and $E$ is uniform on $\Gr(n,N)$, then
+\[
+\E\sup_{t\in T}\Big|\frac Nn|P_Et|^2-1\Big|\le\E\sup_{t\in T}\Big|\frac{|Gt|^2}n-1\Big|.
+\]
+\end{lemma}
+
+\begin{proof}
+By Lemma~\ref{lem:polar} we may take $E$ to be the row space of $G=SW$, so $|P_Et|=|W^\top Wt|=|Wt|$. For fixed $W_0\in\St$, $\E|SW_0t|^2=N|W_0t|^2$, hence
+\[
+\sup_{t\in T}\Big|\frac Nn|W_0t|^2-1\Big|=\sup_{t\in T}\Big|\E\Big(\frac{|SW_0t|^2}n-1\Big)\Big|\le\E\sup_{t\in T}\Big|\frac{|SW_0t|^2}n-1\Big|.
+\]
+Integrate over $W_0\sim\sigma_{\St}$ and use the independence of $S$ and $W$.
+\end{proof}
+
+\begin{fact}[Concentration on $\SO(N)$]\label{fact:SO}
+There is an absolute constant $\cso>0$ such that if $N\ge3$, $U$ is Haar distributed on $\SO(N)$, and $F:\SO(N)\to\R$ is $L$-Lipschitz for the Hilbert--Schmidt distance, then $\Prob(F(U)\ge\E F(U)+s)\le e^{-\cso Ns^2/L^2}$ for $s>0$ \cite{GromovMilman}, \cite[Thm.~5.17]{Meckes}.
+\end{fact}
+
+\begin{proposition}\label{prop:haar}
+There are absolute constants $c_3,C_3>0$ such that if $T\subset S^{N-1}$, $E$ is uniform on $\Gr(n,N)$, $\eps\in(0,1]$ and $n\ge C_3(w(T)+1)^2/\eps^2$, then
+\[
+\Prob\Big(\sup_{t\in T}\Big|\frac Nn|P_Et|^2-1\Big|>\eps\Big)\le e^{-c_3n\eps^2}.
+\]
+\end{proposition}
+
+\begin{proof}
+Let $C_4:=\max(2\sqrt3\,\Cmd,6\Cmd^2)$, $C_3:=144C_4^2$, $c_3:=\cso/36$, $w:=w(T)$ and $\beta:=(w+1)/\sqrt n$; then $N\ge n\ge144$ and $\beta\le\eps/(12C_4)\le1/12$. Put $x_t:=\sqrt{N/n}\,|P_Et|$, $D_1:=\sup_{t\in T}|x_t-1|$ and $D_2:=\sup_{t\in T}|x_t^2-1|$, and recall that $|x-1|\le|x^2-1|\le2|x-1|+|x-1|^2$ for $x\ge0$.
+
+\emph{Expectation.} Let $\Delta:=\sup_{t\in T}\big||Gt|/\sqrt n-1\big|$ and $a:=\Cmd/\sqrt n$. By Fact~\ref{fact:md}, $\zeta:=(\Delta/a-w)_+$ satisfies $\Prob(\zeta>u)\le\min(1,3e^{-u^2})$, so $\E\zeta^2\le1+\log3<3$. As $\Delta\le a(w+\zeta)$, Lemma~\ref{lem:compare} gives
+\[
+\E D_1\le\E D_2\le2\E\Delta+\E\Delta^2\le2a(w+\sqrt3)+2a^2(w^2+3)\le C_4(\beta+\beta^2)\le\eps/6.
+\]
+
+\emph{Concentration.} Since $\SO(N)$ acts transitively on $\Gr(n,N)$, we may write $E=UE_0$ with $U$ Haar on $\SO(N)$ and $E_0:=\spn(e_1,\dots,e_n)$. Then $|P_Et|=|P_{E_0}U^\top t|$, so $D_1$ is a $\sqrt{N/n}$-Lipschitz function of $U$, and Fact~\ref{fact:SO} with $s=\eps/6$ gives $\Prob(D_1\ge\eps/3)\le e^{-c_3n\eps^2}$. On $\{D_1<\eps/3\}$ we have $D_2\le2D_1+D_1^2<\eps$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:haar}]
+Assume $X\not\subset\{\fs\}$, let $\Ch$ be as in Lemma~\ref{lem:cone}, and $T:=\Ch(\R)\cap S^{N-1}$. The subspace $E:=H_0^\perp$ is uniform on $\Gr(n,N)$ and $d(f,H)=|P_E(f-\fs)|$. For $f\in X\setminus\{\fs\}$ we have $t_f:=(f-\fs)/|f-\fs|\in T$ and
+\[
+\frac Nn\,d(f,H)^2-|f-\fs|^2=|f-\fs|^2\Big(\frac Nn|P_Et_f|^2-1\Big),
+\]
+while for $f=\fs$ there is nothing to prove. By Lemma~\ref{lem:cone} and Proposition~\ref{prop:cover}, $(w(T)+1)^2\le2w(T)^2+2\le C'(k+1+\log\delta)$ with $C':=2\Cw^2+2$, so Proposition~\ref{prop:haar} gives the main claim with $C:=C_3C'$ and $c:=c_3$. If $n<C\eps^{-2}(k+1+\log\delta)$, then $e^{cC(k+1)}\delta^{cC}e^{-cn\eps^2}>1$; hence the failure probability is always at most $(e^{cC})^{k+1}\delta^{cC}e^{-cn\eps^2}$, and the last claim follows after replacing $C$ by $\max(C,e^{cC})$.
+\end{proof}
+
+\begin{thebibliography}{99}
+
+\bibitem{Chirka}
+E.~M. Chirka, \emph{Complex Analytic Sets}, Kluwer, Dordrecht, 1989.
+
+\bibitem{Fulton}
+W. Fulton, \emph{Intersection Theory}, 2nd ed., Springer, 1998.
+
+\bibitem{Gordon}
+Y. Gordon, On Milman's inequality and random subspaces which escape through a mesh in $\R^n$, in: \emph{Geometric Aspects of Functional Analysis (1986/87)}, Lecture Notes in Math. 1317, Springer, 1988, 84--106.
+
+\bibitem{GromovMilman}
+M. Gromov and V.~D. Milman, A topological application of the isoperimetric inequality, \emph{Amer. J. Math.} 105 (1983), 843--854.
+
+\bibitem{Harris}
+J. Harris, \emph{Algebraic Geometry: A First Course}, Graduate Texts in Math. 133, Springer, 1992.
+
+\bibitem{Heintz}
+J. Heintz, Definability and fast quantifier elimination in algebraically closed fields, \emph{Theoret. Comput. Sci.} 24 (1983), 239--277.
+
+\bibitem{Lelong}
+P. Lelong, Int\'egration sur un ensemble analytique complexe, \emph{Bull. Soc. Math. France} 85 (1957), 239--262.
+
+\bibitem{LMPV}
+C. Liaw, A. Mehrabian, Y. Plan and R. Vershynin, A simple tool for bounding the deviation of random matrices on geometric sets, in: \emph{Geometric Aspects of Functional Analysis (2014--2016)}, Lecture Notes in Math. 2169, Springer, 2017, 277--299.
+
+\bibitem{Meckes}
+E.~S. Meckes, \emph{The Random Matrix Theory of the Classical Compact Groups}, Cambridge University Press, 2019.
+
+\bibitem{Thie}
+P.~R. Thie, The Lelong number of a point of a complex analytic set, \emph{Math. Ann.} 172 (1967), 269--312.
+
+\bibitem{Vershynin}
+R. Vershynin, \emph{High-Dimensional Probability}, Cambridge University Press, 2018 (first edition).
+
+\end{thebibliography}
+
+\end{document}

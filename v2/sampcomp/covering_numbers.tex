@@ -1,0 +1,429 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\cM}{\mathcal{M}}
+\newcommand{\cN}{\mathcal{N}}
+\newcommand{\cF}{\mathcal{F}}
+\newcommand{\cL}{\mathcal{L}}
+\newcommand{\cD}{\mathcal{D}}
+\newcommand{\cH}{\mathcal{H}}
+\newcommand{\cX}{\mathcal{X}}
+\DeclareMathOperator{\mult}{mult}
+
+\title{Covering numbers of semi-algebraic sets:\\
+linear in the dimension, logarithmic in the degree}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let $\cM\subseteq\R^N$ be a semi-algebraic set of dimension $m$ whose Zariski
+closure has degree $d$. For every Euclidean norm we show
+$\log\cN_\varepsilon(\cM\cap B)\le\log d+2m\log(1+2/\varepsilon)$, with no
+dependence on $N$. The proof applies Gromov's packing argument for the entropy
+of holomorphic maps to the complexification of $\cM$, using Lelong's
+monotonicity theorem. Since evaluation at data points is linear, the bound also
+holds for empirical covering numbers; for polynomial machine learning models
+this gives a sample complexity of order
+$\varepsilon^{-2}\bigl(m+\log d+\log(1/\delta)\bigr)$.
+\end{abstract}
+
+\section{Setting and results}
+
+Let $V$ be a real vector space of dimension $N$, for instance a space of
+polynomials of bounded degree containing the neuromanifold of a polynomial
+model~\cite{MSMTK25}, and let $\cM\subseteq V$ be semi-algebraic of dimension
+$m$. Let $X\subseteq V_\C=V\otimes_\R\C$ be the complex Zariski closure of
+$\cM$, with irreducible components $X_1,\dots,X_s$. Then $\dim_\C X=m$, since
+a semi-algebraic set has the dimension of its Zariski
+closure~\cite[\S2.8]{BCR98} and Krull dimension is unchanged by extending
+scalars to $\C$. We set
+\[
+  d:=\deg X:=\sum_{j=1}^{s}\deg X_j,
+\]
+where $\deg X_j$ is the number of points of $X_j\cap L$ for a generic affine
+subspace $L$ of codimension $\dim X_j$. If $\cM=\varphi(\R^q)$ for a polynomial
+map $\varphi$, as for polynomial neural networks, then $X$ is irreducible and
+$d$ is the degree of the neurovariety; it bounds the number of complex
+interpolants of $m$ generic samples~\cite[App.~B]{MSMTK25}. For a subset $S$ of
+a normed space, $\cN_\varepsilon(S)$ is the least number of closed
+$\varepsilon$-balls covering~$S$.
+
+\begin{theorem}\label{thm:main}
+Fix an inner product on $V$, with closed unit ball $B$. For every
+$\varepsilon>0$,
+\[
+  \cN_\varepsilon(\cM\cap B)\le d\Bigl(1+\frac{2}{\varepsilon}\Bigr)^{2m},
+  \qquad\text{i.e.}\qquad
+  \log\cN_\varepsilon(\cM\cap B)\le\log d+2m\log\Bigl(1+\frac{2}{\varepsilon}\Bigr),
+\]
+and the centres can be taken in $\cM\cap B$. The same bound holds for
+$T(\cM)\cap B_W$, for every linear map $T\colon V\to W$ to a Euclidean space $W$
+with unit ball $B_W$. In particular, it holds for the $L^2(\mu)$-seminorm, for
+any probability measure $\mu$ on the inputs with $V\subseteq L^2(\mu)$, e.g.\ an
+empirical measure.
+\end{theorem}
+
+For learning, let $V$ consist of functions on an input set $\cX$, let
+\[
+  \cF:=\{f\in\cM:\ |f(x)|\le 1\ \text{for all } x\in\cX\},
+\]
+let $(x_1,y_1),\dots,(x_n,y_n)$ be i.i.d.\ from a distribution $\pi$ on
+$\cX\times[-1,1]$, and write $\cL_\pi(f)=\mathbb{E}_\pi(f(x)-y)^2$ and
+$\cL_\cD(f)=\frac1n\sum_i(f(x_i)-y_i)^2$.
+
+\begin{corollary}\label{cor:sample}
+There is an absolute constant $C$ such that, with probability at least
+$1-\delta$,
+\[
+  \sup_{f\in\cF}\bigl|\cL_\pi(f)-\cL_\cD(f)\bigr|
+  \le C\sqrt{\frac{m+\log d+\log(2/\delta)}{n}}.
+\]
+In particular, $n=O\bigl(\varepsilon^{-2}(m+\log d+\log(1/\delta))\bigr)$
+samples suffice for empirical risk minimisation over $\cF$ to be
+$\varepsilon$-optimal in~$\cF$.
+\end{corollary}
+
+\section{Background}
+
+Bounding the metric entropy of a set by its algebraic or integral-geometric
+complexity has a long history. After Kolmogorov and Tikhomirov made
+$\varepsilon$-entropy a systematic tool~\cite{KT59}, Vitushkin~\cite{Vi55}
+introduced \emph{multidimensional variations} (integrals over affine sections of
+the number of connected components) and showed that they bound covering numbers;
+see also Ivanov~\cite{Iv75}. For semi-algebraic sets, the variations are
+controlled by the Petrovskii--Oleinik--Milnor--Thom bounds on Betti
+numbers~\cite{PO49,Mi64,Th65}. This yields
+$\log\cN_\varepsilon\le m\log(1/\varepsilon)+C$, with $C$ depending on the
+ambient dimension and on the degrees of the defining equations.
+Yomdin~\cite{Yo87} used semi-algebraic entropy estimates to compare volume
+growth and entropy of smooth maps, and Gromov's Bourbaki
+exposition~\cite{Gr87} distilled the resulting ``algebraic lemma''; the
+monograph of Yomdin and Comte~\cite{YC04} is the standard reference. A second
+route goes through volumes of tubes, from Weyl's formula~\cite{We39} to
+effective bounds for real algebraic sets by Wongkew~\cite{Wo93},
+B\"urgisser, Cucker and Lotz~\cite{BCL08}, Lotz~\cite{Lo15}, and Basu and
+Lerario~\cite{BL23}. Zhang and Kileel~\cite{ZK23} give a direct slicing argument
+with improved bounds. In learning theory, covering numbers control sample
+complexity~\cite{CS02}, and such bounds were brought to polynomial networks
+in~\cite{KTB19,MSMTK25}.
+
+On the complex side, Lelong~\cite{Le57} showed that integration over a complex
+analytic set defines a closed positive current whose density ratio is monotone,
+and Thie~\cite{Th67} identified the limiting density with the multiplicity.
+Gromov~\cite{Gr03} (preprint 1977) combined Lelong's lower volume bound with a
+packing argument to bound the topological entropy of holomorphic maps; the
+argument is now standard in complex dynamics~\cite{DS10}. B\"urgisser, Cucker
+and Lotz~\cite{BCL06} bounded volumes of tubes around complex projective
+varieties in terms of their degree. The proof below transplants Gromov's packing
+argument to the complexification of a real semi-algebraic set, where the total
+volume is controlled by the degree through Stoll's theorem~\cite{St64}.
+
+\section{Proofs}
+
+\begin{lemma}[Lelong, Thie, Stoll]\label{lem:lelong}
+Let $Y\subseteq\C^N$ be an irreducible algebraic variety of dimension $k$ and
+degree $e$, and let $\omega_{2k}=\pi^k/k!$ be the volume of the unit ball of
+$\C^k=\R^{2k}$. For $a\in\C^N$, the function
+\[
+  \Theta_a(r)=\frac{\cH^{2k}\bigl(Y\cap B(a,r)\bigr)}{\omega_{2k}\,r^{2k}},
+  \qquad r>0,
+\]
+is nondecreasing, with $\lim_{r\to0}\Theta_a(r)=\mult_a Y\ge1$ if $a\in Y$, and
+$\lim_{r\to\infty}\Theta_a(r)=e$. Consequently, for all $r>0$,
+\begin{align}
+  \cH^{2k}\bigl(Y\cap B(a,r)\bigr) &\ge \omega_{2k}\,r^{2k}
+    \qquad (a\in Y), \label{eq:lower}\\
+  \cH^{2k}\bigl(Y\cap B(a,r)\bigr) &\le e\,\omega_{2k}\,r^{2k}
+    \qquad (a\in\C^N). \label{eq:upper}
+\end{align}
+\end{lemma}
+
+\begin{proof}[Sketch]
+By the Lelong--Jensen formula, for $0<s<r$,
+\[
+  \Theta_a(r)-\Theta_a(s)=\int_{Y\cap\{s<|z-a|<r\}}
+  \bigl(dd^c\log|z-a|^2\bigr)^k\;\ge\;0,
+\]
+where $dd^c\log|z-a|^2$ is the pullback of the Fubini--Study form (of mass $1$
+on lines) under $z\mapsto[z-a]\in\PP^{N-1}$. Hence $\Theta_a$ is nondecreasing,
+and $\Theta_a(0^+)=\mult_aY$ by Thie's theorem~\cite{Th67}. As $s\to0$ and
+$r\to\infty$, Crofton's formula on $\PP^{N-1}$ identifies the integral with the
+number of points of $Y\cap L$ other than $a$, for a generic linear subspace
+$L\ni a$ of codimension $k$. This number is $e-\mult_aY$, so
+$\Theta_a(\infty)=e$, which is Stoll's theorem~\cite{St64}. See~\cite{Ch89,De12}
+for details.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+Extend the inner product to a Hermitian one on $V_\C$, so that
+$\|u+iv\|^2=\|u\|^2+\|v\|^2$ and $V\subset V_\C$ isometrically. In orthonormal
+coordinates $V_\C=\C^N$, and dimension and degree are unchanged. Write
+$m_j=\dim X_j\le m$ and $d_j=\deg X_j$, and partition
+$\cM\cap B=S_1\sqcup\dots\sqcup S_s$ with $S_j\subseteq X_j$.
+
+Let $P\subseteq S_j$ be finite and $\varepsilon$-separated, i.e.\
+$\|f-g\|>\varepsilon$ for distinct $f,g\in P$. The complex balls
+$B(f,\varepsilon/2)$, $f\in P$, are pairwise disjoint, centred on $X_j$, and
+contained in $B(0,1+\varepsilon/2)$. By~\eqref{eq:lower} and~\eqref{eq:upper},
+\[
+  |P|\,\omega_{2m_j}\Bigl(\frac{\varepsilon}{2}\Bigr)^{2m_j}
+  \le\sum_{f\in P}\cH^{2m_j}\bigl(X_j\cap B(f,\tfrac{\varepsilon}{2})\bigr)
+  \le\cH^{2m_j}\bigl(X_j\cap B(0,1+\tfrac{\varepsilon}{2})\bigr)
+  \le d_j\,\omega_{2m_j}\Bigl(1+\frac{\varepsilon}{2}\Bigr)^{2m_j},
+\]
+so $|P|\le d_j(1+2/\varepsilon)^{2m_j}$. Hence a maximal $\varepsilon$-separated
+subset of $S_j$ exists, is finite, and is an $\varepsilon$-net of $S_j$ with
+centres in $S_j$. Summing over $j$, using $m_j\le m$ and $\sum_j d_j=d$, gives
+the bound.
+
+For the last claim, extend $T$ $\C$-linearly. The complex Zariski closure of
+$T(\cM)$ is $\overline{T(X)}$, whose dimension is at most $m$ and whose degree
+is at most $d$, since linear maps do not increase degree~\cite{He83}. Apply the
+first part to $T(\cM)\subseteq W$.
+\end{proof}
+
+\begin{proof}[Proof of Corollary~\ref{cor:sample}]
+Fix $S=(x_1,\dots,x_n)$ and let $T_S\colon V\to\R^n$, $f\mapsto(f(x_i))_i$,
+which is linear. With $\|u\|_S=(\frac1n\sum_i u_i^2)^{1/2}$ we have
+$\cF|_S\subseteq T_S(\cM)\cap\{\|u\|_S\le1\}$, so Theorem~\ref{thm:main} gives,
+uniformly in $S$ and $n$,
+\[
+  \log\cN_t\bigl(\cF|_S,\|\cdot\|_S\bigr)\le\log d+2m\log(1+4/t)
+  \qquad(t>0),
+\]
+with centres in $\cF|_S$ (the $4$ accounts for moving the centres into
+$\cF|_S$). Dudley's entropy integral~\cite{Du67} bounds the empirical
+Rademacher complexity:
+\[
+  \widehat{\mathfrak R}_S(\cF)\lesssim\frac{1}{\sqrt n}\int_0^1
+  \sqrt{\log d+2m\log(1+4/t)}\,dt\lesssim\sqrt{\frac{m+\log d}{n}}.
+\]
+The loss $(\hat y,y)\mapsto(\hat y-y)^2$ takes values in $[0,4]$ and is
+$4$-Lipschitz in $\hat y\in[-1,1]$, so the contraction lemma and the standard
+symmetrisation and bounded-differences argument~\cite{BM02} give the claim.
+Uniform deviation at most $\varepsilon/2$ makes empirical risk minimisation
+$\varepsilon$-optimal.
+\end{proof}
+
+\section{Comparison with Kileel et al.}
+
+The neuroalgebraic geometry literature quotes~\cite[eq.~(4)]{MSMTK25},
+attributing it to~\cite{KTB19},
+\[
+  \log\cN_\varepsilon(\cM)=O\bigl(m\log(d/\varepsilon)+C\bigr),
+\]
+with $C$ depending on $N=\dim V$. Zhang and Kileel~\cite{ZK23} prove bounds in
+terms of the degree $D$ of the polynomials defining or parametrising the set.
+Table~\ref{tab:comparison} lists them in the regime $m\ll N$, as summarised
+in~\cite[Table~1]{ZK23} (in our notation). Its last two rows use two
+Bézout-type facts.
+
+
+\begin{itemize}
+\item[(a)] If $\varphi\colon\C^q\to\C^N$ has coordinates of degree $\le D$ and
+  $Y=\overline{\varphi(\C^q)}$ has dimension $m$, then $\deg Y\le D^m$. Indeed,
+  for a generic affine subspace $L$ of codimension $m$, the $\deg Y$ points of
+  $Y\cap L$ lie in $\varphi(\C^q)$. Their fibres partition $\varphi^{-1}(L)$
+  into $\deg Y$ nonempty unions of irreducible components, and since
+  $\varphi^{-1}(L)$ is cut out by $m$ equations of degree $\le D$, the Bézout
+  inequality~\cite{He83} bounds the number of components by $D^m$.
+\item[(b)] The zero set in $\C^N$ of polynomials of degree $\le D$ has degree
+  at most $D^N$~\cite{He83}. The proof of Theorem~\ref{thm:main} only uses
+  $\cM\subseteq X$, so it applies with this zero set in place of $X$.
+\end{itemize}
+
+\begin{table}[ht]
+\centering\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Source & Setting & Bound on $\log\cN_\varepsilon(\,\cdot\,\cap B)$\\
+\midrule
+\cite{KTB19} via \cite{MSMTK25} & variety of dimension $m$, degree $d$
+  & $O\bigl(m\log\frac{d}{\varepsilon}+C(N)\bigr)$\\
+\cite{ZK23} & image of $\varphi\colon\R^q\to\R^N$, $\deg\varphi\le D$
+  & $q\log\frac1\varepsilon+O(q\log D+q\log N)$\\
+\cite{ZK23} & real variety of dimension $m$, equations of degree $\le D$
+  & $m\log\frac1\varepsilon+O(N\log D+m\log N)$\\
+\midrule
+Thm.~\ref{thm:main} & semi-algebraic, dimension $m$, $d=\deg\overline{\cM}$
+  & $\log d+2m\log(1+\frac{2}{\varepsilon})$\\
+Thm.~\ref{thm:main} + (a) & image as in row 2, $m=\dim\varphi(\R^q)\le q$
+  & $m\log D+2m\log(1+\frac{2}{\varepsilon})$\\
+Thm.~\ref{thm:main} + (b) & variety as in row 3, complex zero set of dim.\ $m$
+  & $N\log D+2m\log(1+\frac{2}{\varepsilon})$\\
+\bottomrule
+\end{tabular}
+\caption{Covering-number bounds for sets $U\cap B\subseteq\R^N$.}
+\label{tab:comparison}
+\end{table}
+
+Compared with these results, Theorem~\ref{thm:main}:
+\begin{itemize}
+\item is stated in terms of the degree $d$ of the variety itself, which enters
+  only as $\log d$. This removes the cross term $m\log d$ of~\cite{KTB19}, and
+  by (a) and (b) it recovers the degree terms of~\cite{ZK23}. Moreover,
+  $\log d$ can be much smaller than these Bézout bounds;
+\item has no dependence on the ambient dimension $N$;
+\item for neuromanifolds, replaces the number of parameters $q$ by
+  $m=\dim\cM$, which is smaller whenever the parametrisation has
+  positive-dimensional fibres (e.g.\ rescaling symmetries);
+\item pays a factor $2$ in front of $m\log(1/\varepsilon)$, whereas the real
+  bounds have the sharp leading term as $\varepsilon\to0$.
+\end{itemize}
+The decoupling of $m$ and $\log d$ matters for deep polynomial networks, whose
+dimension grows linearly with depth while their degree grows
+(super-)exponentially~\cite{SMK25}.
+
+\section{Remarks}
+
+\paragraph{Sharpness.} The form $\log d+\Theta(m)\log(1/\varepsilon)$ cannot be
+improved. The $d$ parallel affine $m$-planes through
+$\tfrac12e_1,\dots,\tfrac12e_d$ in $\R^{d+m}$ form a variety of degree $d$ that
+needs at least $d\,(c/\varepsilon)^m$ balls for $\varepsilon<1/4$. Irreducible
+examples exist too: the trigonometric moment curve
+$\gamma(t)=k^{-1/2}(\cos t,\sin t,\dots,\cos kt,\sin kt)$ is a rational normal
+curve of degree $d=2k$ on the unit sphere, and the points $\gamma(2\pi j/k)$,
+$0\le j<k$, are orthonormal. Hence $\cN_\varepsilon\ge d/2$ for
+$\varepsilon<1/\sqrt2$.
+
+\paragraph{Why complexify.} Over $\R$ there is no analogue
+of~\eqref{eq:lower}: $\{x^2+y^2=0\}$ is a point and $\{x^2+y^2=\eta\}$ is an
+arbitrarily small oval. Real proofs therefore count connected components of
+slices, and the Petrovskii--Oleinik--Milnor--Thom bounds used for this are the
+source of the ambient and cross terms in Table~\ref{tab:comparison}. Complex
+varieties are calibrated, hence minimal, so monotonicity supplies the lower bound
+for free; the price is the factor $2$.
+
+\paragraph{Sup-norm covers.} The Cucker--Smale bound~\cite{CS02}, as used
+in~\cite[Thm.~B.1]{MSMTK25}, needs covers in
+$\|f\|_\infty=\sup_{\cX}|f|$, assumed to be a norm on $V$. Take John's
+ellipsoid~\cite{Jo48} $E$ with $E\subseteq\{\|f\|_\infty\le1\}\subseteq\sqrt N E$.
+Theorem~\ref{thm:main} for the norm with unit ball $E$ gives
+$\log\cN^{\infty}_\varepsilon(\cF)\le\log d+2m\log(1+4\sqrt N/\varepsilon)$,
+with centres in $\cF$.
+
+\begin{thebibliography}{99}\footnotesize\setlength{\itemsep}{1pt}
+
+\bibitem{BM02} P.~L. Bartlett and S.~Mendelson, Rademacher and Gaussian
+complexities: risk bounds and structural results, \emph{J. Mach. Learn. Res.}
+3 (2002), 463--482.
+
+\bibitem{BL23} S.~Basu and A.~Lerario, Hausdorff approximations and volume of
+tubes of singular algebraic sets, \emph{Math. Ann.} 387 (2023), 79--109.
+
+\bibitem{BCR98} J.~Bochnak, M.~Coste and M.-F. Roy, \emph{Real Algebraic
+Geometry}, Springer, 1998.
+
+\bibitem{BCL06} P.~B\"urgisser, F.~Cucker and M.~Lotz, Smoothed analysis of
+complex conic condition numbers, \emph{J. Math. Pures Appl.} 86 (2006),
+293--309.
+
+\bibitem{BCL08} P.~B\"urgisser, F.~Cucker and M.~Lotz, The probability that a
+slightly perturbed numerical analysis problem is difficult, \emph{Math. Comp.}
+77 (2008), 1559--1583.
+
+\bibitem{Ch89} E.~M. Chirka, \emph{Complex Analytic Sets}, Kluwer, 1989.
+
+\bibitem{CS02} F.~Cucker and S.~Smale, On the mathematical foundations of
+learning, \emph{Bull. Amer. Math. Soc.} 39 (2002), 1--49.
+
+\bibitem{De12} J.-P. Demailly, \emph{Complex Analytic and Differential
+Geometry}, book manuscript, Institut Fourier, 2012, Ch.~III.
+
+\bibitem{DS10} T.-C. Dinh and N.~Sibony, Dynamics in several complex variables:
+endomorphisms of projective spaces and polynomial-like mappings, in
+\emph{Holomorphic Dynamical Systems}, Lecture Notes in Math. 1998, Springer,
+2010; arXiv:0810.0811.
+
+\bibitem{Du67} R.~M. Dudley, The sizes of compact subsets of Hilbert space and
+continuity of Gaussian processes, \emph{J. Funct. Anal.} 1 (1967), 290--330.
+
+\bibitem{Gr87} M.~Gromov, Entropy, homology and semialgebraic geometry (after
+Y.~Yomdin), S\'eminaire Bourbaki, Exp.~663, \emph{Ast\'erisque} 145--146
+(1987), 225--240.
+
+\bibitem{Gr03} M.~Gromov, On the entropy of holomorphic maps, \emph{Enseign.
+Math.} 49 (2003), 217--235 (preprint 1977).
+
+\bibitem{He83} J.~Heintz, Definability and fast quantifier elimination in
+algebraically closed fields, \emph{Theoret. Comput. Sci.} 24 (1983), 239--277.
+
+\bibitem{Iv75} L.~D. Ivanov, \emph{Variations of Sets and Functions} (in
+Russian), Nauka, Moscow, 1975.
+
+\bibitem{Jo48} F.~John, Extremum problems with inequalities as subsidiary
+conditions, in \emph{Studies and Essays Presented to R.~Courant}, Interscience,
+1948, 187--204.
+
+\bibitem{KTB19} J.~Kileel, M.~Trager and J.~Bruna, On the expressive power of
+deep polynomial neural networks, \emph{NeurIPS} 32 (2019).
+
+\bibitem{KT59} A.~N. Kolmogorov and V.~M. Tikhomirov, $\varepsilon$-entropy and
+$\varepsilon$-capacity of sets in function spaces, \emph{Uspekhi Mat. Nauk}
+14 (1959), no.~2, 3--86.
+
+\bibitem{Le57} P.~Lelong, Int\'egration sur un ensemble analytique complexe,
+\emph{Bull. Soc. Math. France} 85 (1957), 239--262.
+
+\bibitem{Lo15} M.~Lotz, On the volume of tubular neighborhoods of real
+algebraic varieties, \emph{Proc. Amer. Math. Soc.} 143 (2015), 1875--1889.
+
+\bibitem{MSMTK25} G.~L. Marchetti, V.~Shahverdi, S.~Mereta, M.~Trager and
+K.~Kohn, Algebra unveils deep learning -- an invitation to neuroalgebraic
+geometry, \emph{ICML} 2025; arXiv:2501.18915.
+
+\bibitem{Mi64} J.~Milnor, On the Betti numbers of real varieties, \emph{Proc.
+Amer. Math. Soc.} 15 (1964), 275--280.
+
+\bibitem{PO49} I.~G. Petrovskii and O.~A. Oleinik, On the topology of real
+algebraic surfaces, \emph{Izv. Akad. Nauk SSSR Ser. Mat.} 13 (1949), 389--402.
+
+\bibitem{SMK25} V.~Shahverdi, G.~L. Marchetti and K.~Kohn, On the geometry and
+optimization of polynomial convolutional networks, \emph{AISTATS} 2025.
+
+\bibitem{St64} W.~Stoll, The growth of the area of a transcendental analytic
+set I, II, \emph{Math. Ann.} 156 (1964).
+
+\bibitem{Th65} R.~Thom, Sur l'homologie des vari\'et\'es alg\'ebriques
+r\'eelles, in \emph{Differential and Combinatorial Topology}, Princeton Univ.
+Press, 1965.
+
+\bibitem{Th67} P.~R. Thie, The Lelong number of a point of a complex analytic
+set, \emph{Math. Ann.} 172 (1967), 269--312.
+
+\bibitem{Vi55} A.~G. Vitushkin, \emph{On Multidimensional Variations} (in
+Russian), Gostekhizdat, Moscow, 1955.
+
+\bibitem{We39} H.~Weyl, On the volume of tubes, \emph{Amer. J. Math.} 61
+(1939), 461--472.
+
+\bibitem{Wo93} R.~Wongkew, Volumes of tubular neighbourhoods of real algebraic
+varieties, \emph{Pacific J. Math.} 159 (1993), 177--184.
+
+\bibitem{Yo87} Y.~Yomdin, Volume growth and entropy, \emph{Israel J. Math.} 57
+(1987), 285--300; $C^k$-resolution of semialgebraic mappings, \emph{ibid.},
+301--317.
+
+\bibitem{YC04} Y.~Yomdin and G.~Comte, \emph{Tame Geometry with Application in
+Smooth Analysis}, Lecture Notes in Math. 1834, Springer, 2004.
+
+\bibitem{ZK23} Y.~Zhang and J.~Kileel, Covering number of real algebraic
+varieties and beyond: improved bounds and applications, arXiv:2311.05116, 2023.
+
+\end{thebibliography}
+
+\end{document}
