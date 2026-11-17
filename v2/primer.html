@@ -287,7 +287,7 @@
       <p>Since $r \ge 2$, every polynomial map has degree at most $r^{L-1}$ for $L$ large enough, so the claim follows from Theorem 13.</p>
     </details>
 
-    <p>Over $\K = \R$, together with the Weierstrass approximation theorem, this shows that MLPs with a polynomial activation of degree at least $2$ are universal approximators, provided that the depth is allowed to grow.</p>
+    <p>Over $\K = \R$, together with the Weierstrass approximation theorem, this shows that MLPs with a polynomial activation of degree at least $2$ are universal approximators, provided that the depth is allowed to grow. Weierstrass-type theorems hold for many function spaces and norms beyond the uniform norm on continuous functions, such as $L^p$ and Sobolev spaces, each with its own error bounds (<a href="#pinkus2005density">Pinkus, 2005</a>; <a href="#devore1993constructive">DeVore and Lorentz, 1993</a>).</p>
   </details>
 
   <details class="section">
@@ -423,6 +423,31 @@
     <div class="bend">
       <p>Equivariant parameters are special. The $\theta$ for which $f_\theta$ is $G$-equivariant typically form a proper Zariski-closed subset of $\Theta$, which may miss the dense open subset where the model is identifiable.</p>
     </div>
+
+    <p>We conclude by describing the fibers of MLPs (<a href="#ex-perceptrons">Example 4</a>). They always contain the following parameters. Permuting the neurons of a hidden layer $j$, i.e., the rows of $W_j$ and $b_j$ and, accordingly, the columns of $W_{j+1}$, does not change $f_\theta$. Neither does rescaling a hidden neuron by $\lambda \in \Sigma$ (<a href="#ex-subnetworks">Example 9</a>), i.e., multiplying its incoming weights and bias by $\lambda$ and its outgoing weights by $c^{-1}$, where $\sigma(\lambda t) = c\, \sigma(t)$. We say that $\theta$ is <em>identifiable</em> if every parameter in its fiber is obtained from $\theta$ by such permutations and rescalings.</p>
+
+    <p>To show that, outside of subnetworks, the fibers contain no other parameters, we need the following notion. The resulting theorem generalizes Corollary 4.1 of <a href="#kohn2026linear">Kohn et al. (2026)</a>, whose proof we follow.</p>
+
+    <div class="definition" id="def-regular-map">
+      <p><span class="label">Definition 22</span> (Regular map). Let $A$ be a set and $W$ a vector space. A map $g \colon A \to W$ is <em>$s$-regular</em> if, for all $k \le s$ and all pairwise distinct $a_1, \ldots, a_k \in A$, the vectors $g(a_1), \ldots, g(a_k)$ are linearly independent (<a href="#borsuk1957independent">Borsuk, 1957</a>).</p>
+    </div>
+
+    <div class="theorem" id="thm-mlp-identifiability">
+      <p><span class="label">Theorem 23.</span> Consider an MLP with $L \ge 2$ layers, vanishing biases, and activation $\sigma \in \K[t]$ of degree $r$, with $\sigma(0) = 0$. Let $\overline{d} = \max\{d_1, \ldots, d_{L-1}\}$, and let $P$ be a set of representatives of the $\Sigma$-orbits of the nonzero polynomials $p \in \K[x_1, \ldots, x_{\din}]$ of degree at most $r^{L-2}$ with $p(0) = 0$. If the map $P \to \K[x_1, \ldots, x_{\din}]$, $p \mapsto \sigma \circ p$, is $2\overline{d}$-regular, then $\theta \in \Theta$ is identifiable if and only if no neuron is inactive or redundant at $\theta$.</p>
+    </div>
+
+    <details class="proof">
+      <summary>Proof.</summary>
+      <p>If a neuron is inactive or redundant, we can remove it as in Example 9, i.e., set its incoming and outgoing weights to zero, without changing $f_\theta$; note that, since $\sigma(0) = 0$, a neuron with vanishing incoming weights outputs $0$. This changes the numbers of vanishing rows and columns of the matrices $W_j$, which are invariant under permutations and rescalings, unless both weights vanish already, in which case we make the outgoing weights nonzero instead. Hence, $\theta$ is not identifiable.</p>
+      <p>Conversely, assume that no neuron is inactive or redundant at $\theta$, and note that the assumption on $\sigma$ also holds for fewer layers and narrower hidden layers. Let $h^{(j)}$ be the vector of activations of layer $j$, with $h^{(0)} = x$. By induction on $j < L$, the coordinates of $h^{(j)}$ are linearly independent: those of $W_{j+1} h^{(j)}$, the pre-activations of layer $j + 1$, are then nonzero polynomials vanishing at $0$, of degree at most $r^j$, which lie in distinct $\Sigma$-orbits, since the rows of $W_{j+1}$ do, so that their images under $\sigma$ are linearly independent by assumption.</p>
+      <p>We now show that $\theta$ is identifiable, by induction on $L$, the case $L = 1$ being trivial. Let $\theta' = (V_1, \ldots, V_L)$ be in the fiber of $\theta$, and let $p_i$ and $q_i$ be the pre-activations of the $i$-th neuron of layer $L - 1$ at $\theta$ and $\theta'$, respectively. Then
+      $$
+      \sum_i W_L[:,i]\; \sigma \circ p_i = \sum_i V_L[:,i]\; \sigma \circ q_i,
+      $$
+      where, by the above, the $p_i$ are nonzero and lie in distinct $\Sigma$-orbits, and the columns $W_L[:,i]$ are nonzero. Since $\sigma \circ (\lambda p)$ is a multiple of $\sigma \circ p$ for $\lambda \in \Sigma$, the assumption implies that, once the terms with $q_i = 0$ are discarded and those in the same $\Sigma$-orbit are combined, all the coefficients vanish. Hence, every $p_i$ lies in the orbit of some $q_{\pi(i)}$, where $\pi$ is injective, hence a permutation, and $W_L[:,i] = c\, V_L[:,\pi(i)]$, where $\sigma \circ q_{\pi(i)} = c\, \sigma \circ p_i$. Permuting and rescaling the neurons of layer $L - 1$ at $\theta'$, we may thus assume that $q_i = p_i$ and $V_L = W_L$. Then $(W_1, \ldots, W_{L-1})$ and $(V_1, \ldots, V_{L-1})$ are parameters of an MLP with $L - 1$ layers that compute the same function $x \mapsto (p_1, \ldots, p_{d_{L-1}})$, and no neuron is inactive or redundant at the former. By induction, they differ by permutations and rescalings, and so do $\theta$ and $\theta'$.</p>
+    </details>
+
+    <p>The assumption of Theorem 23 holds for monomials and for generic polynomials of large degree $r = \Omega(\overline{d}^2)$. For $\sigma(t) = t^r$, we have $\Sigma = \K \setminus \{0\}$, and the assumption states that the $r$-th powers of at most $s$ pairwise non-proportional polynomials are linearly independent. This follows from the Newman–Slater theorem, i.e., Fermat's last theorem for polynomials (<a href="#finkel2025activation">Finkel et al., 2025</a>). For a generic $\sigma$ with $\sigma(0) = 0$, we have $\Sigma = \{1\}$, and the assumption has been proven by <a href="#chang2026linear">Chang and Hendi (2026)</a>, as conjectured by <a href="#kohn2026linear">Kohn et al. (2026)</a>.</p>
   </details>
 
   <details class="section">
@@ -433,7 +458,7 @@
     <p>In machine learning, the role of singularities has been highlighted by <em>singular learning theory</em> (<a href="#watanabe2009algebraic">Watanabe, 2009</a>), according to which they bias the learning process. One way to see this is via Voronoi cells.</p>
 
     <div class="definition" id="def-voronoi-cell">
-      <p><span class="label">Definition 22</span> (Voronoi cell). Let $V$ be real, of dimension $N$, with a scalar product, and let $Z \subseteq V$. The <em>Voronoi cell</em> of $f \in Z$ is
+      <p><span class="label">Definition 24</span> (Voronoi cell). Let $V$ be real, of dimension $N$, with a scalar product, and let $Z \subseteq V$. The <em>Voronoi cell</em> of $f \in Z$ is
       $$
       \mathrm{Vor}_Z(f) = \{ u \in V : \|u - f\| \le \|u - q\| \text{ for all } q \in Z \},
       $$
@@ -474,7 +499,18 @@
       </div>
     </figure>
 
-    <p>In neural networks, the singularities of $\M$ usually correspond to subnetworks (<a href="#ex-subnetworks">Example 9</a>). The relation between subnetworks and singularities is intuitive: both are degenerate objects, from the neural and the geometric perspective, respectively.</p>
+    <p>In neural networks, the singularities of $\M$ often arise from subnetworks (<a href="#ex-subnetworks">Example 9</a>). The relation between subnetworks and singularities is intuitive: both are degenerate objects, from the neural and the geometric perspective, respectively. For MLPs, the link goes through the differential $d\varphi_\theta$, whose image consists of tangent vectors in $T_{f_\theta} \overline{\M}$. For subnetworks, as shown below, as $\theta$ varies in the fiber $\varphi^{-1}(f_\theta)$, these images span a space of dimension larger than $\dim \M$ (cf. <a href="#shahverdi2026learning">Shahverdi et al., 2026</a>, Theorem 4.2).</p>
+
+    <div class="theorem" id="thm-subnetworks-singular">
+      <p><span class="label">Theorem 25.</span> Let $\K$ have characteristic $0$, let $\sigma \in \K[t]$ have degree $r \ge 1$, and consider an MLP (<a href="#ex-perceptrons">Example 4</a>). Let $0 < j < L$, let $e = \min\{d_0, \ldots, d_{j-1}\}$, and let $N = \binom{e + r}{r}$, multiplied by $\dout$ if $j = L - 1$. If $\dim \M < N$, then $f_\theta$ is a singular point of $\overline{\M}$ for every $\theta$ at which some neuron of layer $j$ is inactive or redundant. In particular, if $r \ge \dim \M$, the functions of all subnetworks are singular points of $\overline{\M}$.</p>
+    </div>
+
+    <details class="proof">
+      <summary>Proof.</summary>
+      <p>If the $i$-th neuron of layer $j$ is inactive or redundant, then $f_\theta$ is also computed by a parameter at which its outgoing weights $W_{j+1}[:,i]$ vanish: if $W_j[i,:] = 0$, its constant output $\sigma(b_j[i])$ can be absorbed by $b_{j+1}$, and if it is redundant, its output is $c$ times that of the $k$-th neuron, where $\sigma(\lambda t) = c\, \sigma(t)$, which can be absorbed by $W_{j+1}[:,k]$. Since the singular locus of $\overline{\M}$ is Zariski closed, it then suffices to consider a generic $\theta$ in the linear subspace $S \subseteq \Theta$ where $W_{j+1}[:,i] = 0$.</p>
+      <p>For $\theta \in S$, the neuron does not affect $f_\theta$: replacing its incoming weights and bias by any $u \in \K^{d_{j-1}}$ and $b \in \K$ yields a parameter in the fiber of $f_\theta$, at which the derivative of the output with respect to $W_{j+1}[k,i]$ is $\lambda_k(x)\, \sigma(u \cdot h_\theta(x) + b)$. Here, $h_\theta \colon \K^{\din} \to \K^{d_{j-1}}$ is computed by the first $j - 1$ layers ($h_\theta(x) = x$ if $j = 1$), and $\lambda_k$, the derivative of the output with respect to the $k$-th pre-activation of layer $j + 1$, does not depend on $(u, b)$. Hence, $T_{f_\theta} \overline{\M}$ contains $\lambda_k E_\theta$, where $E_\theta$ is the span of the functions $\sigma(u \cdot h_\theta(x) + b)$. If $j = L - 1$, $\lambda_k$ is the $k$-th standard basis vector of $\K^{\dout}$, so that $T_{f_\theta} \overline{\M}$ contains $E_\theta^{\dout}$. Otherwise, $\lambda_k$ is a product of the matrices $W_L, \ldots, W_{j+2}$ and of diagonal matrices with entries $\sigma'(\cdot)$, applied to the $k$-th standard basis vector, hence nonzero for generic $\theta$, and multiplication by $\lambda_k$ is injective, since $\K[x]$ is a domain. In both cases, $\dim T_{f_\theta} \overline{\M} \ge N > \dim \M$ as soon as $\dim E_\theta \ge \binom{e + r}{r}$.</p>
+      <p>By <a href="#lem-translates">Lemma 12</a>, with $t = u \cdot h_\theta(x)$, $E_\theta$ contains the powers $(u \cdot h_\theta(x))^s$ for $s \le r$, hence, by the polarization identity in the proof of <a href="#thm-fixed-depth">Theorem 13</a>, all the polynomials of degree at most $r$ in $h_\theta(x)$. For generic $\theta$, the Jacobian matrix of $h_\theta$, a product of the matrices $W_{j-1}, \ldots, W_1$ and of diagonal matrices with entries $\sigma'(\cdot)$, has rank $e$ at generic $x$, so that, up to relabeling, the first $e$ coordinates $h_1, \ldots, h_e$ of $h_\theta$ have a Jacobian matrix $J$ of rank $e$. Then no nonzero polynomial $q$ satisfies $q(h_1, \ldots, h_e) = 0$: otherwise, for such a $q$ of minimal degree, the chain rule gives $(\nabla q)(h_1, \ldots, h_e)\, J = 0$, hence $(\nabla q)(h_1, \ldots, h_e) = 0$, so that $\nabla q = 0$ by minimality, and $q$ is a nonzero constant. Thus, the $\binom{e + r}{r}$ monomials of degree at most $r$ in $h_1, \ldots, h_e$ are linearly independent elements of $E_\theta$. Finally, $N \ge \binom{1 + r}{r} = r + 1$ gives the last claim.</p>
+    </details>
   </details>
 
   <details class="section">
@@ -483,7 +519,7 @@
     <p>As we have seen in <a href="#learning">Learning</a>, a model learns by minimizing a loss $L$ over $\M$ through its parameters, i.e., by minimizing $L \circ \varphi$ over $\Theta$. We now look at the dynamics of this process. Consider an algebraic model over $\K = \R$, fix a scalar product on $V$ and one on $\Theta = \R^{\dpar}$ (e.g., the standard one), and let $L \colon V \to \R$ be differentiable, e.g., the MSE. Gradients are taken with respect to these scalar products, and $d\varphi_\theta^* \colon V \to \Theta$ denotes the adjoint of the differential $d\varphi_\theta \colon \Theta \to V$ of the parametrization map at $\theta \in \Theta$.</p>
 
     <div class="definition" id="def-gradient-flow">
-      <p><span class="label">Definition 23</span> (Gradient flow). The <em>gradient flow</em> of the model for the loss $L$ is the differential equation
+      <p><span class="label">Definition 26</span> (Gradient flow). The <em>gradient flow</em> of the model for the loss $L$ is the differential equation
       $$
       \dot\theta(t) = -\nabla (L \circ \varphi)(\theta(t))
       $$
@@ -495,7 +531,7 @@
     <p>The trajectory in function space is governed by the following equation.</p>
 
     <div class="theorem" id="prop-ntk">
-      <p><span class="label">Proposition 24.</span> Along every trajectory of the gradient flow,
+      <p><span class="label">Proposition 27.</span> Along every trajectory of the gradient flow,
       \begin{equation}\label{eq:function-space-flow}
       \dot f(t) = -K_{\theta(t)} \nabla L(f(t)), \qquad K_\theta = d\varphi_\theta\, d\varphi_\theta^* \colon V \to V.
       \end{equation}
@@ -514,7 +550,7 @@
     <p>Quantities that do not change during training are a basic tool to analyze its dynamics. They confine the trajectories to subsets of $\Theta$ determined by the initialization, reducing the effective dimension of the dynamics, and influencing the solution eventually reached.</p>
 
     <div class="definition" id="def-conserved-quantity">
-      <p><span class="label">Definition 25</span> (Conserved quantity). A <em>conserved quantity</em> of the model is a differentiable function $Q \colon \Theta \to \R$ such that $\nabla Q(\theta) \in \ker d\varphi_\theta$ for all $\theta \in \Theta$.</p>
+      <p><span class="label">Definition 28</span> (Conserved quantity). A <em>conserved quantity</em> of the model is a differentiable function $Q \colon \Theta \to \R$ such that $\nabla Q(\theta) \in \ker d\varphi_\theta$ for all $\theta \in \Theta$.</p>
     </div>
 
     <p>Since the gradient flow is orthogonal to $\ker d\varphi_\theta$, a conserved quantity $Q$ is constant along every trajectory, whatever the loss: $\frac{d}{dt} Q(\theta(t)) = \langle \nabla Q(\theta(t)), \dot\theta(t) \rangle = 0$. Conversely, the functions that are constant along the trajectories for every loss are precisely the conserved quantities (<a href="#marcotte2023abide">Marcotte et al., 2023</a>). Hence, trajectories never leave the level sets of conserved quantities. Since $\ker d\varphi_\theta$ is the tangent space of the fiber for generic $\theta$, non-constant conserved quantities exist only if the generic fiber is positive-dimensional, i.e., if $\dim \M < \dpar$. Such fibers often come from continuous parameter symmetries: if a Lie group $G$ acts linearly on $\Theta$ with $f_{g \cdot \theta} = f_\theta$, its orbits lie in the fibers (as in <a href="#prop-equivariance-fibers">Proposition 21</a>), so that, differentiating, $\xi \cdot \theta \in \ker d\varphi_\theta$ for $\xi$ in its Lie algebra $\mathfrak{g}$. If $\xi$ acts by a self-adjoint operator, then $\xi \cdot \theta$ is the gradient of $\mu_\xi(\theta) = \frac{1}{2} \langle \xi \cdot \theta, \theta \rangle$, which is therefore conserved. Hence, every trajectory stays in the real algebraic variety $\mu^{-1}(\mu(\theta(0)))$, where the quadratic map $\mu \colon \Theta \to \mathfrak{p}^*$ collects the $\mu_\xi$ for $\xi$ in the subspace $\mathfrak{p} \subseteq \mathfrak{g}$ of such elements. This is an analogue of Noether's theorem for gradient flows (<a href="#kunin2021neural">Kunin et al., 2021</a>), with the scalar product in place of the symplectic form: accordingly, $\mu$, characterized by $\nabla \mu_\xi(\theta) = \xi \cdot \theta$, is the analogue of a moment map, called a <em>gradient map</em> (<a href="#heinzner2008stratifications">Heinzner et al., 2008</a>). Unlike in the symplectic case, however, symmetries preserving the scalar product, i.e., generated by skew-adjoint $\xi$, such as rotations, yield no conserved quantity in this way; see <a href="#nguyen2026parameter">Nguyen and Montúfar (2026)</a> for the precise relation between symmetries and conservation laws.</p>
@@ -607,13 +643,17 @@
       <li id="bartlett2002rademacher">Peter L. Bartlett, Shahar Mendelson. <cite>Rademacher and Gaussian Complexities: Risk Bounds and Structural Results.</cite> Journal of Machine Learning Research 3, 463–482, 2002. <a href="https://www.jmlr.org/papers/v3/bartlett02a.html">jmlr.org/papers/v3/bartlett02a</a></li>
       <li id="basu2023hausdorff">Saugata Basu, Antonio Lerario. <cite>Hausdorff Approximations and Volume of Tubes of Singular Algebraic Sets.</cite> Mathematische Annalen 387, 79–109, 2023. <a href="https://doi.org/10.1007/s00208-022-02458-w">doi:10.1007/s00208-022-02458-w</a></li>
       <li id="bochnak1998real">Jacek Bochnak, Michel Coste, Marie-Françoise Roy. <cite>Real Algebraic Geometry.</cite> Springer, 1998. <a href="https://doi.org/10.1007/978-3-662-03718-8">doi:10.1007/978-3-662-03718-8</a></li>
+      <li id="borsuk1957independent">Karol Borsuk. <cite>On the $k$-Independent Subsets of the Euclidean Space and of the Hilbert Space.</cite> Bulletin de l'Académie Polonaise des Sciences, Classe III, 5, 351–356, 1957.</li>
       <li id="bronstein2021geometric">Michael M. Bronstein, Joan Bruna, Taco Cohen, Petar Veličković. <cite>Geometric Deep Learning: Grids, Groups, Graphs, Geodesics, and Gauges.</cite> Preprint, 2021. <a href="https://arxiv.org/abs/2104.13478">arXiv:2104.13478</a></li>
+      <li id="chang2026linear">Xiaotian Chang, Yacoub Hendi. <cite>Linear Independence of Polynomial Compositions with Bounded Input Degree.</cite> Preprint, 2026. <a href="https://arxiv.org/abs/2610.20825">arXiv:2610.20825</a></li>
       <li id="chirka1989complex">Evgenii M. Chirka. <cite>Complex Analytic Sets.</cite> Kluwer, 1989. <a href="https://doi.org/10.1007/978-94-009-2366-9">doi:10.1007/978-94-009-2366-9</a></li>
       <li id="cifuentes2022voronoi">Diego Cifuentes, Kristian Ranestad, Bernd Sturmfels, Madeleine Weinstein. <cite>Voronoi Cells of Varieties.</cite> Journal of Symbolic Computation 109, 351–366, 2022. <a href="https://doi.org/10.1016/j.jsc.2020.07.009">doi:10.1016/j.jsc.2020.07.009</a></li>
       <li id="cruttwell2022categorical">Geoffrey S. H. Cruttwell, Bruno Gavranović, Neil Ghani, Paul Wilson, Fabio Zanasi. <cite>Categorical Foundations of Gradient-Based Learning.</cite> European Symposium on Programming (ESOP), 2022. <a href="https://arxiv.org/abs/2103.01931">arXiv:2103.01931</a></li>
       <li id="cucker2002mathematical">Felipe Cucker, Steve Smale. <cite>On the Mathematical Foundations of Learning.</cite> Bulletin of the American Mathematical Society 39(1), 1–49, 2002. <a href="https://doi.org/10.1090/S0273-0979-01-00923-5">doi:10.1090/S0273-0979-01-00923-5</a></li>
       <li id="cybenko1989approximation">George Cybenko. <cite>Approximation by Superpositions of a Sigmoidal Function.</cite> Mathematics of Control, Signals and Systems 2(4), 303–314, 1989. <a href="https://doi.org/10.1007/BF02551274">doi:10.1007/BF02551274</a></li>
+      <li id="devore1993constructive">Ronald A. DeVore, George G. Lorentz. <cite>Constructive Approximation.</cite> Grundlehren der mathematischen Wissenschaften 303, Springer, 1993. <a href="https://doi.org/10.1007/978-3-662-02888-9">doi:10.1007/978-3-662-02888-9</a></li>
       <li id="dudley1967sizes">Richard M. Dudley. <cite>The Sizes of Compact Subsets of Hilbert Space and Continuity of Gaussian Processes.</cite> Journal of Functional Analysis 1(3), 290–330, 1967. <a href="https://doi.org/10.1016/0022-1236(67)90017-1">doi:10.1016/0022-1236(67)90017-1</a></li>
+      <li id="finkel2025activation">Bella Finkel, Jose Israel Rodriguez, Chenxi Wu, Thomas Yahl. <cite>Activation Degree Thresholds and Expressiveness of Polynomial Neural Networks.</cite> Algebraic Statistics, 2025. <a href="https://arxiv.org/abs/2408.04569">arXiv:2408.04569</a></li>
       <li id="fong2019backprop">Brendan Fong, David I. Spivak, Rémy Tuyéras. <cite>Backprop as Functor: A Compositional Perspective on Supervised Learning.</cite> ACM/IEEE Symposium on Logic in Computer Science (LICS), 2019. <a href="https://arxiv.org/abs/1711.10455">arXiv:1711.10455</a></li>
       <li id="fulton1998intersection">William Fulton. <cite>Intersection Theory.</cite> 2nd edition, Springer, 1998. <a href="https://doi.org/10.1007/978-1-4612-1700-8">doi:10.1007/978-1-4612-1700-8</a></li>
       <li id="gromov2003entropy">Mikhail Gromov. <cite>On the Entropy of Holomorphic Maps.</cite> L'Enseignement Mathématique 49, 217–235, 2003 (preprint 1977).</li>
@@ -624,6 +664,7 @@
       <li id="jacot2018neural">Arthur Jacot, Franck Gabriel, Clément Hongler. <cite>Neural Tangent Kernel: Convergence and Generalization in Neural Networks.</cite> Advances in Neural Information Processing Systems (NeurIPS), 2018. <a href="https://arxiv.org/abs/1806.07572">arXiv:1806.07572</a></li>
       <li id="jacot2021saddle">Arthur Jacot, François Ged, Berfin Şimşek, Clément Hongler, Franck Gabriel. <cite>Saddle-to-Saddle Dynamics in Deep Linear Networks: Small Initialization Training, Symmetry, and Sparsity.</cite> Preprint, 2021. <a href="https://arxiv.org/abs/2106.15933">arXiv:2106.15933</a></li>
       <li id="kileel2019expressive">Joe Kileel, Matthew Trager, Joan Bruna. <cite>On the Expressive Power of Deep Polynomial Neural Networks.</cite> Advances in Neural Information Processing Systems (NeurIPS), 2019. <a href="https://arxiv.org/abs/1905.12207">arXiv:1905.12207</a></li>
+      <li id="kohn2026linear">Kathlén Kohn, Giovanni Luca Marchetti, Alex Massarenti, Massimiliano Mella. <cite>Linear Independence of Polynomial Compositions and Identifiability of Deep Neural Networks.</cite> Preprint, 2026. <a href="https://arxiv.org/abs/2608.27113">arXiv:2608.27113</a></li>
       <li id="kolmogorov1959entropy">Andrey N. Kolmogorov, Vladimir M. Tikhomirov. <cite>ε-Entropy and ε-Capacity of Sets in Function Spaces.</cite> Uspekhi Matematicheskikh Nauk 14(2), 3–86, 1959 (in Russian). <a href="https://www.mathnet.ru/eng/rm7289">mathnet.ru/eng/rm7289</a></li>
       <li id="kunin2021neural">Daniel Kunin, Javier Sagastuy-Brena, Surya Ganguli, Daniel L. K. Yamins, Hidenori Tanaka. <cite>Neural Mechanics: Symmetry and Broken Conservation Laws in Deep Learning Dynamics.</cite> International Conference on Learning Representations (ICLR), 2021. <a href="https://arxiv.org/abs/2012.04728">arXiv:2012.04728</a></li>
       <li id="kunin2025alternating">Daniel Kunin, Giovanni Luca Marchetti, Feng Chen, Dhruva Karkada, James B. Simon, Michael R. DeWeese, Surya Ganguli, Nina Miolane. <cite>Alternating Gradient Flows: A Theory of Feature Learning in Two-layer Neural Networks.</cite> Advances in Neural Information Processing Systems (NeurIPS), 2025. <a href="https://arxiv.org/abs/2506.06489">arXiv:2506.06489</a></li>
@@ -634,8 +675,10 @@
       <li id="nguyen2026parameter">Khang Nguyen, Guido Montúfar. <cite>On Parameter Symmetries and Conservation Laws in Gradient Flow.</cite> Preprint, 2026. <a href="https://arxiv.org/abs/2609.34549">arXiv:2609.34549</a></li>
       <li id="pesme2023saddle">Scott Pesme, Nicolas Flammarion. <cite>Saddle-to-Saddle Dynamics in Diagonal Linear Networks.</cite> Advances in Neural Information Processing Systems (NeurIPS), 2023. <a href="https://arxiv.org/abs/2304.00488">arXiv:2304.00488</a></li>
       <li id="pinkus1999approximation">Allan Pinkus. <cite>Approximation Theory of the MLP Model in Neural Networks.</cite> Acta Numerica 8, 143–195, 1999. <a href="https://doi.org/10.1017/S0962492900002919">doi:10.1017/S0962492900002919</a></li>
+      <li id="pinkus2005density">Allan Pinkus. <cite>Density in Approximation Theory.</cite> Surveys in Approximation Theory 1, 1–45, 2005. <a href="https://arxiv.org/abs/math/0501328">arXiv:math/0501328</a></li>
       <li id="shahverdi2025geometry">Vahid Shahverdi, Giovanni Luca Marchetti, Kathlén Kohn. <cite>On the Geometry and Optimization of Polynomial Convolutional Networks.</cite> International Conference on Artificial Intelligence and Statistics (AISTATS), 2025. <a href="https://arxiv.org/abs/2410.00722">arXiv:2410.00722</a></li>
       <li id="shahverdi2026identifiable">Vahid Shahverdi, Giovanni Luca Marchetti, Georg Bökman, Kathlén Kohn. <cite>Identifiable Equivariant Networks are Layerwise Equivariant.</cite> International Conference on Machine Learning (ICML), 2026. <a href="https://arxiv.org/abs/2601.21645">arXiv:2601.21645</a></li>
+      <li id="shahverdi2026learning">Vahid Shahverdi, Giovanni Luca Marchetti, Kathlén Kohn. <cite>Learning on a Razor's Edge: Identifiability and Singularity of Polynomial Neural Networks.</cite> International Conference on Learning Representations (ICLR), 2026. <a href="https://arxiv.org/abs/2505.11846">arXiv:2505.11846</a></li>
       <li id="stoll1964growth">Wilhelm Stoll. <cite>The Growth of the Area of a Transcendental Analytic Set. I, II.</cite> Mathematische Annalen 156, 47–78 and 144–170, 1964. <a href="https://doi.org/10.1007/BF01359980">doi:10.1007/BF01359980</a>, <a href="https://doi.org/10.1007/BF01359928">doi:10.1007/BF01359928</a></li>
       <li id="thie1967lelong">Paul R. Thie. <cite>The Lelong Number of a Point of a Complex Analytic Set.</cite> Mathematische Annalen 172(4), 269–312, 1967. <a href="https://doi.org/10.1007/BF01351593">doi:10.1007/BF01351593</a></li>
       <li id="vitushkin1955variations">Anatoli G. Vitushkin. <cite>On Multidimensional Variations.</cite> Gostekhizdat, Moscow, 1955 (in Russian).</li>
