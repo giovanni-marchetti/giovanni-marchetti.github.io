@@ -12,6 +12,7 @@
 <script src="assets/mathjax-config.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
 <script defer src="assets/sections.js"></script>
+<script defer src="assets/toggles.js"></script>
 <script defer src="neuromanifold/flat.js"></script>
 </head>
 <body>
@@ -93,10 +94,16 @@
       $$
       where $W_i \in \K^{d_i \times d_{i-1}}$ and $b_i \in \K^{d_i}$, for widths $d_0 = \din, d_1, \ldots, d_L = \dout$. Since compositions of algebraic models are algebraic, an MLP with polynomial activation is algebraic.</p>
       <!-- Static svg in the style of the network on the home page (see .mlp-figure in assets/style.css). It reads from
-           right to left: inputs on the right, the last layer on the left. The labels are placed in % of the figure. -->
+           right to left: inputs on the right, the last layer on the left. The labels are placed in % of the figure.
+           The buttons under it (assets/toggles.js) set data-skip and data-sharing on the figure. "Skip connections"
+           shows the orange arrows of Example 6 (.nm-on-skip), over the second layer and over the last one, and hides
+           the activations (.nm-off-skip); the first layer has no skip connection, since its widths differ. "Weight
+           sharing" makes the first layer the convolution of Example 5, with kernel (w_1, w_2): as for equal segments
+           in geometry, orange ticks mark the edges of w_1 with one stroke and those of w_2 with two (.nm-on-sharing),
+           and the other two edges (.nm-w0), drawn first, fade out. -->
       <figure class="nm-figure mlp-figure">
         <div class="nm-stage">
-          <svg viewBox="0 0 400 210" role="img" aria-label="A multilayer perceptron, read from right to left: three inputs, then layers of two neurons. The first layer is labelled W_1 + b_1 and the last W_L + b_L; the activation sigma acts on the first two layers.">
+          <svg viewBox="0 0 400 210" role="img" aria-label="A multilayer perceptron, read from right to left: three inputs, then layers of two neurons. The first layer is labelled W_1 + b_1 and the last W_L + b_L; the activation sigma acts on the first two layers. The buttons below add skip connections, as orange arrows labelled id that bypass the second layer and the last one, and weight sharing, which makes the first layer a convolution: each of its neurons reads two neighbouring inputs, and edges with the same weight carry the same number of orange ticks.">
             <line class="nm-edge" x1="40" y1="82" x2="110" y2="82"/>
             <line class="nm-edge" x1="40" y1="82" x2="110" y2="138"/>
             <line class="nm-edge" x1="40" y1="138" x2="110" y2="82"/>
@@ -105,12 +112,14 @@
             <line class="nm-edge" x1="230" y1="82" x2="300" y2="138"/>
             <line class="nm-edge" x1="230" y1="138" x2="300" y2="82"/>
             <line class="nm-edge" x1="230" y1="138" x2="300" y2="138"/>
+            <line class="nm-edge nm-w0" x1="300" y1="82" x2="370" y2="166"/>
+            <line class="nm-edge nm-w0" x1="300" y1="138" x2="370" y2="54"/>
             <line class="nm-edge" x1="300" y1="82" x2="370" y2="54"/>
             <line class="nm-edge" x1="300" y1="82" x2="370" y2="110"/>
-            <line class="nm-edge" x1="300" y1="82" x2="370" y2="166"/>
-            <line class="nm-edge" x1="300" y1="138" x2="370" y2="54"/>
             <line class="nm-edge" x1="300" y1="138" x2="370" y2="110"/>
             <line class="nm-edge" x1="300" y1="138" x2="370" y2="166"/>
+            <path class="nm-tick nm-extra nm-on-sharing" d="M333 62.9L337 73.1M333 118.9L337 129.1"/>
+            <path class="nm-tick nm-extra nm-on-sharing" d="M335 90.1L330.9 100.3M339.1 91.7L335 101.9M335 146.1L330.9 156.3M339.1 147.7L335 157.9"/>
             <circle class="nm-node" cx="40" cy="82" r="6"/>
             <circle class="nm-node" cx="40" cy="138" r="6"/>
             <circle class="nm-node" cx="110" cy="82" r="6"/>
@@ -125,13 +134,21 @@
             <circle class="nm-node" cx="162" cy="110" r="1.6"/>
             <circle class="nm-node" cx="170" cy="110" r="1.6"/>
             <circle class="nm-node" cx="178" cy="110" r="1.6"/>
-            <g class="nm-arrow"><path class="nm-shaft" d="M235.8 58.9A9 9 0 1 0 221.1 53.6"/><path class="nm-head" d="M222.2 59.5L218.5 54L223.8 53.1Z"/></g>
-            <g class="nm-arrow"><path class="nm-shaft" d="M305.8 58.9A9 9 0 1 0 291.1 53.6"/><path class="nm-head" d="M292.2 59.5L288.5 54L293.8 53.1Z"/></g>
+            <g class="nm-arrow nm-off-skip"><path class="nm-shaft" d="M235.8 58.9A9 9 0 1 0 221.1 53.6"/><path class="nm-head" d="M222.2 59.5L218.5 54L223.8 53.1Z"/></g>
+            <g class="nm-arrow nm-off-skip"><path class="nm-shaft" d="M305.8 58.9A9 9 0 1 0 291.1 53.6"/><path class="nm-head" d="M292.2 59.5L288.5 54L293.8 53.1Z"/></g>
+            <g class="nm-arrow nm-accent nm-extra nm-on-skip"><path class="nm-shaft" d="M295.8 72.9Q266.4 13.9 237 67.6"/><path class="nm-head" d="M234.7 72L235.1 65.5L239.9 68Z"/></g>
+            <g class="nm-arrow nm-accent nm-extra nm-on-skip"><path class="nm-shaft" d="M105.8 72.9Q76.4 13.9 47 67.6"/><path class="nm-head" d="M44.7 72L45.1 65.5L49.9 68Z"/></g>
           </svg>
-          <span class="nm-label" style="left: 57.5%; top: 14.8%">$\sigma$</span>
-          <span class="nm-label" style="left: 75%; top: 14.8%">$\sigma$</span>
+          <span class="nm-label nm-off-skip" style="left: 57.5%; top: 14.8%">$\sigma$</span>
+          <span class="nm-label nm-off-skip" style="left: 75%; top: 14.8%">$\sigma$</span>
+          <span class="nm-label nm-extra nm-on-skip" style="left: 18.8%; top: 14.3%">$\mathrm{id}$</span>
+          <span class="nm-label nm-extra nm-on-skip" style="left: 66.3%; top: 14.3%">$\mathrm{id}$</span>
           <span class="nm-label" style="left: 18.8%; top: 92.4%">$W_L + b_L$</span>
           <span class="nm-label" style="left: 83.8%; top: 92.4%">$W_1 + b_1$</span>
+        </div>
+        <div class="toggles">
+          <button type="button" class="tag" data-toggle="skip" aria-pressed="false">Skip connections</button>
+          <button type="button" class="tag" data-toggle="sharing" aria-pressed="false">Weight sharing</button>
         </div>
       </figure>
       <p>Two cases are of particular interest. In both, the biases vanish: $b_1 = \cdots = b_L = 0$.</p>
@@ -202,7 +219,7 @@
   </details>
 
   <details class="section">
-    <summary><h2 id="learning">Learning</h2></summary>
+    <summary><h2 id="learning">Learning as distance optimization</h2></summary>
 
     <p>Ideally, the goal of machine learning is to approximate a <em>target function</em> $f^* \in V$ by a function in the neuromanifold $\M$. We do not have access to $f^*$: it is a “Platonic” object. This is the setting of <em>supervised learning</em>. Other learning paradigms, such as generative modelling and reinforcement learning, either reduce to it or can be formalized similarly, with some modifications.</p>
 
@@ -289,6 +306,7 @@
 
     <p>Over $\K = \R$, together with the Weierstrass approximation theorem, this shows that MLPs with a polynomial activation of degree at least $2$ are universal approximators, provided that the depth is allowed to grow. Weierstrass-type theorems hold for many function spaces and norms beyond the uniform norm on continuous functions, such as $L^p$ and Sobolev spaces, each with its own error bounds (<a href="#pinkus2005density">Pinkus, 2005</a>; <a href="#devore1993constructive">DeVore and Lorentz, 1993</a>).</p>
 
+    <!--
     <h3 id="approximating-non-polynomial-networks">Approximating non-polynomial networks</h3>
 
     <p>The activations used in practice, such as $\tanh$ or the ReLU $t \mapsto \max\{0, t\}$, are not polynomials, so that the corresponding networks are not algebraic models. By the above, the functions they compute can be approximated, on compact sets, by MLPs with a polynomial activation, of sufficient depth. In fact, there is no need to change the architecture: it suffices to approximate the activation. Let $\sigma \colon \R \to \R$ be continuous. By the Weierstrass approximation theorem, there are polynomials $\sigma_k \in \R[t]$ converging to $\sigma$ uniformly on compact sets: take, e.g., $\sigma_k$ such that $|\sigma_k(t) - \sigma(t)| \le 1/k$ for $|t| \le k$.</p>
@@ -313,6 +331,7 @@
     <div class="bend">
       <p>The approximation is only local: the convergence is uniform on compact sets of inputs and parameters, and this cannot be improved, since a uniform limit of polynomials on the whole of $\R$ is a polynomial. Nor does it extend to derivatives for the ReLU, which is not differentiable at $0$. Moreover, Proposition 15 is about functions, not about invariants: the geometry of the $\M_k$ need not reflect that of $\M$. For instance, the ReLU satisfies $\sigma(\lambda t) = \lambda\, \sigma(t)$ for all $\lambda > 0$, so that multiplying the incoming weights and bias of a hidden neuron by $\lambda$, and its outgoing weights by $\lambda^{-1}$, does not change $f_\theta$: the fibers of the parametrization map of a ReLU network are positive-dimensional. Yet the $\sigma_k$ can be taken generic and of large degree, in which case the fibers of the algebraic models are generically finite (<a href="#thm-mlp-identifiability">Theorem 24</a>).</p>
     </div>
+    -->
   </details>
 
   <details class="section">
@@ -400,11 +419,9 @@
   <details class="section">
     <summary><h2 id="identifiability">Identifiability</h2></summary>
 
-    <p>A classical question about a model is whether the function determines the parameters: given $f \in \M$, is there a unique $\theta \in \Theta$ such that $f_\theta = f$? In statistics, a parametric model is called <em>identifiable</em> when distinct parameters define distinct distributions, which is needed to estimate the parameters consistently from data. In deep learning, identifiability matters for interpreting the weights, for recovering a network's weights by querying its input–output map, and for the geometry of the loss landscape, whose critical points come in families of parameters that compute the same function. In our language, the parameters that compute the same function as $\theta$ form the <em>fiber</em> $\varphi^{-1}(f_\theta)$ of the parametrization map, and identifiability asks for a description of the fibers.</p>
+    <p>A classical question about a model, known as <em>identifiability</em>, is determining the parameters that define the same  function. In our language, such parameters $\theta$ form the <em>fiber</em> $\varphi^{-1}(f_\theta)$ of the parametrization map, and identifiability asks for a description of the fibers. As we shall see, the geometry of the fibers plays a role in several aspects, from expressivity to optimization.</p>
 
     <p>For algebraic models, fibers are well behaved. The <em>degree</em> of $\varphi$ is the degree of its graph $\Gamma_\varphi = \{(\theta, f_\theta) : \theta \in \Theta\} \subseteq \Theta \times V$. Explicitly, $\deg \varphi$ is the number of solutions $\theta \in \Theta$ of $\dpar$ generic equations $\ell_i(\theta) + \ell'_i(f_\theta) = c_i$, where $\ell_i$ and $\ell'_i$ are linear forms on $\Theta$ and $V$, and $c_i \in \K$. By Bézout's theorem, $\deg \varphi \le (\deg_\theta f_\theta)^{\dpar}$, where $\deg_\theta$ denotes the degree in $\theta$.</p>
-
-    <p>The following facts are standard. The statements on the generic fiber follow from the theorem on the dimension of fibers and from generic flatness (<a href="#hartshorne1977algebraic">Hartshorne, 1977</a>, Exercise II.3.22 and Theorems III.9.7 and III.9.9), and the inequality follows from the Bézout inequality (<a href="#fulton1998intersection">Fulton, 1998</a>, Example 8.4.6).</p>
 
     <div class="theorem" id="thm-generic-fiber">
       <p><span class="label">Theorem 20</span> (Generic fiber). There is a dense Zariski-open subset $U \subseteq \overline{\M}$, contained in $\M$, such that the fibers $\varphi^{-1}(f)$, for $f \in U$, are equidimensional, with the same dimension and the same degree. Moreover, for $f \in U$:</p>
@@ -414,11 +431,18 @@
       </ul>
     </div>
 
-    <p>We call $\varphi^{-1}(f)$, for $f \in U$, the <em>generic fiber</em>. In particular, the generic fiber is finite if and only if $\dim \M = \dpar$. In characteristic $0$, $\dim \M$ is the rank of the differential of $\varphi$ at a generic $\theta$, which gives a simple numerical test.</p>
+    <details class="proof">
+      <summary>Proof.</summary>
+      <p>The statements on the generic fiber follow from the theorem on the dimension of fibers and from generic flatness (<a href="#hartshorne1977algebraic">Hartshorne, 1977</a>, Exercise II.3.22 and Theorems III.9.7 and III.9.9). For the inequality, let $m = \dim \M$ and $e = \dpar - m$, and let $L = A \times B \subseteq \Theta \times V$, where $B \subseteq V$ is a generic affine subspace of codimension $m$ and $A \subseteq \Theta$ is a generic affine subspace of codimension $e$. Since $\dim(\overline{\M} \setminus U) \lt m$, $B$ meets $\overline{\M}$ in $\deg \M$ points, all in $U$, and $A$ meets the fiber of each of them, which is equidimensional of dimension $e$, in $\deg \varphi^{-1}(f)$ points. Hence
+      $$
+      \Gamma_\varphi \cap L = \bigsqcup_{f \in B \cap \overline{\M}} \big(A \cap \varphi^{-1}(f)\big) \times \{f\}
+      $$
+      consists of $\deg \M \cdot \deg \varphi^{-1}(f)$ points. Each of them is an irreducible component of the intersection of the projective closures of $\Gamma_\varphi$ and $L$, so that, by the Bézout inequality (<a href="#fulton1998intersection">Fulton, 1998</a>, Example 8.4.6), their number is at most $\deg \Gamma_\varphi \cdot \deg L = \deg \varphi$.</p>
+    </details>
 
-    <p>The inequality in Theorem 20 comes from intersecting $\Gamma_\varphi$ with the affine subspace $L \subseteq \Theta \times V$ cut out by $\dim \M$ generic affine hyperplanes of $V$ and $\dpar - \dim \M$ generic affine hyperplanes of $\Theta$. This intersection consists of $\deg \M \cdot \deg \varphi^{-1}(f)$ points, and by the Bézout inequality there are at most $\deg \varphi$ of them. The inequality is strict in general, because $L$ is not generic: its equations separate $\theta$ and $f$. Its projective closure may therefore meet the projective closure of $\Gamma_\varphi$ at infinity. These <em>contributions at infinity</em> account for the difference between $\deg \varphi$ and $\deg \M \cdot \deg \varphi^{-1}(f)$, in the sense of the refined Bézout theorem (<a href="#fulton1998intersection">Fulton, 1998</a>, §12.3).</p>
+    <p>The inequality in Theorem 20 is strict in general, because $L$ is not generic: its equations separate $\theta$ and $f$. Its projective closure may therefore meet the projective closure of $\Gamma_\varphi$ at infinity. These <em>contributions at infinity</em> account for the difference between $\deg \varphi$ and $\deg \M \cdot \deg \varphi^{-1}(f)$, in the sense of the refined Bézout theorem (<a href="#fulton1998intersection">Fulton, 1998</a>, §12.3).</p>
 
-    <p>By the <a href="#sample-complexity">previous section</a>, Theorem 20 relates generic identifiability to sample complexity. Sample complexity is controlled by the dimension and the degree of $\M$, not by the number $\dpar$ of parameters, and by Theorem 20 both are smaller when the generic fiber is larger.</p>
+    <p>We call $\varphi^{-1}(f)$, for $f \in U$, the <em>generic fiber</em>. In particular, the generic fiber is finite if and only if $\dim \M = \dpar$. In characteristic $0$, $\dim \M$ is the rank of the differential of $\varphi$ at a generic $\theta$, which gives a simple numerical test. By the <a href="#sample-complexity">previous section</a>, Theorem 20 relates generic identifiability to sample complexity. Sample complexity is controlled by the dimension and the degree of $\M$, not by the number $\dpar$ of parameters, and by Theorem 20 both are smaller when the generic fiber is larger.</p>
 
     <p>Identifiability is also interesting because of its relation to symmetries of the input and output spaces.</p>
 
@@ -480,7 +504,7 @@
     <p>Combining Theorem 24 with Theorem 20 computes the dimension of the neuromanifold of an MLP and bounds its degree. Indeed, a generic $\theta$ is not a subnetwork, so that its fiber is its orbit under permutations and rescalings, which act freely on it. Since permutations are $0$-dimensional, this orbit is finite when $\Sigma$ is, i.e., when $\sigma$ is not a monomial, while for a monomial the rescalings form a torus of dimension $d_1 + \cdots + d_{L-1}$. Moreover, $\deg_\theta f_\theta = 1 + r + \cdots + r^{L-1}$.</p>
 
     <div class="theorem" id="cor-mlp-dimension">
-      <p><span class="label">Corollary 25.</span> Under the assumptions of Theorem 24, if $\sigma$ is not a monomial, then $\dim \M = \dpar$ and
+      <p><span class="label">Corollary 25.</span> Under the assumptions of Theorem 24, if $\sigma$ is not a monomial, then $\dim \M = \dpar = \sum_{i=1}^{L} d_i (d_{i-1} + 1)$ and
       $$
       \deg \M \le \frac{(1 + r + \cdots + r^{L-1})^{\dpar}}{\prod_{j=1}^{L-1} |\Sigma|^{d_j}\, d_j!}.
       $$
@@ -488,6 +512,31 @@
     </div>
 
     <p>Through Theorem 18 and Corollary 19, Corollary 25 yields bounds on the covering numbers and on the sample complexity of MLPs. These match, up to constants, the classical bounds through the pseudo-dimension, i.e., the Vapnik–Chervonenkis dimension of real-valued classes, which <a href="#goldberg1995bounding">Goldberg and Jerrum (1995)</a> bound in terms of $\dpar$ and $\deg_\theta f_\theta$. They improve those of <a href="#zhang2025covering">Zhang and Kileel (2025)</a>, which, specialized to polynomial activations, contain additional logarithmic factors in the widths and in the number of samples.</p>
+
+    <!-- ResNet identifiability (commented out)
+    <p>Finally, we turn to residual networks (<a href="#ex-skip-connections">Example 6</a>). A <em>ResNet</em> of width $d$ and depth $L$ is the deep model of Example 6 whose layers are the perceptrons $y \mapsto \sigma(W_k y + b_k)$ (<a href="#ex-perceptrons">Example 4</a>), with $W_k \in \K^{d \times d}$ and $b_k \in \K^d$. Its function is $f_\theta = h_L$, where $h_0 = x \in \K^d$ and $h_k = h_{k-1} + \sigma(W_k h_{k-1} + b_k)$ for $1 \le k \le L$. The identifiability of ResNets has been studied by <a href="#dahlgren2026polynomial">Dahlgren et al. (2026)</a>, by comparing homogeneous components of highest degree, as in the following lemma.</p>
+
+    <div class="theorem" id="lem-degree-gap">
+      <p><span class="label">Lemma 26</span> (Degree gap). Let $\K$ have characteristic $0$, let $\sigma \in \K[t]$ have degree $r \ge 2$, and let $p, q \in \K[x_1, \ldots, x_n]$, where $p$ has degree $\delta \ge 1$. If $\sigma \circ p - \sigma \circ q$ has degree at most $\delta$, then $q = \zeta p + e$ for some $\zeta, e \in \K$ such that $\sigma(\zeta t + e) - \sigma(t)$ has degree at most $1$.</p>
+    </div>
+
+    <details class="proof">
+      <summary>Proof.</summary>
+      <p>Let $a$ be the leading coefficient of $\sigma$, and denote by $[h]_k$ the homogeneous component of degree $k$ of a polynomial $h$. Since $\sigma \circ p$ has degree $r\delta > \delta$, so does $\sigma \circ q$, with the same component of degree $r\delta$. Hence $q$ has degree $\delta$ and $[q]_\delta^r = [p]_\delta^r$, so that $[q]_\delta = \zeta [p]_\delta$ for some $\zeta \in \K$ with $\zeta^r = 1$, by unique factorization. Let $e = q - \zeta p$, of degree $\varepsilon < \delta$, and suppose that $\varepsilon \ge 1$. In the expansion of $\sigma \circ (\zeta p + e) - \sigma \circ (\zeta p)$ in powers of $e$, the term $r a\, (\zeta p)^{r-1} e$ has degree $(r - 1)\delta + \varepsilon$, and all the others have smaller degree, since $\varepsilon < \delta$. Moreover, $\sigma \circ (\zeta p) - \sigma \circ p$ has degree at most $(r - 1)\delta$, since $\zeta^r = 1$. Hence $\sigma \circ q - \sigma \circ p$ has degree $(r - 1)\delta + \varepsilon > \delta$, a contradiction. Therefore $e \in \K$, and $\sigma \circ q - \sigma \circ p = \rho \circ p$, where $\rho(t) = \sigma(\zeta t + e) - \sigma(t)$. Since $\rho \circ p$ has degree $\delta \deg \rho \le \delta$, $\rho$ has degree at most $1$.</p>
+    </details>
+
+    <div class="theorem" id="cor-resnet-identifiability">
+      <p><span class="label">Corollary 27.</span> Let $\K$ have characteristic $0$, and let $\sigma \in \K[t]$ be nonconstant and such that, for all $\zeta, e \in \K$, the polynomial $\sigma(\zeta t + e) - \sigma(t)$ is either zero or of degree at least $2$. Consider a ResNet. If $W_1, \ldots, W_{L-1}$ are invertible and $W_L$ has no zero row, then the fiber of $\theta$ consists of the parameters obtained from $\theta$ by replacing each row $(W_k[i,:], b_k[i])$ with $(\zeta W_k[i,:], \zeta b_k[i] + e)$, where $\zeta, e \in \K$, which may depend on $k$ and $i$, satisfy $\sigma(\zeta t + e) = \sigma(t)$.</p>
+    </div>
+
+    <details class="proof">
+      <summary>Proof.</summary>
+      <p>Let $r$ and $a$ be the degree and the leading coefficient of $\sigma$. The assumption forces $r \ge 3$, since $\sigma(t + 1) - \sigma(t)$ is nonzero of degree $r - 1$. By induction on $k < L$, $h_k$ has degree $r^k$, and its homogeneous component $H_k$ of degree $r^k$ has algebraically independent coordinates. Indeed, $H_0 = x$, and if this holds for $H_{k-1}$, then the coordinates of $W_k H_{k-1}$ are algebraically independent, since $W_k$ is invertible, hence nonzero of degree $r^{k-1}$, so that $H_k = a\, (W_k H_{k-1})^r$, with the power taken component-wise, whose coordinates are algebraically independent as well. As a consequence, $1, h_{L-1,1}, \ldots, h_{L-1,d}$ are linearly independent, and, since $W_L$ has no zero row, the coordinates of $p = W_L h_{L-1} + b_L$ have degree $\delta = r^{L-1}$.</p>
+      <p>The parameters in the statement lie in the fiber of $\theta$, since they do not change the $h_k$. Conversely, let $\theta'$ be in the fiber, with hidden states $h'_k$, and let $q = W'_L h'_{L-1} + b'_L$. For every $i$, the polynomial $\sigma \circ p_i - \sigma \circ q_i = h'_{L-1,i} - h_{L-1,i}$ has degree at most $\delta$. By Lemma 26 and the assumption, $q_i = \zeta_i p_i + e_i$ with $\sigma(\zeta_i t + e_i) = \sigma(t)$, so that $\sigma \circ q_i = \sigma \circ p_i$, and thus $h'_{L-1} = h_{L-1}$. Since the first $L - 1$ layers of $\theta$ satisfy the assumptions for depth $L - 1$, by induction on $L$, the case $L = 0$ being trivial, those of $\theta'$ are obtained from them as in the statement. Finally, $W'_L h_{L-1} + b'_L = q = Z p + e$, where $Z$ is diagonal with entries $\zeta_i$ and $e = (e_i)_i$, so that $W'_L = Z W_L$ and $b'_L = Z b_L + e$, by linear independence.</p>
+    </details>
+
+    <p>The affine maps $t \mapsto \zeta t + e$ with $\sigma(\zeta t + e) = \sigma(t)$ form a group of order at most $r$, as $\zeta^r = 1$ and $e$ is determined by $\zeta$. For $\sigma(t) = t^r$ with $r \ge 3$, the assumption of Corollary 27 holds, and these maps are $t \mapsto \zeta t$ with $\zeta^r = 1$. For a generic $\sigma$ of degree $r \ge 5$, the assumption holds as well, and the group is trivial, so that each parameter of Corollary 27 is the only point of its fiber (<a href="#dahlgren2026polynomial">Dahlgren et al., 2026</a>). In all cases, the parameters of Corollary 27 form a dense open subset of $\Theta$, so that the generic fiber is finite and $\dim \M = \dpar = L d(d + 1)$, by Theorem 20.</p>
+    -->
   </details>
 
   <details class="section">
@@ -507,7 +556,7 @@
 
     <p>Voronoi cells are convex, being intersections of half-spaces. Let $Z \subseteq V$ be an irreducible variety of dimension $m$. If $f \in Z$ is smooth, then $\mathrm{Vor}_Z(f)$ is a full-dimensional subset of the normal space $f + (T_f Z)^\perp$: it is contained in it by the first-order optimality condition, and contains a neighborhood of $f$ in it, since $Z$ is a manifold near $f$ (<a href="#cifuentes2022voronoi">Cifuentes et al., 2022</a>). Thus its dimension is the codimension $N - m$ of $Z$. At a singular point, instead, the Voronoi cell can be larger. For instance, the Voronoi cell of the cusp of the plane curve $y^2 = x^3$ is two-dimensional, while those of its smooth points are one-dimensional. It can also be smaller: the Voronoi cell of a node of a plane curve, where two branches cross, is the node itself.</p>
 
-    <p>Since learning is, ideally, distance minimization (see <a href="#learning">Learning</a>), this can be interpreted as an implicit bias towards singularities. Indeed, $f \in \M$ minimizes the ideal loss $\|f - f^*\|^2$ over $\M$ precisely when $f^* \in \mathrm{Vor}_{\M}(f)$. Hence a singular point with a large Voronoi cell is more likely to be a global minimum than a given smooth point, in the sense that it minimizes the distance for a larger set of target functions $f^*$, namely those in its Voronoi cell. If this cell is full-dimensional, as at the cusp above, it even has positive measure, whereas the Voronoi cell of a smooth point lies in its normal space, which has measure zero.</p>
+    <p>Since learning is, ideally, distance minimization (see <a href="#learning">Learning as distance optimization</a>), this can be interpreted as an implicit bias towards singularities. Indeed, $f \in \M$ minimizes the ideal loss $\|f - f^*\|^2$ over $\M$ precisely when $f^* \in \mathrm{Vor}_{\M}(f)$. Hence a singular point with a large Voronoi cell is more likely to be a global minimum than a given smooth point, in the sense that it minimizes the distance for a larger set of target functions $f^*$, namely those in its Voronoi cell. If this cell is full-dimensional, as at the cusp above, it even has positive measure, whereas the Voronoi cell of a smooth point lies in its normal space, which has measure zero.</p>
 
     <!-- Static svg (see .cusp-figure in assets/style.css). The cusp y^2 = x^3 is drawn as the Bézier curves of
          (t^2, ±t^3), 0 ≤ t ≤ 1. In orange, the Voronoi cell of the cusp: the region on the left of the curve
@@ -558,7 +607,7 @@
   <details class="section">
     <summary><h2 id="gradient-flow">Gradient flow</h2></summary>
 
-    <p>As we have seen in <a href="#learning">Learning</a>, a model learns by minimizing a loss $L$ over $\M$ through its parameters, i.e., by minimizing $L \circ \varphi$ over $\Theta$. We now look at the dynamics of this process. Consider an algebraic model over $\K = \R$, fix a scalar product on $V$ and one on $\Theta = \R^{\dpar}$ (e.g., the standard one), and let $L \colon V \to \R$ be differentiable, e.g., the MSE. Gradients are taken with respect to these scalar products, and $d\varphi_\theta^* \colon V \to \Theta$ denotes the adjoint of the differential $d\varphi_\theta \colon \Theta \to V$ of the parametrization map at $\theta \in \Theta$.</p>
+    <p>As we have seen in <a href="#learning">Learning as distance optimization</a>, a model learns by minimizing a loss $L$ over $\M$ through its parameters, i.e., by minimizing $L \circ \varphi$ over $\Theta$. We now look at the dynamics of this process. Consider an algebraic model over $\K = \R$, fix a scalar product on $V$ and one on $\Theta = \R^{\dpar}$ (e.g., the standard one), and let $L \colon V \to \R$ be differentiable, e.g., the MSE. Gradients are taken with respect to these scalar products, and $d\varphi_\theta^* \colon V \to \Theta$ denotes the adjoint of the differential $d\varphi_\theta \colon \Theta \to V$ of the parametrization map at $\theta \in \Theta$.</p>
 
     <div class="definition" id="def-gradient-flow">
       <p><span class="label">Definition 28</span> (Gradient flow). The <em>gradient flow</em> of the model for the loss $L$ is the differential equation
@@ -595,7 +644,33 @@
       <p><span class="label">Definition 30</span> (Conserved quantity). A <em>conserved quantity</em> of the model is a differentiable function $Q \colon \Theta \to \R$ such that $\nabla Q(\theta) \in \ker d\varphi_\theta$ for all $\theta \in \Theta$.</p>
     </div>
 
-    <p>Since the gradient flow is orthogonal to $\ker d\varphi_\theta$, a conserved quantity $Q$ is constant along every trajectory, whatever the loss: $\frac{d}{dt} Q(\theta(t)) = \langle \nabla Q(\theta(t)), \dot\theta(t) \rangle = 0$. Conversely, the functions that are constant along the trajectories for every loss are precisely the conserved quantities (<a href="#marcotte2023abide">Marcotte et al., 2023</a>). Hence, trajectories never leave the level sets of conserved quantities. Since $\ker d\varphi_\theta$ is the tangent space of the fiber for generic $\theta$, non-constant conserved quantities exist only if the generic fiber is positive-dimensional, i.e., if $\dim \M < \dpar$. Such fibers often come from continuous parameter symmetries: if a Lie group $G$ acts linearly on $\Theta$ with $f_{g \cdot \theta} = f_\theta$, its orbits lie in the fibers (as in <a href="#prop-equivariance-fibers">Proposition 22</a>), so that, differentiating, $\xi \cdot \theta \in \ker d\varphi_\theta$ for $\xi$ in its Lie algebra $\mathfrak{g}$. If $\xi$ acts by a self-adjoint operator, then $\xi \cdot \theta$ is the gradient of $\mu_\xi(\theta) = \frac{1}{2} \langle \xi \cdot \theta, \theta \rangle$, which is therefore conserved. Hence, every trajectory stays in the real algebraic variety $\mu^{-1}(\mu(\theta(0)))$, where the quadratic map $\mu \colon \Theta \to \mathfrak{p}^*$ collects the $\mu_\xi$ for $\xi$ in the subspace $\mathfrak{p} \subseteq \mathfrak{g}$ of such elements. This is an analogue of Noether's theorem for gradient flows (<a href="#kunin2021neural">Kunin et al., 2021</a>), with the scalar product in place of the symplectic form: accordingly, $\mu$, characterized by $\nabla \mu_\xi(\theta) = \xi \cdot \theta$, is the analogue of a moment map, called a <em>gradient map</em> (<a href="#heinzner2008stratifications">Heinzner et al., 2008</a>). Unlike in the symplectic case, however, symmetries preserving the scalar product, i.e., generated by skew-adjoint $\xi$, such as rotations, yield no conserved quantity in this way; see <a href="#nguyen2026parameter">Nguyen and Montúfar (2026)</a> for the precise relation between symmetries and conservation laws.</p>
+    <p>The name is justified by the following lemma (<a href="#marcotte2023abide">Marcotte et al., 2023</a>).</p>
+
+    <div class="theorem" id="lem-conserved-quantities">
+      <p><span class="label">Lemma 31.</span> A differentiable function $Q \colon \Theta \to \R$ is a conserved quantity if and only if it is constant along every trajectory of the gradient flow, for every differentiable loss $L \colon V \to \R$.</p>
+    </div>
+
+    <details class="proof">
+      <summary>Proof.</summary>
+      <p>Along a trajectory, $\dot\theta(t) = -d\varphi_{\theta(t)}^* \nabla L(f(t))$ by the chain rule, so that
+      $$
+      \frac{d}{dt} Q(\theta(t)) = \langle \nabla Q(\theta(t)), \dot\theta(t) \rangle = -\big\langle d\varphi_{\theta(t)} \nabla Q(\theta(t)), \nabla L(f(t)) \big\rangle,
+      $$
+      which vanishes if $Q$ is a conserved quantity. Conversely, let $\theta_0 \in \Theta$ and $u \in V$, and consider the linear loss $L = \langle u, \cdot \rangle$, so that $\nabla L = u$. Since $L \circ \varphi$ is a polynomial, the Picard–Lindelöf theorem provides a trajectory with $\theta(0) = \theta_0$. As $Q$ is constant along it, the derivative above vanishes at $t = 0$, i.e., $\langle d\varphi_{\theta_0} \nabla Q(\theta_0), u \rangle = 0$. Since $u$ is arbitrary, $\nabla Q(\theta_0) \in \ker d\varphi_{\theta_0}$.</p>
+    </details>
+
+    <p>Since $\ker d\varphi_\theta$ is the tangent space of the fiber for generic $\theta$, non-constant conserved quantities exist only if the generic fiber is positive-dimensional, i.e., if $\dim \M < \dpar$. Such fibers often come from continuous parameter symmetries, whose orbits lie in the fibers (as in <a href="#prop-equivariance-fibers">Proposition 22</a>), and some of these symmetries yield conserved quantities.</p>
+
+    <div class="theorem" id="thm-gradient-map">
+      <p><span class="label">Theorem 32</span> (Gradient map). Let $G$ be a Lie group acting linearly on $\Theta$ with $f_{g \cdot \theta} = f_\theta$ for all $g \in G$ and $\theta \in \Theta$. For $\xi$ in its Lie algebra $\mathfrak{g}$, let $\xi \cdot \theta = \frac{d}{dt}\big|_{t = 0} \exp(t\xi) \cdot \theta$, let $\mathfrak{p} \subseteq \mathfrak{g}$ be the subspace of the $\xi$ acting by self-adjoint operators, and let $\mu \colon \Theta \to \mathfrak{p}^*$ be the quadratic map defined by $\mu(\theta)(\xi) = \mu_\xi(\theta) = \frac{1}{2} \langle \xi \cdot \theta, \theta \rangle$. Then, for every $\xi \in \mathfrak{p}$, $\mu_\xi$ is a conserved quantity, with $\nabla \mu_\xi(\theta) = \xi \cdot \theta$. Hence, whatever the loss, every trajectory of the gradient flow stays in the real algebraic variety $\mu^{-1}(\mu(\theta(0)))$.</p>
+    </div>
+
+    <details class="proof">
+      <summary>Proof.</summary>
+      <p>Let $\xi \in \mathfrak{g}$ and $\theta \in \Theta$. Differentiating $\varphi(\exp(t\xi) \cdot \theta) = \varphi(\theta)$ at $t = 0$ gives $d\varphi_\theta(\xi \cdot \theta) = 0$. If $\xi \in \mathfrak{p}$, then, by self-adjointness, $d(\mu_\xi)_\theta(v) = \frac{1}{2} \langle \xi \cdot v, \theta \rangle + \frac{1}{2} \langle \xi \cdot \theta, v \rangle = \langle \xi \cdot \theta, v \rangle$ for all $v \in \Theta$, i.e., $\nabla \mu_\xi(\theta) = \xi \cdot \theta \in \ker d\varphi_\theta$. The last claim follows from Lemma 31.</p>
+    </details>
+
+    <p>Theorem 32 is an analogue of Noether's theorem for gradient flows (<a href="#kunin2021neural">Kunin et al., 2021</a>), with the scalar product in place of the symplectic form: accordingly, $\mu$, characterized by $\nabla \mu_\xi(\theta) = \xi \cdot \theta$, is the analogue of a moment map, called a <em>gradient map</em> (<a href="#heinzner2008stratifications">Heinzner et al., 2008</a>). Unlike in the symplectic case, however, symmetries preserving the scalar product, i.e., generated by skew-adjoint $\xi$, such as rotations, yield no conserved quantity in this way; see <a href="#nguyen2026parameter">Nguyen and Montúfar (2026)</a> for the precise relation between symmetries and conservation laws.</p>
   </details>
 
   <details class="section">
@@ -693,6 +768,7 @@
       <li id="cruttwell2022categorical">Geoffrey S. H. Cruttwell, Bruno Gavranović, Neil Ghani, Paul Wilson, Fabio Zanasi. <cite>Categorical Foundations of Gradient-Based Learning.</cite> European Symposium on Programming (ESOP), 2022. <a href="https://arxiv.org/abs/2103.01931">arXiv:2103.01931</a></li>
       <li id="cucker2002mathematical">Felipe Cucker, Steve Smale. <cite>On the Mathematical Foundations of Learning.</cite> Bulletin of the American Mathematical Society 39(1), 1–49, 2002. <a href="https://doi.org/10.1090/S0273-0979-01-00923-5">doi:10.1090/S0273-0979-01-00923-5</a></li>
       <li id="cybenko1989approximation">George Cybenko. <cite>Approximation by Superpositions of a Sigmoidal Function.</cite> Mathematics of Control, Signals and Systems 2(4), 303–314, 1989. <a href="https://doi.org/10.1007/BF02551274">doi:10.1007/BF02551274</a></li>
+      <!-- <li id="dahlgren2026polynomial">Isabel Dahlgren, Giovanni Luca Marchetti, Kathlén Kohn. <cite>Polynomial Residual Networks are Generically Identifiable.</cite> Preprint, 2026. <a href="https://arxiv.org/abs/2610.33738">arXiv:2610.33738</a></li> -->
       <li id="devore1993constructive">Ronald A. DeVore, George G. Lorentz. <cite>Constructive Approximation.</cite> Grundlehren der mathematischen Wissenschaften 303, Springer, 1993. <a href="https://doi.org/10.1007/978-3-662-02888-9">doi:10.1007/978-3-662-02888-9</a></li>
       <li id="dudley1967sizes">Richard M. Dudley. <cite>The Sizes of Compact Subsets of Hilbert Space and Continuity of Gaussian Processes.</cite> Journal of Functional Analysis 1(3), 290–330, 1967. <a href="https://doi.org/10.1016/0022-1236(67)90017-1">doi:10.1016/0022-1236(67)90017-1</a></li>
       <li id="finkel2025activation">Bella Finkel, Jose Israel Rodriguez, Chenxi Wu, Thomas Yahl. <cite>Activation Degree Thresholds and Expressiveness of Polynomial Neural Networks.</cite> Algebraic Statistics, 2025. <a href="https://arxiv.org/abs/2408.04569">arXiv:2408.04569</a></li>

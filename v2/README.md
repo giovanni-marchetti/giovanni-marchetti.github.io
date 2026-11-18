@@ -13,6 +13,7 @@ A plain HTML website. There is no build step: open `index.html` in a browser.
 | `papers.js` | The papers listed on the Literature page, and the tags that filter them |
 | `assets/literature.js` | Writes the papers of `papers.js` into `literature.html`, and above them the tags |
 | `assets/sections.js` | Opens a collapsed section of the Primer when a link points inside it |
+| `assets/toggles.js` | Buttons that change a figure: the skip connections and the weight sharing of the network in the Examples of the Primer |
 | `neuromanifold/` | The two interactive neuromanifold viewers: `surface.js` (the surface of a residual network, `#nm-surface`, at the end of the home page), `flat.js` (the flat neuromanifold of a shallow network, `#nm-flat`, at the end of the section "Feature learning" of the Primer), and `viewers.css`, the styles of both |
 
 ## Writing math
