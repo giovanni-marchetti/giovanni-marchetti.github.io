@@ -43,6 +43,8 @@ Each section of the Primer is collapsible and starts closed (add `open` to start
 </details>
 ```
 
+A section can be divided into subsections, each starting with `<h3 id="name">Title</h3>`.
+
 ## Citing in the Primer
 
 The Primer ends with a References section, sorted by the surname of the first author. To cite a work, add its entry

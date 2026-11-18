@@ -1,0 +1,312 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black]{hyperref}
+
+\newtheorem{maintheorem}{Theorem}
+\renewcommand{\themaintheorem}{\Alph{maintheorem}}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}[lemma]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[lemma]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[lemma]{Remark}
+
+\newcommand{\K}{\mathbb{K}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\A}{\mathbb{A}}
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\cO}{\mathcal{O}}
+\newcommand{\Mbar}{\overline{\M}}
+\newcommand{\dpar}{d_{\mathrm{par}}}
+\newcommand{\sm}{\setminus}
+\newcommand{\Tn}{\Theta^{\mathrm{nd}}}
+\newcommand{\hs}{\hat\sigma}
+\newcommand{\ha}{\hat a}
+
+\title{Singularities of polynomial residual networks\\[4pt]\large Theorem 25 of the Primer for ResNets}
+\author{}
+\date{November 2026}
+
+\begin{document}
+\maketitle
+
+\noindent
+Theorem~25 of the Primer shows that the functions of subnetworks of an MLP are singular points of the neurovariety. Its proof moves along the fiber of a neuron whose \emph{outgoing} weights vanish. In a residual network there are no outgoing weights, and a subnetwork is defined by the vanishing of the \emph{incoming} weights of a neuron (Example~9). We prove that, for deep residual networks of constant width and a generic activation of degree at least $5$, the functions of subnetworks are again singular points (Theorem~\ref{thm:sing}). The mechanism is different: the fiber is finite, but it contains several parameters, which give several branches of the neurovariety through the same point. In the opposite direction, we show that the functions of non-degenerate parameters are smooth points (Theorem~\ref{thm:smooth}). For width one, or depth one, this gives a complete description of the singularities. In general, however, subnetworks are not the only singularities of a residual network (Proposition~\ref{prop:other}).
+
+\section{Setting and results}
+
+Let $\K$ be a field of characteristic $0$, and let $\sigma=\sum_{m=0}^ra_mt^m\in\K[t]$ have degree $r$. A \emph{residual network} of depth $L\ge1$ and width $d\ge1$ is the composition of $L$ perceptrons with skip connections (Examples~4 and~6):
+\[
+h_0=x,\qquad p_k=W_kh_{k-1}+b_k,\qquad h_k=h_{k-1}+\sigma(p_k)\quad(1\le k\le L),\qquad f_\theta=h_L,
+\]
+where $x=(x_1,\dots,x_d)$, $W_k\in\K^{d\times d}$ and $b_k\in\K^d$. Thus $\theta=(W_k,b_k)_{k\le L}\in\Theta=\K^{\dpar}$ with $\dpar=Ld(d+1)$, and the coordinates $p_{k,m}$ and $h_{k,m}$ of the pre-activations and of the hidden states are polynomials in $x$ with
+\[
+\deg p_{k,m}\le r^{k-1},\qquad\deg h_{k,m}\le r^k.
+\]
+The parametrization map is $\varphi\colon\Theta\to V=\K[x_1,\dots,x_d]^d_{\le r^L}$, with image $\M$ and neurovariety $\Mbar$. The $m$-th neuron of layer $k$ is \emph{inactive} at $\theta$ if its incoming weights vanish, $W_k[m,:]=0$; it then adds the constant $\sigma(b_{k,m})$ to the $m$-th coordinate. As in Example~9, the parameters with an inactive neuron are the \emph{subnetworks}.
+
+\paragraph{Assumption on $\sigma$.} Let $\kappa=a_{r-1}/(ra_r)$, and let $\hs(u)=\sigma(u-\kappa)=\sum_m\ha_mu^m$ be the centered activation, so that $\ha_r=a_r$ and $\ha_{r-1}=0$. We assume
+\begin{equation*}\tag{A}\label{eq:A}
+\gcd\{m\ge2:\ \ha_m\ne0\}=1.
+\end{equation*}
+Since $\ha_{r-1}=0$, this forces $r\ge5$. It holds for a generic $\sigma$ of any degree $r\ge5$, for which $\ha_2\ha_3\ne0$, and for instance for $\sigma(t)=t^5+t^2$. By Lemma~\ref{lem:rigid}, \eqref{eq:A} means that $\sigma$ has no affine symmetry, even modulo affine functions.
+
+\begin{maintheorem}[Subnetworks are singular]\label{thm:sing}
+Assume \eqref{eq:A}. If some neuron is inactive at $\theta\in\Theta$, then $f_\theta$ is a singular point of $\Mbar$. More precisely, $\Mbar$ is not normal at $f_\theta$.
+\end{maintheorem}
+
+For the opposite direction, we single out the parameters at which all degrees are as large as possible.
+
+\begin{definition}\label{def:nd}
+A parameter $\theta$ is \emph{non-degenerate} if
+\begin{enumerate}[label=\textup{(\roman*)},nosep]
+\item $\deg p_{k,m}=r^{k-1}$ for all $1\le k\le L$ and $1\le m\le d$;
+\item $1,h_{k,1},\dots,h_{k,d}$ are linearly independent for all $0\le k<L$.
+\end{enumerate}
+The non-degenerate parameters form a Zariski-open subset $\Tn\subseteq\Theta$.
+\end{definition}
+
+The set $\Tn$ is non-empty: it contains the parameters with $W_k=I$ for all $k$, at which the network splits into $d$ networks of width one: $h_{k,m}$ is a polynomial of degree $r^k$ in $x_m$ alone. No neuron is inactive at a non-degenerate parameter, since an inactive neuron has a constant pre-activation. If $d=1$ or $L=1$, the converse holds, i.e., $\Tn$ is the set of the parameters without inactive neurons: for $L=1$, condition (i) says that the rows of $W_1$ are nonzero and (ii) is empty, and for $d=1$, if $W_k\ne0$ for all $k$, then $\deg h_k=r\deg p_k=r\deg h_{k-1}$ by induction. If $d\ge2$ and $L\ge2$, $\Tn$ is smaller: for instance, if two rows of $W_1$ are proportional, the leading forms of two coordinates of $h_1$ are proportional, and a suitable row of $W_2$ cancels them, so that (i) fails.
+
+\begin{maintheorem}[Non-degenerate parameters are smooth]\label{thm:smooth}
+Assume \eqref{eq:A}. Then $\varphi$ is injective on $\Tn$ and $\varphi^{-1}(\varphi(\Tn))=\Tn$, so that $\dim\M=\dpar=Ld(d+1)$, and for every $\theta\in\Tn$ the function $f_\theta$ is a smooth point of $\Mbar$. In particular, if $d=1$ or $L=1$, a function $f\in\M$ is a singular point of $\Mbar$ if and only if $f=f_\theta$ for some $\theta$ with an inactive neuron.
+\end{maintheorem}
+
+For $d\ge2$ and $L\ge2$, non-degeneracy cannot be replaced by the absence of inactive neurons: in general, subnetworks are not the only singularities of a residual network.
+
+\begin{proposition}[Other singularities]\label{prop:other}
+Let $\K$ be algebraically closed, let $\sigma(t)=t^5+t^2+t$, which satisfies \eqref{eq:A}, and let $d=L=2$. There is a parameter $\theta$ at which no neuron is inactive and such that $f_\theta$ is a singular point of $\Mbar$.
+\end{proposition}
+
+At this parameter the hidden state $h_1$ takes values in a line, so that condition (ii) of Definition~\ref{def:nd} fails, and the fiber of $f_\theta$ has positive dimension. What happens at the other degenerate parameters is left open; see Remark~\ref{rem:open}.
+
+\section{Tools}
+
+Throughout the proofs, $\K$ is algebraically closed. This is not restrictive: as in \texttt{singularities.tex}, the ideal of $\Mbar$ is the kernel of $g\mapsto g\circ\varphi$, which commutes with the extension of scalars to the algebraic closure, so that the Jacobian criterion at a point of $V$ gives the same answer over both fields, while \eqref{eq:A}, the inactivity of a neuron and Definition~\ref{def:nd} do not depend on the field. For $g\in\K[x]$, we write $[g]_e$ for its homogeneous component of degree $e$, and $\deg0=-\infty$.
+
+\begin{lemma}[Rigidity]\label{lem:rigid}
+Assume \eqref{eq:A}.
+\begin{enumerate}[label=\textup{(\roman*)},nosep]
+\item If $\zeta,e\in\K$ and $\sigma(t)-\sigma(\zeta t+e)$ has degree at most $1$ in $t$, then $\zeta=1$ and $e=0$.
+\item If $c,\alpha,e\in\K$ and $c\,\sigma(t)-(\alpha t+e)\,\sigma'(t)$ has degree at most $1$ in $t$, then $c=\alpha=e=0$.
+\item For every $\beta\in\K$ there is $\beta'\ne\beta$ with $\sigma(\beta')=\sigma(\beta)$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Let $u=t+\kappa$, so that $\sigma(t)=\hs(u)$ and $\sigma'(t)=\hs'(u)$.
+
+(i) We have $\sigma(\zeta t+e)=\hs(\zeta u+e')$ with $e'=e+(1-\zeta)\kappa$. The coefficient of $u^r$ in $\hs(u)-\hs(\zeta u+e')$ is $\ha_r(1-\zeta^r)$, so $\zeta^r=1$. Since $\ha_{r-1}=0$, the coefficient of $u^{r-1}$ is $-r\ha_r\zeta^{r-1}e'$, so $e'=0$, as $r-1\ge2$. Then the coefficient of $u^m$ is $\ha_m(1-\zeta^m)$, so that $\zeta^m=1$ for all $m\ge2$ with $\ha_m\ne0$. By \eqref{eq:A}, $\zeta=1$, and then $e=e'=0$.
+
+(ii) We have $\alpha t+e=\alpha u+e'$ with $e'=e-\alpha\kappa$. The coefficient of $u^m$ in $c\,\hs(u)-(\alpha u+e')\hs'(u)$ is $(c-m\alpha)\ha_m-(m+1)e'\ha_{m+1}$. For $m=r$ this gives $c=r\alpha$, and for $m=r-1$ it gives $e'=0$. By \eqref{eq:A}, $\ha_m\ne0$ for some $2\le m\le r-2$, and then $(r-m)\alpha\,\ha_m=0$ gives $\alpha=0$. Hence $c=0$ and $e=0$.
+
+(iii) Otherwise $\sigma(t)-\sigma(\beta)=a_r(t-\beta)^r$, so that $\hs(u)=a_r(u-\kappa-\beta)^r+\sigma(\beta)$. Then $\ha_{r-1}=0$ gives $\kappa+\beta=0$, and $r$ is the only $m\ge2$ with $\ha_m\ne0$, against \eqref{eq:A}.
+\end{proof}
+
+The next lemma is the heart of the matter. In a residual network of constant width, every coordinate of a layer is of the form $h+\sigma\circ p$, with a single neuron $\sigma\circ p$ whose degree exceeds that of the rest. Hence the questions on fibers, differentials and limits reduce to statements about one composition, modulo lower degree.
+
+\begin{lemma}[Degree gap]\label{lem:gap}
+Let $r\ge3$, and let $p\in\K[x]$ have degree $\delta\ge1$.
+\begin{enumerate}[label=\textup{(\roman*)},nosep]
+\item If $q\in\K[x]$ and $\deg(\sigma\circ p-\sigma\circ q)\le\delta$, then $q=\zeta p+e$ for some $\zeta,e\in\K$ such that $\sigma(t)-\sigma(\zeta t+e)$ has degree at most $1$.
+\item If $c\in\K$, $q\in\K[x]$ and $\deg\big(c\,\sigma\circ p-(\sigma'\circ p)\,q\big)\le\delta$, then $q=\alpha p+e$ for some $\alpha,e\in\K$ such that $c\,\sigma(t)-(\alpha t+e)\,\sigma'(t)$ has degree at most $1$.
+\end{enumerate}
+In particular, under \eqref{eq:A}, $q=p$ in \textup{(i)}, and $c=0$ and $q=0$ in \textup{(ii)}.
+\end{lemma}
+
+\begin{proof}
+(i) Since $\deg(\sigma\circ p)=r\delta>\delta$, the leading forms of $\sigma\circ p$ and $\sigma\circ q$ agree: $\deg q=\delta$ and $[q]_\delta^r=[p]_\delta^r$, so that $[q]_\delta=\zeta[p]_\delta$ with $\zeta^r=1$. Let $e=q-\zeta p$, of degree $\epsilon<\delta$. Expanding,
+\[
+\sigma\circ p-\sigma\circ q=\sum_ma_m(1-\zeta^m)\,p^m-\sum_m\sum_{l\ge1}a_m\tbinom ml\zeta^{m-l}\,p^{m-l}e^l.
+\]
+The term with $m=r$ of the first sum vanishes, so the first sum has degree at most $(r-1)\delta$. If $\epsilon\ge1$, the term $(m,l)$ of the second sum has degree $m\delta-l(\delta-\epsilon)$, which is largest for $(m,l)=(r,1)$ only. So the difference has degree $(r-1)\delta+\epsilon>\delta$, a contradiction. Hence $e\in\K$, and $\sigma\circ p-\sigma\circ q=\rho\circ p$ with $\rho(t)=\sigma(t)-\sigma(\zeta t+e)$. Since $\deg(\rho\circ p)=\delta\deg\rho$, we get $\deg\rho\le1$.
+
+(ii) If $q=0$, then $c=0$, and we take $\alpha=e=0$. Let $q\ne0$. Then $(\sigma'\circ p)\,q$ has degree at least $(r-1)\delta>\delta$, so its leading form is cancelled by that of $c\,\sigma\circ p$: $\deg q=\delta$ and $c\,[p]_\delta^r=r\,[p]_\delta^{r-1}[q]_\delta$, i.e., $[q]_\delta=\alpha[p]_\delta$ with $\alpha=c/r$. Let $e=q-\alpha p$, of degree less than $\delta$. Then
+\[
+c\,\sigma\circ p-(\sigma'\circ p)\,q=\tau\circ p-(\sigma'\circ p)\,e,\qquad\tau(t)=c\,\sigma(t)-\alpha t\,\sigma'(t),
+\]
+where $\deg\tau\le r-1$. If $\deg e\ge1$, the last term has degree $(r-1)\delta+\deg e$, larger than both $\deg(\tau\circ p)$ and $\delta$, a contradiction. Hence $e\in\K$, and the left-hand side is $\rho\circ p$ with $\rho(t)=c\,\sigma(t)-(\alpha t+e)\,\sigma'(t)$, so that $\deg\rho\le1$.
+
+The last claim follows from Lemma~\ref{lem:rigid}.
+\end{proof}
+
+The singular points will be detected through normality.
+
+\begin{lemma}[A criterion for non-normality]\label{lem:zmt}
+Let $\varphi\colon X\to Z$ be a birational morphism of irreducible varieties. Let $x\ne x'$ be points of $X$ with $\varphi(x)=\varphi(x')=z$, and assume that $x$ is an isolated point of the fiber $\varphi^{-1}(z)$. Then $Z$ is not normal at $z$. In particular, $z$ is a singular point of $Z$.
+\end{lemma}
+
+\begin{proof}
+Assume that $z$ is a normal point. The normal points of $Z$ form an open subset $Z'$, and the points of $\varphi^{-1}(Z')$ that are isolated in their fiber form an open subset $X'\subseteq X$, by the semicontinuity of the dimension of the fibers. It contains $x$, hence it is dense in $X$, and $\varphi|_{X'}\colon X'\to Z'$ is a birational morphism with finite fibers to a normal variety. By Zariski's main theorem (Mumford, \emph{The Red Book of Varieties and Schemes}, \S III.9), it is an isomorphism onto an open subset $Z_0\subseteq Z'$, which contains $z$. Let $\psi\colon Z_0\to X'$ be its inverse. The morphisms $\psi\circ\varphi$ and $\mathrm{id}$, from $\varphi^{-1}(Z_0)$ to $X$, agree on the dense subset $X'$, hence everywhere. So $\varphi$ is injective on $\varphi^{-1}(Z_0)$, which contains $x$ and $x'$: a contradiction. Finally, a smooth point is normal.
+\end{proof}
+
+For the smooth points, we use the criterion of \texttt{singularities.tex} (Lemma~2 there, with a trivial group). Let $R=\K[[s]]$ and $F=\K((s))$; an element of $F\otimes U$ is \emph{integral} if it lies in $R\otimes U$, and its \emph{reduction} is then its value at $s=0$.
+
+\begin{lemma}[A criterion for smoothness]\label{lem:criterion}
+Let $\varphi\colon\A^M\to\A^N$ be a morphism, $Z$ the Zariski closure of its image, and $X^\circ\subseteq\A^M$ a non-empty open subset. Assume that, for every $x\in X^\circ$:
+\begin{enumerate}[label=\textup{(\alph*)},nosep]
+\item $\varphi^{-1}(\varphi(x))=\{x\}$;
+\item the differential $d\varphi_x$ is injective;
+\item if $\gamma\in F^M$ is such that $\varphi(\gamma)$ is integral with reduction $\varphi(x)$, then $\gamma$ is integral.
+\end{enumerate}
+Then every point of $\varphi(X^\circ)$ is a smooth point of $Z$, $\dim Z=M$, and $\varphi(X^\circ)$ is open in $Z$.
+\end{lemma}
+
+\section{Non-degenerate parameters: proof of Theorem~\ref{thm:smooth}}
+
+For a parameter $\theta$ of a network of depth $L$, let $\theta_{<L}=(W_k,b_k)_{k<L}$, a parameter of the network of depth $L-1$, whose function is $h_{L-1}$. If $\theta$ is non-degenerate, so is $\theta_{<L}$. Writing $h=h_{L-1}$, $p=p_L$ and $D=r^{L-1}$,
+\begin{equation}\label{eq:last}
+f_\theta=h+\sigma(p),\qquad p=W_Lh+b_L,\qquad\deg h_m\le D,\quad\deg p_m\le D,
+\end{equation}
+with $\deg p_m=D$ for all $m$ if $\theta$ is non-degenerate. We verify the three assumptions of Lemma~\ref{lem:criterion} for $X^\circ=\Tn$, by induction on $L$. The case $L=0$, where $\Theta$ is a point and $f=x$, is empty.
+
+\begin{proposition}[Fibers]\label{prop:fibers}
+Assume \eqref{eq:A}. If $\theta\in\Tn$ and $f_{\theta'}=f_\theta$ for some $\theta'\in\Theta$, then $\theta'=\theta$.
+\end{proposition}
+
+\begin{proof}
+Let $h,p$ and $h',q$ be as in \eqref{eq:last}, for $\theta$ and for $\theta'=(W'_k,b'_k)$. For every $m$, the polynomial $\sigma\circ p_m-\sigma\circ q_m=h'_m-h_m$ has degree at most $D=\deg p_m$. By Lemma~\ref{lem:gap}(i), $q_m=p_m$. Hence $h'=h$, and $\theta'_{<L}=\theta_{<L}$ by induction. Then $(W'_L-W_L)\,h+(b'_L-b_L)=q-p=0$, and Definition~\ref{def:nd}(ii) for $k=L-1$ gives $W'_L=W_L$ and $b'_L=b_L$.
+\end{proof}
+
+\begin{proposition}[Differential]\label{prop:diff}
+Assume $r\ge3$. If $\theta\in\Tn$, then $d\varphi_\theta$ is injective.
+\end{proposition}
+
+\begin{proof}
+Let $\dot\theta=(\dot W_k,\dot b_k)$ be in the kernel, and let $\dot h$ be the image of $\dot\theta_{<L}$ under the differential at $\theta_{<L}$ of the parametrization of depth $L-1$, so that $\deg\dot h_m\le D$. Differentiating \eqref{eq:last},
+\[
+0=\dot h_m+(\sigma'\circ p_m)\,\dot p_m,\qquad\dot p=\dot W_Lh+\dot b_L+W_L\dot h.
+\]
+If $\dot p_m\ne0$, the last term has degree at least $(r-1)D>D\ge\deg\dot h_m$, which is impossible. So $\dot p=0$ and $\dot h=0$. By induction, $\dot\theta_{<L}=0$, and $\dot W_Lh+\dot b_L=\dot p=0$ gives $\dot W_L=0$ and $\dot b_L=0$, by Definition~\ref{def:nd}(ii).
+\end{proof}
+
+\begin{proposition}[Limits]\label{prop:limits}
+Assume \eqref{eq:A}. Let $\theta^0\in\Tn$, and let $\theta(s)\in F^{\dpar}$ be such that $f_{\theta(s)}$ is integral with reduction $f_{\theta^0}$. Then $\theta(s)$ is integral.
+\end{proposition}
+
+\begin{proof}
+Let $\nu$ be the Gauss valuation on $F[x]$, i.e., the least order in $s$ of the coefficients. It is multiplicative, and $g$ is integral if and only if $\nu(g)\ge0$. Let $h,p$ and $h^0,p^0$ be as in \eqref{eq:last}, for $\theta(s)$ and for $\theta^0$. Fix $m$, and write $p$, $p^0$ for $p_m$, $p^0_m$; thus $\deg p\le D$ and $\deg p^0=D$. Since $\deg h_m\le D$, the components of degree larger than $D$ of the $m$-th coordinate of $f_{\theta(s)}$ are those of $\sigma\circ p$:
+\begin{equation}\label{eq:high}
+[\sigma\circ p]_e\ \text{ is integral, with reduction }\ [\sigma\circ p^0]_e,\qquad\text{for all } e>D.
+\end{equation}
+We show that $p$ is integral, one homogeneous component at a time. Let $P=[p]_D$. For $e=rD$, \eqref{eq:high} says that $a_rP^r$ is integral with reduction $a_r[p^0]_D^r\ne0$. Hence $\nu(P)=0$. Let $0\le e<D$. A product of $r$ homogeneous components of $p$ of total degree $(r-1)D+e$ has either one factor $[p]_e$ and $r-1$ factors $P$, or only factors of degree larger than $e$. Moreover, $p^l$ has degree at most $(r-1)D$ for $l<r$. Hence
+\[
+[\sigma\circ p]_{(r-1)D+e}=a_r\big(r\,P^{r-1}[p]_e+G_e\big)+\begin{cases}a_{r-1}P^{r-1}&\text{if }e=0,\\0&\text{if }e>0,\end{cases}
+\]
+where $G_e$ is a polynomial with integer coefficients in the components $[p]_{e'}$ with $e<e'\le D$. By descending induction on $e$, these components are integral. Since $(r-1)D+e>D$, \eqref{eq:high} then shows that $P^{r-1}[p]_e$ is integral, and so is $[p]_e$, because $\nu(P)=0$. Thus $p$ is integral. By \eqref{eq:high}, its reduction $\bar p$ satisfies $\deg(\sigma\circ\bar p-\sigma\circ p^0)\le D=\deg p^0$, and $\bar p=p^0$ by Lemma~\ref{lem:gap}(i).
+
+Therefore all the $p_m$ are integral, with reductions $p^0_m$, and $h=f_{\theta(s)}-\sigma(p)$ is integral, with reduction $h^0$. By induction, $\theta_{<L}(s)$ is integral. Finally, $p_m=\sum_nW_L[m,n]\,h_n+b_{L,m}$. If these coefficients were not all integral, multiplying by the least power $s^k$, $k>0$, that makes them integral and reducing would give a nontrivial linear relation among $1,h^0_1,\dots,h^0_d$, against Definition~\ref{def:nd}(ii). So $W_L(s)$ and $b_L(s)$ are integral.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:smooth}]
+By Propositions~\ref{prop:fibers}, \ref{prop:diff} and~\ref{prop:limits}, Lemma~\ref{lem:criterion} applies to $X^\circ=\Tn$: the functions $f_\theta$ with $\theta\in\Tn$ are smooth points of $\Mbar$, and $\dim\Mbar=\dpar$. Proposition~\ref{prop:fibers} also gives the claims on the fibers. If $d=1$ or $L=1$, $\Tn$ is the set of the parameters without inactive neurons. So a singular point $f\in\M$ of $\Mbar$ is only computed by parameters with an inactive neuron, and the converse is Theorem~\ref{thm:sing}, proved below.
+\end{proof}
+
+\section{Inactive neurons: proof of Theorem~\ref{thm:sing}}
+
+Fix a neuron $(j,i)$, and let $S=\{\theta\in\Theta:W_j[i,:]=0\}$, a linear subspace of $\Theta$. We first show that $\varphi$ is still an immersion at a generic point of $S$. It suffices to find one such point, and we choose it so that the network splits into networks of width one.
+
+\begin{lemma}[Width one]\label{lem:one}
+Assume \eqref{eq:A}, and let $d=1$. Let $\theta=(w_k,b_k)_{k\le L}$ with $w_j=0$, $\sigma'(b_j)\ne0$, and $w_k\ne0$ for $k\ne j$. Then $d\varphi_\theta$ is injective.
+\end{lemma}
+
+\begin{proof}
+Here $h_k,p_k\in\K[x]$ are polynomials in one variable. We have $h_j=h_{j-1}+\sigma(b_j)$ and, for $k\ne j$, $\deg p_k=\deg h_{k-1}$ and $\deg h_k=r\deg h_{k-1}$. In particular, no $h_k$ is constant. Let $\dot\theta=(\dot w_k,\dot b_k)$ be in the kernel of $d\varphi_\theta$, and let $\dot h_k$ and $\dot p_k$ be the corresponding derivatives of $h_k$ and $p_k$:
+\[
+\dot h_0=0,\qquad\dot p_k=\dot w_kh_{k-1}+\dot b_k+w_k\dot h_{k-1},\qquad\dot h_k=\dot h_{k-1}+\sigma'(p_k)\,\dot p_k,\qquad\dot h_L=0.
+\]
+By induction on $k$, $\deg\dot h_k\le\deg h_k$. We use the following remark:
+\begin{equation*}\tag{$\ast$}\label{eq:star}
+\text{if $k\ne j$ and $\dot h_k=c$ for some $c\in\K$, then $\dot p_k=0$ and $\dot h_{k-1}=c$.}
+\end{equation*}
+Indeed, otherwise $\sigma'(p_k)\,\dot p_k=c-\dot h_{k-1}$ would have degree at least $(r-1)\deg h_{k-1}>\deg h_{k-1}$.
+
+Applying \eqref{eq:star} with $c=0$ for $k=L,L-1,\dots,j+1$ gives $\dot h_k=0$ for $k\ge j$ and $\dot p_k=0$ for $k>j$. At layer $j$, since $w_j=0$ and $p_j=b_j$,
+\[
+\dot h_{j-1}=c_0+c_1h_{j-1},\qquad c_1=-\sigma'(b_j)\,\dot w_j,\quad c_0=-\sigma'(b_j)\,\dot b_j.
+\]
+If $j=1$, then $\dot h_0=0$ and $h_0=x$ give $c_0=c_1=0$. Let $j\ge2$. Substituting $h_{j-1}=h_{j-2}+\sigma(p_{j-1})$ and $\dot h_{j-1}=\dot h_{j-2}+\sigma'(p_{j-1})\,\dot p_{j-1}$,
+\[
+c_1\,\sigma(p_{j-1})-\sigma'(p_{j-1})\,\dot p_{j-1}=\dot h_{j-2}-c_0-c_1h_{j-2},
+\]
+which has degree at most $\deg h_{j-2}=\deg p_{j-1}$. By Lemma~\ref{lem:gap}(ii), $c_1=0$ and $\dot p_{j-1}=0$, so that $\dot h_{j-2}=c_0$. Applying \eqref{eq:star} with $c=c_0$ for $k=j-2,\dots,1$ gives $\dot h_0=c_0$, hence $c_0=0$.
+
+In both cases $c_0=c_1=0$, so that $\dot w_j=\dot b_j=0$, and $\dot h_k=0$ for all $k$ and $\dot p_k=0$ for all $k\ne j$. Then $\dot w_kh_{k-1}+\dot b_k=0$, and $\dot w_k=\dot b_k=0$ since $h_{k-1}$ is not constant.
+\end{proof}
+
+\begin{lemma}[A diagonal parameter]\label{lem:diag}
+Assume \eqref{eq:A}. There is $\theta\in S$ such that $d\varphi_\theta$ is injective.
+\end{lemma}
+
+\begin{proof}
+Let $\theta$ be such that every $W_k$ is diagonal, with diagonal entries $w_{k,m}\ne0$ for $(k,m)\ne(j,i)$ and $w_{j,i}=0$, and such that $\sigma'(b_{j,i})\ne0$. Then $h_{k,m}=u_{k,m}(x_m)$ and $p_{k,m}=\pi_{k,m}(x_m)$, where, for each $m$, the $u_{k,m}$ and $\pi_{k,m}$ are the hidden states and pre-activations of the network of width one with parameter $\theta_m=(w_{k,m},b_{k,m})_{k\le L}$. As in the proof of Lemma~\ref{lem:one}, $\deg u_{k,m}=r^k$, except that $u_{j,i}=u_{j-1,i}+\sigma(b_{j,i})$ and $\deg u_{k,i}=r^{k-1}$ for $k\ge j$.
+
+Let $\dot\theta=(\dot W_k,\dot b_k)$ be in the kernel of $d\varphi_\theta$. Since $W_k$ is diagonal, the derivatives $\dot h_k$ of the hidden states satisfy $\dot h_{k,m}=\lambda_{k,m}\,\dot h_{k-1,m}+\sigma'(p_{k,m})\big(\dot b_{k,m}+\sum_n\dot W_k[m,n]\,h_{k-1,n}\big)$ with $\lambda_{k,m}=1+w_{k,m}\,\sigma'(p_{k,m})$. Hence, for every $m$,
+\begin{equation}\label{eq:diag}
+0=\dot h_{L,m}=\sum_{k=1}^LA_{k,m}(x_m)\Big(\dot b_{k,m}+\sum_{n=1}^d\dot W_k[m,n]\,u_{k-1,n}(x_n)\Big),\qquad A_{k,m}=\sigma'(\pi_{k,m})\prod_{l>k}\lambda_{l,m}.
+\end{equation}
+The polynomials $A_{k,m}\in\K[x_m]$ are nonzero: $\pi_{k,m}$ is not constant unless $(k,m)=(j,i)$, where $\sigma'(\pi_{j,i})=\sigma'(b_{j,i})\ne0$ and $\lambda_{j,i}=1$. For $m\ne i$, $\deg A_{k,m}=(r-1)\sum_{l\ge k}r^{l-1}=r^L-r^{k-1}$, so that $A_{1,m},\dots,A_{L,m}$ are linearly independent.
+
+\emph{Off-diagonal entries.} Let $n\ne m$. Differentiating \eqref{eq:diag} with respect to $x_n$,
+\[
+\sum_{k=1}^L\dot W_k[m,n]\,A_{k,m}(x_m)\,u'_{k-1,n}(x_n)=0.
+\]
+If $n\ne i$, the polynomials $u'_{k-1,n}$ have the distinct degrees $r^{k-1}-1$, hence are linearly independent, and $\dot W_k[m,n]\,A_{k,m}=0$, i.e., $\dot W_k[m,n]=0$, for all $k$. If $n=i$, then $u'_{j,i}=u'_{j-1,i}$, while the $u'_{k-1,i}$ with $k\ne j+1$ have distinct degrees, namely $r^{k-1}-1$ for $k\le j$ and $r^{k-2}-1$ for $k\ge j+2$. Hence $\dot W_k[m,i]\,A_{k,m}=0$ for $k\ne j,j+1$ and $\dot W_j[m,i]\,A_{j,m}+\dot W_{j+1}[m,i]\,A_{j+1,m}=0$, the last term being absent if $j=L$. Since $m\ne i$, the $A_{k,m}$ are linearly independent, and $\dot W_k[m,i]=0$ for all $k$.
+
+\emph{Diagonal entries and biases.} Now \eqref{eq:diag} reads $\sum_kA_{k,m}\,(\dot b_{k,m}+\dot W_k[m,m]\,u_{k-1,m})=0$ in $\K[x_m]$. The left-hand side is the image of $(\dot W_k[m,m],\dot b_{k,m})_{k\le L}$ under the differential at $\theta_m$ of the parametrization of the network of width one. This differential is injective, by Proposition~\ref{prop:diff} if $m\ne i$, since then $\theta_m$ is non-degenerate, and by Lemma~\ref{lem:one} if $m=i$. Hence $\dot\theta=0$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:sing}]
+The points at which $\Mbar$ is not normal form a closed subset, contained in the singular locus. Since $S$ is irreducible, it suffices to show that $\Mbar$ is not normal at $f_\theta$ for $\theta$ in a non-empty open subset of $S$. Let $U\subseteq S$ be the set of the $\theta\in S$ at which $d\varphi_\theta$ is injective. It is open in $S$, and non-empty by Lemma~\ref{lem:diag}. Let $\theta\in U$. Since the kernel of $d\varphi_\theta$ contains the tangent space at $\theta$ of the fiber $\varphi^{-1}(f_\theta)$, the point $\theta$ is isolated in its fiber. By Lemma~\ref{lem:rigid}(iii), there is $\beta'\ne b_{j,i}$ with $\sigma(\beta')=\sigma(b_{j,i})$. Let $\theta'$ be obtained from $\theta$ by replacing $b_{j,i}$ with $\beta'$. Then $\theta'\ne\theta$ and $f_{\theta'}=f_\theta$, since the inactive neuron adds the same constant. Finally, $\varphi\colon\Theta\to\Mbar$ is birational, being dominant and injective on the non-empty open subset $\Tn$ (Proposition~\ref{prop:fibers}), in characteristic $0$. By Lemma~\ref{lem:zmt}, $\Mbar$ is not normal at $f_\theta$.
+\end{proof}
+
+\section{Singularities that are not subnetworks: proof of Proposition~\ref{prop:other}}
+
+Let $\zeta$ be a primitive cube root of unity. Since $\zeta^5=\zeta^2$ and $\zeta^4=\zeta$,
+\begin{equation}\label{eq:zeta}
+\sigma(t)-\zeta\,\sigma(\zeta t)=(1-\zeta^2)\,t,\qquad\sigma'(t)=5t^4+2t+1,\qquad\sigma'(\zeta t)=5\zeta t^4+2\zeta t+1.
+\end{equation}
+Let $u=(1-\zeta^2)^{-1}(-1,\zeta)\in\K^2$ and $\beta\in\K$. Let $\theta$ be a parameter such that the rows of $W_1$ are $u$ and $\zeta u$, $b_1=(\beta,\zeta\beta)$, and the rows of $W_2$ are nonzero. No neuron is inactive at $\theta$. With $t=u\cdot x+\beta$, the pre-activations of the first layer are $t$ and $\zeta t$, so that, by \eqref{eq:zeta},
+\[
+h_{1,1}-\zeta h_{1,2}=x_1-\zeta x_2+\sigma(t)-\zeta\,\sigma(\zeta t)=x_1-\zeta x_2+(1-\zeta^2)(u\cdot x+\beta)=(1-\zeta^2)\beta=:c_0.
+\]
+Hence, for every $v\in\K^2$, the parameter $\theta_v$ obtained from $\theta$ by replacing $W_2$ with $W_2+v\,(1,-\zeta)$ and $b_2$ with $b_2-c_0v$ has the same pre-activations $p_2$, and $f_{\theta_v}=f_\theta$. The image of $d\varphi_{\theta_v}$ lies in $T=T_{f_\theta}\Mbar$ for every $v$. Let $\varepsilon_1,\varepsilon_2$ be the standard basis of $\K^2$, and let $m\in\{1,2\}$.
+
+First, the derivative of $\varphi$ at $\theta$ with respect to $W_2[m,1]$ is $\sigma'(p_{2,m})\,h_{1,1}\,\varepsilon_m\in T$.
+
+Second, let $\dot\theta$ be a direction in the parameters of the first layer, and let $\dot h_1$ be the corresponding derivative of $h_1$, which is the same at all the $\theta_v$. Then $d\varphi_{\theta_v}(\dot\theta)=\dot h_1+\sigma'(p_2)\odot\big((W_2+v\,(1,-\zeta))\,\dot h_1\big)$, where $\odot$ is the coordinate-wise product. Subtracting the value at $v=0$ from the value at $v=\varepsilon_m$ gives $\sigma'(p_{2,m})\,g\,\varepsilon_m\in T$, where
+\[
+g=\dot h_{1,1}-\zeta\,\dot h_{1,2}=\sigma'(t)\,\ell_1-\zeta\,\sigma'(\zeta t)\,\ell_2=(5t^4+2t)\,(\ell_1-\zeta^2\ell_2)+(\ell_1-\zeta\ell_2),
+\]
+and $\ell_1,\ell_2$ are the derivatives of the two pre-activations, which are arbitrary affine functions of $x$. Thus $g$ ranges over the space $E$ of the polynomials $(5t^4+2t)A+B$, with $A$ and $B$ affine. This space has dimension $6$, since $A$ and $B$ are determined by $g$.
+
+Finally, $h_{1,1}=x_1+t^5+t^2+t$ does not lie in $E$. Indeed, if $h_{1,1}=(5t^4+2t)A+B$, the components of degree $5$ give $A=t/5+a$ for some $a\in\K$, and then $B=x_1-5a\,t^4+\tfrac35t^2+(1-2a)\,t$ is not affine. Therefore $T$ contains the spaces $\sigma'(p_{2,m})\,(E\oplus\K h_{1,1})\,\varepsilon_m$ for $m=1,2$, whose sum is direct and has dimension $14$. Since $\dim\Mbar\le\dpar=12$, the point $f_\theta$ is singular. \qed
+
+\section{Remarks}
+
+\begin{remark}[Mechanism]
+For a generic $\theta$ with an inactive neuron $(j,i)$, the fiber of $f_\theta$ contains the $r$ parameters obtained by replacing the bias $b_{j,i}$ with the roots $\beta'$ of $\sigma(\beta')=\sigma(b_{j,i})$, and $\varphi$ is an immersion at each of them. They give $r$ smooth branches of $\Mbar$ through $f_\theta$. These branches are tangent to each other: the differentials of $\varphi$ at two such parameters have the same image, since they only differ by the factors $\sigma'(b_{j,i})$ and $\sigma'(\beta')$ in the directions of the incoming weights and bias of the inactive neuron. So, unlike in Theorem~25, the images of the differentials along the fiber do not span a space of dimension larger than $\dim\M$, and the singularity is detected through normality instead. Since a singular point has a Zariski tangent space of dimension larger than $\dim\M$, the conclusion is the same.
+\end{remark}
+
+\begin{remark}[Real networks]
+For $\K=\R$, some of the roots $\beta'$ may be non-real, and the corresponding branches are not visible in $\M$. The statement is that $f_\theta$ is a singular point of the Zariski closure, which is the notion of singularity of the Primer.
+\end{remark}
+
+\begin{remark}[Biases]
+The biases are essential. For $d=L=1$, without bias and with $\sigma(0)=0$, the function $f_\theta=x+\sigma(wx)$ traces the curve $w\mapsto(a_1w,a_2w^2,\dots,a_rw^r)$. If $\sigma'(0)=a_1\ne0$, this is a closed embedding of the line, so that $\Mbar=\M$ is smooth, also at the function $x$ of the subnetwork $w=0$.
+\end{remark}
+
+\begin{remark}[Degenerate parameters]\label{rem:open}
+For $d\ge2$ and $L\ge2$, a parameter without inactive neurons can be degenerate in two ways. If condition (ii) of Definition~\ref{def:nd} fails, some hidden state $h_k$, $k<L$, satisfies an affine relation $c\cdot h_k=c_0$. Then $W_{k+1}+v\,c^\top$ and $b_{k+1}-c_0v$ give the same function for every $v\in\K^d$, the fiber has positive dimension, and $f_\theta$ can be singular, as in Proposition~\ref{prop:other}. This is the analogue, for residual networks, of the redundant neurons of MLPs; it is not a subnetwork in the sense of Example~9. For $d=2$ and $k=1$, such a relation forces the two rows of $W_1$ to differ by a factor $\lambda$ with $\lambda^{r-m}=1$ whenever $m\ge2$ and $\ha_m\ne0$, and $\lambda\ne1$. So it requires non-real parameters in Proposition~\ref{prop:other}, and it does not occur at all if $\ha_2\ha_3\ne0$, e.g., for a generic $\sigma$. If only condition (i) fails, the leading forms of some hidden states cancel in a pre-activation, whose degree is then smaller than $r^{k-1}$. The neuron no longer dominates the rest of its coordinate, the degree gap of Lemma~\ref{lem:gap} is lost, and several compositions of comparable degree interact. This is the situation of deep MLPs in \texttt{singularities.tex}, and leads to the same questions on the independence of compositions (conditions \textup{(R2)} and \textup{(R3)} there). We do not know whether such points are smooth.
+\end{remark}
+
+\begin{remark}[The assumption on $\sigma$]
+Assumption \eqref{eq:A} excludes the degrees $r\le4$ and the activations with an affine symmetry, such as even polynomials and monomials. For these, the generic fiber of $\varphi$ is expected to be the orbit of a non-trivial finite group, and the statements have to be modified accordingly; we have not treated this case.
+\end{remark}
+
+\end{document}
