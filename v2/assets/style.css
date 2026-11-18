@@ -103,7 +103,7 @@ a {
 a:hover { text-decoration-color: var(--ink); }
 .stub { color: var(--muted); font-style: italic; }
 
-/* Opening paragraph of the home page (<p class="lede">): a raised initial in the accent, standing on the first
+/* Opening paragraph of the home page and of the Primer (<p class="lede">): a raised initial in the accent, standing on the first
    line's baseline, and the rest of the first term in small caps, as in a book. At 3.2em, the initial's cap height
    is about two lines of text; line-height .72 makes the first line just tall enough for it. */
 .lede::first-letter {
@@ -128,6 +128,8 @@ details.section > summary { margin: 2.4rem 0 .6rem; }
 details.section > summary > h2 { display: inline; }
 details.section:not([open]) > summary { margin-bottom: 0; }
 details.section:not([open]) + details.section > summary { margin-top: 1.2rem; }
+/* The first section, after the Primer's opening line, sits as close to it as closed sections sit to each other. */
+p + details.section > summary { margin-top: 1.2rem; }
 
 /* Math ignores the surrounding small caps and letter-spacing; display math scrolls inside its own box on narrow screens. */
 mjx-container { font-variant: normal; letter-spacing: normal; }

@@ -12,6 +12,7 @@ A plain HTML website. There is no build step: open `index.html` in a browser.
 | `assets/mathjax-config.js` | LaTeX settings and shared macros |
 | `papers.js` | The papers listed on the Literature page, and the tags that filter them |
 | `assets/literature.js` | Writes the papers of `papers.js` into `literature.html`, and above them the tags |
+| `assets/numbering.js` | Numbers the definitions, theorems and examples of the Primer, and fills in the empty links to them |
 | `assets/sections.js` | Opens a collapsed section of the Primer when a link points inside it |
 | `assets/toggles.js` | Buttons that change a figure: the skip connections and the weight sharing of the network in the Examples of the Primer |
 | `neuromanifold/` | The two interactive neuromanifold viewers: `surface.js` (the surface of a residual network, `#nm-surface`, at the end of the home page), `flat.js` (the flat neuromanifold of a shallow network, `#nm-flat`, at the end of the section "Feature learning" of the Primer), and `viewers.css`, the styles of both |
@@ -25,15 +26,29 @@ Math is rendered by MathJax, so you can write LaTeX directly in the HTML:
 - Shared macros (`\R`, `\C`, `\K`, `\M`, `\Sym`, `\din`, `\dout`, `\dpar`, `\rank`) are defined in `assets/mathjax-config.js`. Add your own there.
 - A literal dollar sign is written `\$`.
 
-Theorem-like blocks are plain HTML; see `primer.html`:
+Theorem-like blocks are plain HTML; see `primer.html`. Their numbers are automatic (`assets/numbering.js`): the label
+holds only the kind, and the id (`def-`, `thm-`, `lem-`, `cor-`, `prop-` or `ex-`, then a name) is used to refer to
+the block.
 
 ```html
-<div class="theorem"><p><span class="label">Theorem 3.</span> Statement.</p></div>
-<div class="definition"><p><span class="label">Definition 4</span> (Name). Text.</p></div>
-<div class="example"><p><span class="label">Example 5</span> (Name). Text.</p></div>
+<div class="theorem" id="thm-name"><p><span class="label">Theorem</span> Statement.</p></div>        <!-- Theorem 3. -->
+<div class="definition" id="def-name"><p><span class="label">Definition</span> (Name). Text.</p></div>  <!-- Definition 4 (Name). -->
+<div class="example" id="ex-name"><p><span class="label">Example</span> (Name). Text.</p></div>        <!-- Example 5 (Name). -->
 <details class="proof"><summary>Proof.</summary><p>Text.</p></details>  <!-- collapsible, starts closed -->
 <div class="bend"><p>A subtle point, marked by a "dangerous bend" sign in the margin.</p></div>
 ```
+
+Definitions, theorems (lemmas, corollaries and propositions included) and examples share one counter, in the order of
+the page; a block inside an HTML comment takes no number. A label gets a period unless a name in parentheses follows
+it. To refer to a block, leave the link empty: it shows the block's name, like `\ref`, or only its number if the link
+has `class="num"`. An empty link to an id that is not a numbered block shows "??".
+
+```html
+... by <a href="#thm-name"></a> ...                                                      <!-- by Theorem 3 -->
+... Theorems <a class="num" href="#thm-a"></a> and <a class="num" href="#thm-b"></a> ...  <!-- Theorems 20 and 24 -->
+```
+
+Other pages cannot know these numbers: a link from them to a block of the Primer names it in words, without a number.
 
 Each section of the Primer is collapsible and starts closed (add `open` to start it open):
 

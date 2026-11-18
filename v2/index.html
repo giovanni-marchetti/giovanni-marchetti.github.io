@@ -89,7 +89,7 @@
     </svg>
   </figure>
 
-  <p>The central objects of study are the spaces of functions $\M$ parametrized by polynomial deep learning models.</p>
+  <p>The central objects of study are polynomial deep learning models and the spaces of functions $\M$ they parametrize, called <em>neuromanifolds</em>.</p>
  <!-- <p>A model is a family of functions $f_\theta \colon X \to Y$, indexed by parameters $\theta$ in a parameter space $\Theta$ (usually Euclidean), and the parametrization map is $\varphi \colon \theta \mapsto f_\theta$. Its image $\M = \varphi(\Theta) \subset Y^X$ is called a <em>neuromanifold</em>. We assume that $f_\theta(x)$ is polynomial in both $x$ and $\theta$.</p> -->
 
   <details class="note">
@@ -143,7 +143,7 @@
     <p>Have fun with some toy neuromanifolds!</p>
     <details class="note">
       <summary>What is this?</summary>
-      <p>Consider a residual network (<a href="primer.html#ex-skip-connections">Example 6</a>) with two layers of one neuron each, no biases, and as activation a polynomial $\sigma \in \R[t]$ of degree $r$. It computes
+      <p>Consider a residual network (see <a href="primer.html#ex-skip-connections">Skip connections</a>) with two layers of one neuron each, no biases, and as activation a polynomial $\sigma \in \R[t]$ of degree $r$. It computes
       $$
       f_\theta(x) = \sigma\big(w_2 (\sigma(w_1 x) + x)\big) + \sigma(w_1 x) + x, \qquad \theta = (w_1, w_2) \in \R^2,
       $$

@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="assets/style.css">
 <link rel="stylesheet" href="neuromanifold/viewers.css">
 <script src="assets/mathjax-config.js"></script>
+<script defer src="assets/numbering.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
 <script defer src="assets/sections.js"></script>
 <script defer src="assets/toggles.js"></script>
@@ -33,12 +34,16 @@
   </header>
 
   <!-- Each section is collapsible: its heading is the summary line of a <details>, closed at first.
-       Write <details class="section" open> for a section that starts open. -->
+       Write <details class="section" open> for a section that starts open.
+       Definitions, theorems and examples are numbered by assets/numbering.js: write only the kind in the label,
+       <span class="label">Theorem</span>, and refer to a block with an empty link, <a href="#thm-constructible"></a>. -->
+
+  <p class="lede">A self-contained mathematical introduction to neuroalgebraic geometry.</p>
   <details class="section">
     <summary><h2 id="neuromanifolds">Neuromanifolds</h2></summary>
 
     <div class="definition" id="def-neuromanifold">
-      <p><span class="label">Definition 1</span> (Neuromanifold). Let $X$ (inputs), $Y$ (outputs) and $\Theta$ (parameters) be sets. A <em>model</em> is a family of functions $f_\theta \colon X \to Y$ indexed by $\theta \in \Theta$. Its <em>parametrization map</em> is
+      <p><span class="label">Definition</span> (Neuromanifold). Let $X$ (inputs), $Y$ (outputs) and $\Theta$ (parameters) be sets. A <em>model</em> is a family of functions $f_\theta \colon X \to Y$ indexed by $\theta \in \Theta$. Its <em>parametrization map</em> is
       $$
       \varphi \colon \Theta \to Y^X, \qquad \theta \mapsto f_\theta,
       $$
@@ -48,7 +53,7 @@
     <p>Models can be composed: the composition of $f_\theta \colon X \to Y$, $\theta \in \Theta$, and $g_{\theta'} \colon Y \to Z$, $\theta' \in \Theta'$, is the model $g_{\theta'} \circ f_\theta \colon X \to Z$ with parameters $(\theta, \theta') \in \Theta \times \Theta'$. This gives the category $\mathbf{Para}$ of <em>parametrized functions</em> (<a href="#fong2019backprop">Fong et al., 2019</a>), whose objects are sets and whose morphisms are models, up to bijections of parameter spaces. Compositionality is at the heart of <em>deep</em> learning: a <em>deep model</em> is a composition $f^{(L)} \circ \cdots \circ f^{(1)}$ of a sequence of models, called <em>layers</em>.</p>
 
     <div class="definition" id="def-algebraic-model">
-      <p><span class="label">Definition 2</span> (Algebraic model). Let $\K$ be an infinite field. A model is <em>algebraic</em> if $X = \K^{\din}$, $Y = \K^{\dout}$, $\Theta = \K^{\dpar}$, and $f_\theta(x)$ is a polynomial in $(\theta, x)$.</p>
+      <p><span class="label">Definition</span> (Algebraic model). Let $\K$ be an infinite field. A model is <em>algebraic</em> if $X = \K^{\din}$, $Y = \K^{\dout}$, $\Theta = \K^{\dpar}$, and $f_\theta(x)$ is a polynomial in $(\theta, x)$.</p>
     </div>
 
     <p>Let $k$ be the degree of $f_\theta(x)$ in $x$, and denote by $\K[x_1, \ldots, x_{\din}]_{\le k}$ the space of polynomials of degree at most $k$ in $\din$ variables. Then $\M$ lives in the finite-dimensional space
@@ -63,13 +68,13 @@
     <p>From now on, we fix a finite-dimensional linear space $V \subseteq Y^X$ containing $\M$, called the <em>ambient space</em>. It can be larger than $\K[x_1, \ldots, x_{\din}]_{\le k}^{\dout}$, or as small as $\operatorname{Span}(\M)$.</p>
 
     <div class="bend">
-      <p>Finite-dimensionality is very special to polynomials. For instance, let $\sigma \colon \R \to \R$ be continuous. <a href="#pinkus1999approximation">Pinkus (1999)</a> proves that the functions $x \mapsto \sigma(w \cdot x + b)$, for $w \in \R^{\din}$ and $b \in \R$, span a finite-dimensional space if and only if $\sigma$ is a polynomial. Hence, for a perceptron (<a href="#ex-perceptrons">Example 4</a>) with a non-polynomial activation, $\M$ is not contained in any finite-dimensional space. However, finite-dimensionality is also an obstruction to universal approximation (see <a href="#universal-approximation">Universal approximation</a>).</p>
+      <p>Finite-dimensionality is very special to polynomials. For instance, let $\sigma \colon \R \to \R$ be continuous. <a href="#pinkus1999approximation">Pinkus (1999)</a> proves that the functions $x \mapsto \sigma(w \cdot x + b)$, for $w \in \R^{\din}$ and $b \in \R$, span a finite-dimensional space if and only if $\sigma$ is a polynomial. Hence, for a perceptron (<a href="#ex-perceptrons"></a>) with a non-polynomial activation, $\M$ is not contained in any finite-dimensional space. However, finite-dimensionality is also an obstruction to universal approximation (see <a href="#universal-approximation">Universal approximation</a>).</p>
     </div>
 
     <p>Recall that a subset of $\K^N$ is <em>constructible</em> if it is a finite union of sets of the form $\{g_1 = \cdots = g_s = 0,\ h \neq 0\}$, and that a subset of $\R^N$ is <em>semi-algebraic</em> if it is a finite union of sets of the form $\{g_1 = \cdots = g_s = 0,\ h_1 > 0, \ldots, h_t > 0\}$, where the $g_i$ and $h_j$ are polynomials.</p>
 
     <div class="theorem" id="thm-constructible">
-      <p><span class="label">Theorem 3.</span> Let $\M$ be the neuromanifold of an algebraic model. If $\K$ is algebraically closed, then $\M$ is constructible. If $\K = \R$, then $\M$ is semi-algebraic.</p>
+      <p><span class="label">Theorem</span> Let $\M$ be the neuromanifold of an algebraic model. If $\K$ is algebraically closed, then $\M$ is constructible. If $\K = \R$, then $\M$ is semi-algebraic.</p>
     </div>
 
     <details class="proof">
@@ -84,7 +89,7 @@
     <summary><h2 id="examples">Examples</h2></summary>
 
     <div class="example" id="ex-perceptrons">
-      <p><span class="label">Example 4</span> (Perceptrons). Let $\sigma \colon \K \to \K$ be a function, the <em>activation</em>. A <em>perceptron</em> is the model
+      <p><span class="label">Example</span> (Perceptrons). Let $\sigma \colon \K \to \K$ be a function, the <em>activation</em>. A <em>perceptron</em> is the model
       $$
       f_\theta(x) = \sigma(W x + b), \qquad \theta = (W, b) \in \K^{\dout \times \din} \times \K^{\dout},
       $$
@@ -96,11 +101,11 @@
       <!-- Static svg in the style of the network on the home page (see .mlp-figure in assets/style.css). It reads from
            right to left: inputs on the right, the last layer on the left. The labels are placed in % of the figure.
            The buttons under it (assets/toggles.js) set data-skip and data-sharing on the figure. "Skip connections"
-           shows the orange arrows of Example 6 (.nm-on-skip), over the second layer and over the last one, and hides
-           the activations (.nm-off-skip); the first layer has no skip connection, since its widths differ. "Weight
-           sharing" makes the first layer the convolution of Example 5, with kernel (w_1, w_2): as for equal segments
-           in geometry, orange ticks mark the edges of w_1 with one stroke and those of w_2 with two (.nm-on-sharing),
-           and the other two edges (.nm-w0), drawn first, fade out. -->
+           shows the orange arrows of the example #ex-skip-connections (.nm-on-skip), over the second layer and over
+           the last one, and hides the activations (.nm-off-skip); the first layer has no skip connection, since its
+           widths differ. "Weight sharing" makes the first layer the convolution of the example #ex-weight-sharing,
+           with kernel (w_1, w_2): as for equal segments in geometry, orange ticks mark the edges of w_1 with one
+           stroke and those of w_2 with two (.nm-on-sharing), and the other two edges (.nm-w0), drawn first, fade out. -->
       <figure class="nm-figure mlp-figure">
         <div class="nm-stage">
           <svg viewBox="0 0 400 210" role="img" aria-label="A multilayer perceptron, read from right to left: three inputs, then layers of two neurons. The first layer is labelled W_1 + b_1 and the last W_L + b_L; the activation sigma acts on the first two layers. The buttons below add skip connections, as orange arrows labelled id that bypass the second layer and the last one, and weight sharing, which makes the first layer a convolution: each of its neurons reads two neighbouring inputs, and edges with the same weight carry the same number of orange ticks.">
@@ -167,7 +172,7 @@
     </div>
 
     <div class="example" id="ex-weight-sharing">
-      <p><span class="label">Example 5</span> (Weight sharing). The weights of some edges of a network can be tied together. Formally, let $\Theta = \K^E$ for a finite set $E$ (e.g., of edges), and let $\sim$ be an equivalence relation on $E$. Imposing $\theta_e = \theta_{e'}$ whenever $e \sim e'$ yields a model with parameter space $\K^{E/{\sim}}$. In ML, this is called <em>parameter sharing</em>; in algebraic geometry, it is a quotient: the coordinate ring of $\K^{E/{\sim}}$ is $\K[\theta_e : e \in E]/(\theta_e - \theta_{e'} : e \sim e')$.</p>
+      <p><span class="label">Example</span> (Weight sharing). The weights of some edges of a network can be tied together. Formally, let $\Theta = \K^E$ for a finite set $E$ (e.g., of edges), and let $\sim$ be an equivalence relation on $E$. Imposing $\theta_e = \theta_{e'}$ whenever $e \sim e'$ yields a model with parameter space $\K^{E/{\sim}}$. In ML, this is called <em>parameter sharing</em>; in algebraic geometry, it is a quotient: the coordinate ring of $\K^{E/{\sim}}$ is $\K[\theta_e : e \in E]/(\theta_e - \theta_{e'} : e \sim e')$.</p>
       <p>For instance, a <em>convolutional layer</em>, as in convolutional neural networks (CNNs), is a perceptron in which each output $y_i$ is connected only to the inputs $x_i, \ldots, x_{i+m-1}$, and edges related by a translation share their weight:
       $$
       y_i = \sigma\Big(\sum_{j=1}^{m} w_j\, x_{i+j-1} + b\Big), \qquad 1 \le i \le \dout = \din - m + 1.
@@ -176,7 +181,7 @@
     </div>
 
     <div class="example" id="ex-skip-connections">
-      <p><span class="label">Example 6</span> (Skip connections). Let $f_\theta \colon \K^{\din} \to \K^{\dout}$ be a model. If $\din = \dout$, then $x \mapsto f_\theta(x) + x$ is again a model, with the same parameters, and it is algebraic if $f$ is. This is called a <em>skip</em> or <em>residual connection</em>. It is often applied layer-wise: replacing each layer $f^{(i)}$ of a deep model by $\mathrm{id} + f^{(i)}$ gives
+      <p><span class="label">Example</span> (Skip connections). Let $f_\theta \colon \K^{\din} \to \K^{\dout}$ be a model. If $\din = \dout$, then $x \mapsto f_\theta(x) + x$ is again a model, with the same parameters, and it is algebraic if $f$ is. This is called a <em>skip</em> or <em>residual connection</em>. It is often applied layer-wise: replacing each layer $f^{(i)}$ of a deep model by $\mathrm{id} + f^{(i)}$ gives
       $$
       (\mathrm{id} + f^{(L)}) \circ \cdots \circ (\mathrm{id} + f^{(1)}),
       $$
@@ -188,7 +193,7 @@
     <summary><h2 id="submodels">Submodels</h2></summary>
 
     <div class="definition" id="def-morphism">
-      <p><span class="label">Definition 7</span> (Morphism). Let $\varphi \colon \Theta \to Y^X$ and $\varphi' \colon \Theta' \to Y^X$ be the parametrization maps of two models $f_\theta$ and $f'_{\theta'}$ with the same inputs $X$ and outputs $Y$. A <em>morphism</em> from the second model to the first is a map $\iota \colon \Theta' \to \Theta$ such that the triangle
+      <p><span class="label">Definition</span> (Morphism). Let $\varphi \colon \Theta \to Y^X$ and $\varphi' \colon \Theta' \to Y^X$ be the parametrization maps of two models $f_\theta$ and $f'_{\theta'}$ with the same inputs $X$ and outputs $Y$. A <em>morphism</em> from the second model to the first is a map $\iota \colon \Theta' \to \Theta$ such that the triangle
       $$
       \begin{array}{ccc}
       \Theta' & \;\overset{\iota}{\longrightarrow}\; & \Theta \\[4pt]
@@ -202,19 +207,19 @@
     <p>If models whose parameter spaces are in bijection are not identified, $\mathbf{Para}$ becomes a bicategory, whose 2-morphisms are precisely the morphisms of models, also called <em>reparametrizations</em> (<a href="#cruttwell2022categorical">Cruttwell et al., 2022</a>).</p>
 
     <div class="definition" id="def-submodel">
-      <p><span class="label">Definition 8</span> (Submodel). A <em>submodel</em> of a model is an injective morphism into it. Equivalently, up to bijection, a submodel of a model with parametrization map $\varphi \colon \Theta \to Y^X$ is a subset $\Theta' \subseteq \Theta$, with parametrization map the restriction $\varphi|_{\Theta'}$.</p>
+      <p><span class="label">Definition</span> (Submodel). A <em>submodel</em> of a model is an injective morphism into it. Equivalently, up to bijection, a submodel of a model with parametrization map $\varphi \colon \Theta \to Y^X$ is a subset $\Theta' \subseteq \Theta$, with parametrization map the restriction $\varphi|_{\Theta'}$.</p>
     </div>
 
     <p>Submodels of neural networks are central in questions related to (implicit) bias and generalization. By Occam's razor, among the solutions to a given task, we should prefer the simplest one, which, in our setting, means one lying in the smallest submodel.</p>
 
     <div class="example" id="ex-subnetworks">
-      <p><span class="label">Example 9</span> (Subnetworks). The main examples of submodels of neural networks are <em>subnetworks</em>. The precise notion depends on the architecture and varies somewhat across the literature but, roughly speaking, a subnetwork is a submodel whose parameters have some “neurons” inactive or redundant, so that its functions are also computed by a smaller network, with these neurons removed. For instance, consider an MLP (<a href="#ex-perceptrons">Example 4</a>) with activation $\sigma$, and let $\Sigma \subseteq \K \setminus \{0\}$ be the <em>homogeneity group</em> of $\sigma$, i.e., the group of the nonzero scalars $\lambda$ such that $\sigma(\lambda t) = c\, \sigma(t)$ for all $t \in \K$ and some $c \in \K$. We have $\Sigma = \K \setminus \{0\}$ if $\sigma(t) = t^r$ is a monomial, while $\Sigma = \{1\}$ for a generic polynomial $\sigma$. Let $0 < j < L$ and $1 \le i \le d_j$. The $i$-th neuron in layer $j$ is:</p>
+      <p><span class="label">Example</span> (Subnetworks). The main examples of submodels of neural networks are <em>subnetworks</em>. The precise notion depends on the architecture and varies somewhat across the literature but, roughly speaking, a subnetwork is a submodel whose parameters have some “neurons” inactive or redundant, so that its functions are also computed by a smaller network, with these neurons removed. For instance, consider an MLP (<a href="#ex-perceptrons"></a>) with activation $\sigma$, and let $\Sigma \subseteq \K \setminus \{0\}$ be the <em>homogeneity group</em> of $\sigma$, i.e., the group of the nonzero scalars $\lambda$ such that $\sigma(\lambda t) = c\, \sigma(t)$ for all $t \in \K$ and some $c \in \K$. We have $\Sigma = \K \setminus \{0\}$ if $\sigma(t) = t^r$ is a monomial, while $\Sigma = \{1\}$ for a generic polynomial $\sigma$. Let $0 < j < L$ and $1 \le i \le d_j$. The $i$-th neuron in layer $j$ is:</p>
       <ul>
         <li><em>inactive</em> if its incoming or outgoing weights vanish, i.e., $W_j[i,:] = 0$ or $W_{j+1}[:,i] = 0$;</li>
         <li><em>redundant</em> if $W_j[i,:] \neq 0$ and $(W_j[i,:], b_j[i]) = \lambda\, (W_j[k,:], b_j[k])$ for some $\lambda \in \Sigma$ and some $1 \le k \le d_j$ with $k \neq i$.</li>
       </ul>
       <p>Such neurons can be removed without changing $f_\theta$, which therefore lies in the neuromanifold of a smaller network, embedded in $\M$. Thus, the parameters at which given neurons are inactive or redundant form subnetworks.</p>
-      <p>For MLPs with skip connections (<a href="#ex-skip-connections">Example 6</a>), i.e., ResNets, subnetworks are defined only by vanishing incoming weights. If $W_j[i,:] = 0$, the $i$-th neuron in layer $j$ only adds the constant $\sigma(b_j[i])$ to the $i$-th coordinate, which can be absorbed by the subsequent biases. The neuron can then be removed by introducing a projection: the remaining neurons of the layer form the residual model $x \mapsto f'(x) + \pi(x)$, where $f'$ is the perceptron without the $i$-th neuron and $\pi \colon \K^{d_j} \to \K^{d_j - 1}$ forgets the $i$-th coordinate, while $x_i$ is passed on unchanged. The other conditions do not define removable neurons, since the skip connection still lets the information of the $i$-th coordinate flow to the subsequent layers.</p>
+      <p>For MLPs with skip connections (<a href="#ex-skip-connections"></a>), i.e., ResNets, subnetworks are defined only by vanishing incoming weights. If $W_j[i,:] = 0$, the $i$-th neuron in layer $j$ only adds the constant $\sigma(b_j[i])$ to the $i$-th coordinate, which can be absorbed by the subsequent biases. The neuron can then be removed by introducing a projection: the remaining neurons of the layer form the residual model $x \mapsto f'(x) + \pi(x)$, where $f'$ is the perceptron without the $i$-th neuron and $\pi \colon \K^{d_j} \to \K^{d_j - 1}$ forgets the $i$-th coordinate, while $x_i$ is passed on unchanged. The other conditions do not define removable neurons, since the skip connection still lets the information of the $i$-th coordinate flow to the subsequent layers.</p>
     </div>
   </details>
 
@@ -228,7 +233,7 @@
     \langle f, g \rangle = \int_X \langle f(x), g(x) \rangle \, d\mu(x)
     $$  
     for a probability measure $\mu$ on $X$. For algebraic models, where $V$ consists of polynomial maps, a standard inner product is the <em>Bombieri–Weyl</em> one, defined on monomials by $\langle x^\alpha, x^\beta \rangle = \delta_{\alpha \beta} \binom{k}{\alpha}^{-1}$ (and extended to homogeneous polynomials by homogenization, and to polynomial maps by summing over the components). 
-   <!-- It is invariant under orthogonal changes of coordinates, and evaluations of homogeneous polynomials are represented by powers of linear forms which, up to scaling, are the neurons of shallow monomial networks with one output (Example 4). -->
+   <!-- It is invariant under orthogonal changes of coordinates, and evaluations of homogeneous polynomials are represented by powers of linear forms which, up to scaling, are the neurons of shallow monomial networks with one output (<a href="#ex-perceptrons"></a>). -->
     </p>
 
     <p>Thus, ideally, machine learning is a <em>distance minimization</em> problem over the neuromanifold, with respect to a distance induced by an inner product on $V$. This is one of the problems at the heart of <em>metric algebraic geometry</em> (<a href="#breiding2024metric">Breiding et al., 2024</a>), a field that studies the interplay between real algebraic varieties and a distance on their ambient space.</p>
@@ -236,7 +241,7 @@
     <p>In practice, however, we do not have access to $f^*$, but only to finitely many samples from it, which form a dataset.</p>
 
     <div class="definition" id="def-dataset">
-      <p><span class="label">Definition 10</span> (Dataset). A <em>dataset</em> is a finite subset $D \subseteq X \times Y$, whose elements $(x_i, y_i)$, $i = 1, \ldots, n$, are called <em>datapoints</em>.</p>
+      <p><span class="label">Definition</span> (Dataset). A <em>dataset</em> is a finite subset $D \subseteq X \times Y$, whose elements $(x_i, y_i)$, $i = 1, \ldots, n$, are called <em>datapoints</em>.</p>
     </div>
 
     <p>The datapoints are assumed to lie on the graph of $f^*$, i.e., $y_i = f^*(x_i)$. Alternatively, as is typical in statistical learning theory, one can dispense with $f^*$ and think of $D$ probabilistically, as sampled from an unknown probability distribution over $X \times Y$; this accounts, for instance, for noise in the labels. For $\K = \R$, the role of $f^*$ is then played by the <em>regression function</em> $x \mapsto \mathbb{E}[y \mid x]$ (<a href="#cucker2002mathematical">Cucker and Smale, 2002</a>).</p>
@@ -250,7 +255,7 @@
     <p>Finally, datapoints and datasets can be viewed geometrically, as affine subspaces of $V$.</p>
 
     <div class="definition" id="def-interpolating-subspace">
-      <p><span class="label">Definition 11</span> (Interpolating subspace). The <em>interpolating subspace</em> of a dataset $D$ is
+      <p><span class="label">Definition</span> (Interpolating subspace). The <em>interpolating subspace</em> of a dataset $D$ is
       $$
       H_D = \{ f \in V : f(x) = y \text{ for all } (x, y) \in D \}.
       $$</p>
@@ -272,7 +277,7 @@
     <p>Algebraic models behave differently. If $\sigma$ is a polynomial of degree $r$, an MLP with $L$ layers has degree at most $r^{L-1}$ in $x$, whatever its widths. Hence, as the widths vary, its neuromanifold stays in the same ambient space $V = \K[x_1, \ldots, x_{\din}]_{\le r^{L-1}}^{\dout}$, and, since $V$ is finite-dimensional, universal approximation as above cannot hold. Within $V$, however, MLPs with a polynomial activation are as expressive as possible: at fixed depth, the union over all widths of their neuromanifolds is the whole ambient space.</p>
 
     <div class="theorem" id="lem-translates">
-      <p><span class="label">Lemma 12.</span> Let $\K$ be a field of characteristic $0$, and let $\sigma \in \K[t]$ have degree $r$. Then the translates $\sigma(t + b)$, for $b \in \K$, span $\K[t]_{\le r}$.</p>
+      <p><span class="label">Lemma</span> Let $\K$ be a field of characteristic $0$, and let $\sigma \in \K[t]$ have degree $r$. Then the translates $\sigma(t + b)$, for $b \in \K$, span $\K[t]_{\le r}$.</p>
     </div>
 
     <details class="proof">
@@ -281,12 +286,12 @@
     </details>
 
     <div class="theorem" id="thm-fixed-depth">
-      <p><span class="label">Theorem 13.</span> Let $\K$ be a field of characteristic $0$, and let $\sigma \in \K[t]$ have degree $r \ge 1$. Then the union over all widths of the neuromanifolds of MLPs with $L$ layers and activation $\sigma$ is $\K[x_1, \ldots, x_{\din}]_{\le r^{L-1}}^{\dout}$.</p>
+      <p><span class="label">Theorem</span> Let $\K$ be a field of characteristic $0$, and let $\sigma \in \K[t]$ have degree $r \ge 1$. Then the union over all widths of the neuromanifolds of MLPs with $L$ layers and activation $\sigma$ is $\K[x_1, \ldots, x_{\din}]_{\le r^{L-1}}^{\dout}$.</p>
     </div>
 
     <details class="proof">
       <summary>Proof.</summary>
-      <p>Let $\mathcal{F}_L$ be the set of functions $\K^{\din} \to \K$ computed by MLPs with $L$ layers and one output, of any widths. Placing such MLPs side by side, on the same input, shows that finitely many elements of $\mathcal{F}_L$ are computed by a single MLP with several outputs, that $\mathcal{F}_L$ is a vector space containing the constants, and that $\mathcal{F}_{L+1}$ is spanned by the constants and the functions $\sigma(u)$, for $u \in \mathcal{F}_L$. It thus suffices to show that $\mathcal{F}_L = \K[x_1, \ldots, x_{\din}]_{\le r^{L-1}}$, by induction on $L$. For $L = 1$, $\mathcal{F}_1$ consists of the affine functions. Assume the claim for $L$. Since $\sigma$ has degree $r$, $\mathcal{F}_{L+1} \subseteq \K[x_1, \ldots, x_{\din}]_{\le r^L}$. Conversely, by Lemma 12, $t^r = \sum_j c_j \sigma(t + b_j)$ for some $c_j, b_j \in \K$, so that $u^r = \sum_j c_j \sigma(u + b_j) \in \mathcal{F}_{L+1}$ for every $u \in \mathcal{F}_L$. By the polarization identity
+      <p>Let $\mathcal{F}_L$ be the set of functions $\K^{\din} \to \K$ computed by MLPs with $L$ layers and one output, of any widths. Placing such MLPs side by side, on the same input, shows that finitely many elements of $\mathcal{F}_L$ are computed by a single MLP with several outputs, that $\mathcal{F}_L$ is a vector space containing the constants, and that $\mathcal{F}_{L+1}$ is spanned by the constants and the functions $\sigma(u)$, for $u \in \mathcal{F}_L$. It thus suffices to show that $\mathcal{F}_L = \K[x_1, \ldots, x_{\din}]_{\le r^{L-1}}$, by induction on $L$. For $L = 1$, $\mathcal{F}_1$ consists of the affine functions. Assume the claim for $L$. Since $\sigma$ has degree $r$, $\mathcal{F}_{L+1} \subseteq \K[x_1, \ldots, x_{\din}]_{\le r^L}$. Conversely, by <a href="#lem-translates"></a>, $t^r = \sum_j c_j \sigma(t + b_j)$ for some $c_j, b_j \in \K$, so that $u^r = \sum_j c_j \sigma(u + b_j) \in \mathcal{F}_{L+1}$ for every $u \in \mathcal{F}_L$. By the polarization identity
       $$
       r!\, 2^r\, u_1 \cdots u_r = \sum_{\varepsilon \in \{\pm 1\}^r} \varepsilon_1 \cdots \varepsilon_r \, (\varepsilon_1 u_1 + \cdots + \varepsilon_r u_r)^r,
       $$
@@ -296,12 +301,12 @@
     <p>If the depth is allowed to grow, the bound on the degree disappears.</p>
 
     <div class="theorem" id="cor-every-polynomial">
-      <p><span class="label">Corollary 14.</span> In the setting of Theorem 13, if $r \ge 2$, every polynomial map $\K^{\din} \to \K^{\dout}$ is computed by an MLP with activation $\sigma$, of sufficient depth and width.</p>
+      <p><span class="label">Corollary</span> In the setting of <a href="#thm-fixed-depth"></a>, if $r \ge 2$, every polynomial map $\K^{\din} \to \K^{\dout}$ is computed by an MLP with activation $\sigma$, of sufficient depth and width.</p>
     </div>
 
     <details class="proof">
       <summary>Proof.</summary>
-      <p>Since $r \ge 2$, every polynomial map has degree at most $r^{L-1}$ for $L$ large enough, so the claim follows from Theorem 13.</p>
+      <p>Since $r \ge 2$, every polynomial map has degree at most $r^{L-1}$ for $L$ large enough, so the claim follows from <a href="#thm-fixed-depth"></a>.</p>
     </details>
 
     <p>Over $\K = \R$, together with the Weierstrass approximation theorem, this shows that MLPs with a polynomial activation of degree at least $2$ are universal approximators, provided that the depth is allowed to grow. Weierstrass-type theorems hold for many function spaces and norms beyond the uniform norm on continuous functions, such as $L^p$ and Sobolev spaces, each with its own error bounds (<a href="#pinkus2005density">Pinkus, 2005</a>; <a href="#devore1993constructive">DeVore and Lorentz, 1993</a>).</p>
@@ -312,7 +317,7 @@
     <p>The activations used in practice, such as $\tanh$ or the ReLU $t \mapsto \max\{0, t\}$, are not polynomials, so that the corresponding networks are not algebraic models. By the above, the functions they compute can be approximated, on compact sets, by MLPs with a polynomial activation, of sufficient depth. In fact, there is no need to change the architecture: it suffices to approximate the activation. Let $\sigma \colon \R \to \R$ be continuous. By the Weierstrass approximation theorem, there are polynomials $\sigma_k \in \R[t]$ converging to $\sigma$ uniformly on compact sets: take, e.g., $\sigma_k$ such that $|\sigma_k(t) - \sigma(t)| \le 1/k$ for $|t| \le k$.</p>
 
     <div class="theorem" id="prop-polynomial-approximation">
-      <p><span class="label">Proposition 15.</span> Let $\sigma \colon \R \to \R$ be continuous, and let $\sigma_k \in \R[t]$ be polynomials converging to $\sigma$ uniformly on compact sets. For an MLP with given widths, let $f_\theta$ and $f_{\theta, k}$ be the functions computed at $\theta \in \Theta$ with activation $\sigma$ and $\sigma_k$, respectively. Then $f_{\theta, k}(x) \to f_\theta(x)$ as $k \to \infty$, uniformly on compact subsets of $\Theta \times \R^{\din}$.</p>
+      <p><span class="label">Proposition</span> Let $\sigma \colon \R \to \R$ be continuous, and let $\sigma_k \in \R[t]$ be polynomials converging to $\sigma$ uniformly on compact sets. For an MLP with given widths, let $f_\theta$ and $f_{\theta, k}$ be the functions computed at $\theta \in \Theta$ with activation $\sigma$ and $\sigma_k$, respectively. Then $f_{\theta, k}(x) \to f_\theta(x)$ as $k \to \infty$, uniformly on compact subsets of $\Theta \times \R^{\din}$.</p>
     </div>
 
     <details class="proof">
@@ -329,7 +334,7 @@
     <p>The approximation extends to derivatives. If $\sigma$ is of class $C^m$, the $\sigma_k$ can be chosen so that, moreover, $\sigma_k^{(i)} \to \sigma^{(i)}$ uniformly on compact sets for all $i \le m$: it suffices to approximate $\sigma^{(m)}$ by polynomials and to integrate $m$ times, with the same values at $0$ as $\sigma, \ldots, \sigma^{(m-1)}$. By the chain rule, the same induction then shows that the partial derivatives of $f_{\theta, k}(x)$ of order at most $m$, with respect to both $\theta$ and $x$, converge to those of $f_\theta(x)$, uniformly on compact sets. For $m \ge 1$, the gradient of the MSE with respect to $\theta$ thus converges as well, uniformly on compact subsets of $\Theta$: the algebraic models approximate not only the functions computed by the network, but also the vector field that drives its training (see <a href="#gradient-flow">Gradient flow</a>). For $m \ge 2$, this vector field is locally Lipschitz, and it follows from Grönwall's inequality that the trajectories of the gradient flow starting at a given parameter converge too, uniformly on bounded time intervals.</p>
 
     <div class="bend">
-      <p>The approximation is only local: the convergence is uniform on compact sets of inputs and parameters, and this cannot be improved, since a uniform limit of polynomials on the whole of $\R$ is a polynomial. Nor does it extend to derivatives for the ReLU, which is not differentiable at $0$. Moreover, Proposition 15 is about functions, not about invariants: the geometry of the $\M_k$ need not reflect that of $\M$. For instance, the ReLU satisfies $\sigma(\lambda t) = \lambda\, \sigma(t)$ for all $\lambda > 0$, so that multiplying the incoming weights and bias of a hidden neuron by $\lambda$, and its outgoing weights by $\lambda^{-1}$, does not change $f_\theta$: the fibers of the parametrization map of a ReLU network are positive-dimensional. Yet the $\sigma_k$ can be taken generic and of large degree, in which case the fibers of the algebraic models are generically finite (<a href="#thm-mlp-identifiability">Theorem 24</a>).</p>
+      <p>The approximation is only local: the convergence is uniform on compact sets of inputs and parameters, and this cannot be improved, since a uniform limit of polynomials on the whole of $\R$ is a polynomial. Nor does it extend to derivatives for the ReLU, which is not differentiable at $0$. Moreover, <a href="#prop-polynomial-approximation"></a> is about functions, not about invariants: the geometry of the $\M_k$ need not reflect that of $\M$. For instance, the ReLU satisfies $\sigma(\lambda t) = \lambda\, \sigma(t)$ for all $\lambda > 0$, so that multiplying the incoming weights and bias of a hidden neuron by $\lambda$, and its outgoing weights by $\lambda^{-1}$, does not change $f_\theta$: the fibers of the parametrization map of a ReLU network are positive-dimensional. Yet the $\sigma_k$ can be taken generic and of large degree, in which case the fibers of the algebraic models are generically finite (<a href="#thm-mlp-identifiability"></a>).</p>
     </div>
     -->
   </details>
@@ -342,7 +347,7 @@
     <p>In machine learning, the dimension and the degree of the neuromanifold are related to a natural question: how much data a model needs. Informally, the <em>sample complexity</em> of a model is the number of datapoints $|D|$ needed to learn the target function $f^*$, up to a given accuracy and with a given confidence. The link passes through another invariant of $\M$: its covering numbers, which measure its size at every scale. In statistical learning theory, they control the sample complexity (<a href="#cucker2002mathematical">Cucker and Smale, 2002</a>): their logarithm plays an analogous role to the Vapnik–Chervonenkis dimension in binary classification, and bounds the number of datapoints needed for the empirical loss to approximate the population loss uniformly over the model.</p>
 
     <div class="definition" id="def-covering-number">
-      <p><span class="label">Definition 16</span> (Covering number). Let $Z$ be a metric space, and let $\varepsilon > 0$. The <em>covering number</em> $\mathcal{N}_\varepsilon(Z)$ is the least number of closed balls of radius $\varepsilon$, centered at points of $Z$, that cover $Z$. Its logarithm is the <em>metric entropy</em> of $Z$.</p>
+      <p><span class="label">Definition</span> (Covering number). Let $Z$ be a metric space, and let $\varepsilon > 0$. The <em>covering number</em> $\mathcal{N}_\varepsilon(Z)$ is the least number of closed balls of radius $\varepsilon$, centered at points of $Z$, that cover $Z$. Its logarithm is the <em>metric entropy</em> of $Z$.</p>
     </div>
 
     <p>Hence $\mathcal{N}_\varepsilon(Z)$ is finite for every $\varepsilon > 0$ if and only if $Z$ is totally bounded, e.g., a bounded subset of $\R^N$, and covering numbers quantify total boundedness.</p>
@@ -350,7 +355,7 @@
     <p>Bounding the covering numbers of algebraic varieties in terms of their fundamental invariants, such as the dimension and the degree, is a long-standing endeavor in metric algebraic geometry. It goes back to Kolmogorov and Vitushkin (<a href="#vitushkin1955variations">Vitushkin, 1955</a>; <a href="#kolmogorov1959entropy">Kolmogorov and Tikhomirov, 1959</a>), passes through the book of <a href="#yomdin2004tame">Yomdin and Comte (2004)</a>, and leads to the recent bounds of <a href="#zhang2025covering">Zhang and Kileel (2025)</a>. Over $\R$, it is also related to Weyl's formula for the volume of tubes around a variety (see, e.g., <a href="#basu2023hausdorff">Basu and Lerario, 2023</a>). The covering bound below rests on the following volume estimates for complex varieties.</p>
 
     <div class="theorem" id="lem-lelong">
-      <p><span class="label">Lemma 17</span> (Lelong, Thie, Stoll). Let $Z \subseteq \C^N$ be an irreducible variety of dimension $m$ and degree $p$. Let $\mathcal{H}^{2m}$ be the $2m$-dimensional Hausdorff measure, $\omega_{2m} = \pi^m / m!$ the volume of the unit ball of $\C^m = \R^{2m}$, and $B(a, r) \subseteq \C^N$ the open ball of center $a$ and radius $r$. For $a \in \C^N$, the function
+      <p><span class="label">Lemma</span> (Lelong, Thie, Stoll). Let $Z \subseteq \C^N$ be an irreducible variety of dimension $m$ and degree $p$. Let $\mathcal{H}^{2m}$ be the $2m$-dimensional Hausdorff measure, $\omega_{2m} = \pi^m / m!$ the volume of the unit ball of $\C^m = \R^{2m}$, and $B(a, r) \subseteq \C^N$ the open ball of center $a$ and radius $r$. For $a \in \C^N$, the function
       $$
       \tau_a(r) = \frac{\mathcal{H}^{2m}\big(Z \cap B(a, r)\big)}{\omega_{2m}\, r^{2m}}, \qquad r > 0,
       $$
@@ -366,10 +371,10 @@
       where $dd^c \log |z - a|^2$ is the pullback of the Fubini–Study form, of mass $1$ on lines, under $z \mapsto [z - a] \in \mathbb{P}^{N-1}$. Hence $\tau_a$ is non-decreasing (<a href="#lelong1957integration">Lelong, 1957</a>), and $\tau_a(0^+) = \operatorname{mult}_a Z$ (<a href="#thie1967lelong">Thie, 1967</a>), where $\operatorname{mult}_a Z = 0$ if $a \notin Z$. As $s \to 0$ and $r \to \infty$, Crofton's formula on $\mathbb{P}^{N-1}$ identifies the integral with the number of points of $Z \cap L$ other than $a$, for a generic affine subspace $L \ni a$ of codimension $m$. This number is $p - \operatorname{mult}_a Z$, so that $\tau_a(\infty) = p$ (<a href="#stoll1964growth">Stoll, 1964</a>). See <a href="#chirka1989complex">Chirka (1989)</a> for details.</p>
     </details>
 
-    <p>Let $V$ be real, of dimension $N$, and let $\M \subseteq V$ be semi-algebraic of dimension $m$, for instance a neuromanifold (<a href="#thm-constructible">Theorem 3</a>), and let $p$ be the degree of its Zariski closure in $V_\C = V \otimes_\R \C$. If $\M$ is a neuromanifold, then $m$ and $p$ are its dimension and degree.</p>
+    <p>Let $V$ be real, of dimension $N$, and let $\M \subseteq V$ be semi-algebraic of dimension $m$, for instance a neuromanifold (<a href="#thm-constructible"></a>), and let $p$ be the degree of its Zariski closure in $V_\C = V \otimes_\R \C$. If $\M$ is a neuromanifold, then $m$ and $p$ are its dimension and degree.</p>
 
     <div class="theorem" id="thm-covering">
-      <p><span class="label">Theorem 18.</span> Fix a scalar product on $V$, with closed unit ball $B$ and the induced distance. For every $\varepsilon > 0$,
+      <p><span class="label">Theorem</span> Fix a scalar product on $V$, with closed unit ball $B$ and the induced distance. For every $\varepsilon > 0$,
       $$
       \mathcal{N}_\varepsilon(\M \cap B) \le p \Big(1 + \frac{2}{\varepsilon}\Big)^{2m}, \quad \text{i.e.,} \quad \log \mathcal{N}_\varepsilon(\M \cap B) \le \log p + 2m \log\Big(1 + \frac{2}{\varepsilon}\Big),
       $$
@@ -378,7 +383,7 @@
 
     <details class="proof">
       <summary>Proof.</summary>
-      <p>Let $Z \subseteq V_\C$ be the Zariski closure of $\M$, with irreducible components $Z_1, \ldots, Z_s$ of dimensions $m_j$ and degrees $p_j$. Then $m_j \le \dim_\C Z = m$ and $\sum_j p_j = p$. Extend the scalar product to a Hermitian one on $V_\C$, so that $\|u + iv\|^2 = \|u\|^2 + \|v\|^2$ and $V \subseteq V_\C$ isometrically. In orthonormal coordinates, $V_\C = \C^N$, and dimension and degree are unchanged. Partition $\M \cap B = S_1 \sqcup \cdots \sqcup S_s$, with $S_j \subseteq Z_j$. Let $P \subseteq S_j$ be finite and $\varepsilon$-separated, i.e., $\|f - g\| > \varepsilon$ for distinct $f, g \in P$. The balls $B(f, \varepsilon/2) \subseteq \C^N$, for $f \in P$, are pairwise disjoint, centered on $Z_j$, and contained in $B(0, 1 + \varepsilon/2)$. By Lemma 17,
+      <p>Let $Z \subseteq V_\C$ be the Zariski closure of $\M$, with irreducible components $Z_1, \ldots, Z_s$ of dimensions $m_j$ and degrees $p_j$. Then $m_j \le \dim_\C Z = m$ and $\sum_j p_j = p$. Extend the scalar product to a Hermitian one on $V_\C$, so that $\|u + iv\|^2 = \|u\|^2 + \|v\|^2$ and $V \subseteq V_\C$ isometrically. In orthonormal coordinates, $V_\C = \C^N$, and dimension and degree are unchanged. Partition $\M \cap B = S_1 \sqcup \cdots \sqcup S_s$, with $S_j \subseteq Z_j$. Let $P \subseteq S_j$ be finite and $\varepsilon$-separated, i.e., $\|f - g\| > \varepsilon$ for distinct $f, g \in P$. The balls $B(f, \varepsilon/2) \subseteq \C^N$, for $f \in P$, are pairwise disjoint, centered on $Z_j$, and contained in $B(0, 1 + \varepsilon/2)$. By <a href="#lem-lelong"></a>,
       $$
       \begin{aligned}
       |P|\, \omega_{2m_j} \Big(\frac{\varepsilon}{2}\Big)^{2m_j} &\le \sum_{f \in P} \mathcal{H}^{2m_j}\big(Z_j \cap B(f, \tfrac{\varepsilon}{2})\big) \\
@@ -388,14 +393,14 @@
       so that $|P| \le p_j (1 + 2/\varepsilon)^{2m_j}$. Hence a maximal $\varepsilon$-separated subset of $S_j$ exists, is finite, and is an $\varepsilon$-net of $S_j$ with centers in $S_j$. Summing over $j$, and using $m_j \le m$ and $\sum_j p_j = p$, gives the bound. For the last claim, extend $T$ to a $\C$-linear map. The complex Zariski closure of $T(\M)$ is $\overline{T(Z)}$, of dimension at most $m$ and degree at most $p$, since linear maps do not increase the degree (<a href="#heintz1983definability">Heintz, 1983</a>). Apply the first part to $T(\M) \subseteq U$.</p>
     </details>
 
-    <p>The bound involves neither $N$ nor the number $\dpar$ of parameters, only $m \le \dpar$ and $\log p$. Over $\R$, there is no analogue of the lower bound of Lemma 17: $\{x^2 + y^2 = 0\}$ is a point, and $\{x^2 + y^2 = \eta\}$ an arbitrarily small circle. Real proofs therefore count connected components of slices, through the Petrovskii–Oleinik–Milnor–Thom bounds on Betti numbers, or bound volumes of tubes (<a href="#yomdin2004tame">Yomdin and Comte, 2004</a>; <a href="#zhang2025covering">Zhang and Kileel, 2025</a>), which brings in $N$ and the degrees of the defining equations. The proof of Theorem 18 instead transplants Gromov's packing argument for the entropy of holomorphic maps (<a href="#gromov2003entropy">Gromov, 2003</a>) to the complexification of $\M$: complex varieties are calibrated, hence minimal, so that monotonicity provides the lower bound for free, at the price of the factor $2$.</p>
+    <p>The bound involves neither $N$ nor the number $\dpar$ of parameters, only $m \le \dpar$ and $\log p$. Over $\R$, there is no analogue of the lower bound of <a href="#lem-lelong"></a>: $\{x^2 + y^2 = 0\}$ is a point, and $\{x^2 + y^2 = \eta\}$ an arbitrarily small circle. Real proofs therefore count connected components of slices, through the Petrovskii–Oleinik–Milnor–Thom bounds on Betti numbers, or bound volumes of tubes (<a href="#yomdin2004tame">Yomdin and Comte, 2004</a>; <a href="#zhang2025covering">Zhang and Kileel, 2025</a>), which brings in $N$ and the degrees of the defining equations. The proof of <a href="#thm-covering"></a> instead transplants Gromov's packing argument for the entropy of holomorphic maps (<a href="#gromov2003entropy">Gromov, 2003</a>) to the complexification of $\M$: complex varieties are calibrated, hence minimal, so that monotonicity provides the lower bound for free, at the price of the factor $2$.</p>
 
     <p>The form $\log p + \Theta(m) \log(1/\varepsilon)$ of the bound cannot be improved. The $p$ parallel affine $m$-planes $\frac{1}{2} e_j + \R^m$, $j = 1, \ldots, p$, in $\R^p \times \R^m$ form a variety of degree $p$ that needs at least $p\,(c/\varepsilon)^m$ balls, for an absolute constant $c > 0$ and $\varepsilon \lt 1/4$. The term $\log p$ is needed for irreducible varieties too: the trigonometric moment curve $\gamma(t) = k^{-1/2}(\cos t, \sin t, \ldots, \cos kt, \sin kt)$ is a rational normal curve of degree $p = 2k$ on the unit sphere, and the $k$ points $\gamma(2\pi j/k)$ are orthonormal, so that $\mathcal{N}_\varepsilon \ge p/2$ for $\varepsilon \lt 1/\sqrt{2}$.</p>
 
     <p>For learning, let $\dout = 1$, let the inputs lie in a set $\mathcal{X} \subseteq X$, and let $\mathcal{F} = \{f \in \M : |f(x)| \le 1 \text{ for all } x \in \mathcal{X}\}$. Let $(x_1, y_1), \ldots, (x_n, y_n)$ be sampled i.i.d. from a probability distribution $P$ on $\mathcal{X} \times [-1, 1]$, and write $L_P(f) = \mathbb{E}_P (f(x) - y)^2$ for the population loss and $L_D(f) = \frac{1}{n} \sum_i (f(x_i) - y_i)^2$ for the MSE of the resulting dataset $D$.</p>
 
     <div class="theorem" id="cor-sample-complexity">
-      <p><span class="label">Corollary 19.</span> There is an absolute constant $C$ such that, with probability at least $1 - \delta$,
+      <p><span class="label">Corollary</span> There is an absolute constant $C$ such that, with probability at least $1 - \delta$,
       $$
       \sup_{f \in \mathcal{F}} \big| L_P(f) - L_D(f) \big| \le C \sqrt{\frac{m + \log p + \log(2/\delta)}{n}}.
       $$
@@ -404,7 +409,7 @@
 
     <details class="proof">
       <summary>Proof.</summary>
-      <p>Fix $S = (x_1, \ldots, x_n)$, and let $T_S \colon V \to \R^n$, $f \mapsto (f(x_i))_i$, which is linear. With $\|u\|_S = (\frac{1}{n} \sum_i u_i^2)^{1/2}$, we have $\mathcal{F}|_S \subseteq T_S(\M) \cap \{\|u\|_S \le 1\}$, so that Theorem 18 gives, uniformly in $S$ and $n$,
+      <p>Fix $S = (x_1, \ldots, x_n)$, and let $T_S \colon V \to \R^n$, $f \mapsto (f(x_i))_i$, which is linear. With $\|u\|_S = (\frac{1}{n} \sum_i u_i^2)^{1/2}$, we have $\mathcal{F}|_S \subseteq T_S(\M) \cap \{\|u\|_S \le 1\}$, so that <a href="#thm-covering"></a> gives, uniformly in $S$ and $n$,
       $$
       \log \mathcal{N}_t\big(\mathcal{F}|_S, \|\cdot\|_S\big) \le \log p + 2m \log(1 + 4/t), \qquad t > 0,
       $$
@@ -424,7 +429,7 @@
     <p>For algebraic models, fibers are well behaved. The <em>degree</em> of $\varphi$ is the degree of its graph $\Gamma_\varphi = \{(\theta, f_\theta) : \theta \in \Theta\} \subseteq \Theta \times V$. Explicitly, $\deg \varphi$ is the number of solutions $\theta \in \Theta$ of $\dpar$ generic equations $\ell_i(\theta) + \ell'_i(f_\theta) = c_i$, where $\ell_i$ and $\ell'_i$ are linear forms on $\Theta$ and $V$, and $c_i \in \K$. By Bézout's theorem, $\deg \varphi \le (\deg_\theta f_\theta)^{\dpar}$, where $\deg_\theta$ denotes the degree in $\theta$.</p>
 
     <div class="theorem" id="thm-generic-fiber">
-      <p><span class="label">Theorem 20</span> (Generic fiber). There is a dense Zariski-open subset $U \subseteq \overline{\M}$, contained in $\M$, such that the fibers $\varphi^{-1}(f)$, for $f \in U$, are equidimensional, with the same dimension and the same degree. Moreover, for $f \in U$:</p>
+      <p><span class="label">Theorem</span> (Generic fiber). There is a dense Zariski-open subset $U \subseteq \overline{\M}$, contained in $\M$, such that the fibers $\varphi^{-1}(f)$, for $f \in U$, are equidimensional, with the same dimension and the same degree. Moreover, for $f \in U$:</p>
       <ul>
         <li>(Fiber-dimension theorem) $\dim \M = \dim \Theta - \dim \varphi^{-1}(f)$.</li>
         <li>(Bézout) $\deg \M \le \deg \varphi \,/\, \deg \varphi^{-1}(f)$.</li>
@@ -440,14 +445,14 @@
       consists of $\deg \M \cdot \deg \varphi^{-1}(f)$ points. Each of them is an irreducible component of the intersection of the projective closures of $\Gamma_\varphi$ and $L$, so that, by the Bézout inequality (<a href="#fulton1998intersection">Fulton, 1998</a>, Example 8.4.6), their number is at most $\deg \Gamma_\varphi \cdot \deg L = \deg \varphi$.</p>
     </details>
 
-    <p>The inequality in Theorem 20 is strict in general, because $L$ is not generic: its equations separate $\theta$ and $f$. Its projective closure may therefore meet the projective closure of $\Gamma_\varphi$ at infinity. These <em>contributions at infinity</em> account for the difference between $\deg \varphi$ and $\deg \M \cdot \deg \varphi^{-1}(f)$, in the sense of the refined Bézout theorem (<a href="#fulton1998intersection">Fulton, 1998</a>, §12.3).</p>
+    <p>The inequality in <a href="#thm-generic-fiber"></a> is strict in general, because $L$ is not generic: its equations separate $\theta$ and $f$. Its projective closure may therefore meet the projective closure of $\Gamma_\varphi$ at infinity. These <em>contributions at infinity</em> account for the difference between $\deg \varphi$ and $\deg \M \cdot \deg \varphi^{-1}(f)$, in the sense of the refined Bézout theorem (<a href="#fulton1998intersection">Fulton, 1998</a>, §12.3).</p>
 
-    <p>We call $\varphi^{-1}(f)$, for $f \in U$, the <em>generic fiber</em>. In particular, the generic fiber is finite if and only if $\dim \M = \dpar$. In characteristic $0$, $\dim \M$ is the rank of the differential of $\varphi$ at a generic $\theta$, which gives a simple numerical test. By the <a href="#sample-complexity">previous section</a>, Theorem 20 relates generic identifiability to sample complexity. Sample complexity is controlled by the dimension and the degree of $\M$, not by the number $\dpar$ of parameters, and by Theorem 20 both are smaller when the generic fiber is larger.</p>
+    <p>We call $\varphi^{-1}(f)$, for $f \in U$, the <em>generic fiber</em>. In particular, the generic fiber is finite if and only if $\dim \M = \dpar$. In characteristic $0$, $\dim \M$ is the rank of the differential of $\varphi$ at a generic $\theta$, which gives a simple numerical test. By the <a href="#sample-complexity">previous section</a>, <a href="#thm-generic-fiber"></a> relates generic identifiability to sample complexity. Sample complexity is controlled by the dimension and the degree of $\M$, not by the number $\dpar$ of parameters, and by <a href="#thm-generic-fiber"></a> both are smaller when the generic fiber is larger.</p>
 
     <p>Identifiability is also interesting because of its relation to symmetries of the input and output spaces.</p>
 
     <div class="definition" id="def-adjunction">
-      <p><span class="label">Definition 21</span> (Adjunction). An algebraic model satisfies <em>adjunction</em> if there are a left action of $\mathrm{GL}_{\dout}(\K)$ and a right action of $\mathrm{GL}_{\din}(\K)$ on $\Theta$, written $(T, \theta) \mapsto T\theta$ and $(\theta, T') \mapsto \theta T'$, that commute and such that
+      <p><span class="label">Definition</span> (Adjunction). An algebraic model satisfies <em>adjunction</em> if there are a left action of $\mathrm{GL}_{\dout}(\K)$ and a right action of $\mathrm{GL}_{\din}(\K)$ on $\Theta$, written $(T, \theta) \mapsto T\theta$ and $(\theta, T') \mapsto \theta T'$, that commute and such that
       $$
       f_{T\theta T'}(x) = T  f_\theta(T'x)
       $$
@@ -459,7 +464,7 @@
     <p>Let $G$ be a group with representations $\rho_X \colon G \to \mathrm{GL}_{\din}(\K)$ and $\rho_Y \colon G \to \mathrm{GL}_{\dout}(\K)$. Recall that a function $f \colon X \to Y$ is <em>$G$-equivariant</em> if $f(\rho_X(g)x) = \rho_Y(g)f(x)$ for all $g \in G$ and $x \in X$. Equivariance is the central notion of <em>geometric deep learning</em> (<a href="#bronstein2021geometric">Bronstein et al., 2021</a>), which designs architectures that respect the symmetries of the data, such as translations of images for CNNs, or permutations of nodes for graph neural networks. For a model satisfying adjunction, $G$ acts on $\Theta$ by $g \cdot \theta = \rho_Y(g)\, \theta\, \rho_X(g)^{-1}$.</p>
 
     <div class="theorem" id="prop-equivariance-fibers">
-      <p><span class="label">Proposition 22.</span> For a model satisfying adjunction, $f_\theta$ is $G$-equivariant if and only if $G \cdot \theta \subseteq \varphi^{-1}(f_\theta)$, i.e., if and only if the fiber of $f_\theta$ is stable under $G$.</p>
+      <p><span class="label">Proposition</span> For a model satisfying adjunction, $f_\theta$ is $G$-equivariant if and only if $G \cdot \theta \subseteq \varphi^{-1}(f_\theta)$, i.e., if and only if the fiber of $f_\theta$ is stable under $G$.</p>
     </div>
 
     <details class="proof">
@@ -473,16 +478,16 @@
       <p>Equivariant parameters are special. The $\theta$ for which $f_\theta$ is $G$-equivariant typically form a proper Zariski-closed subset of $\Theta$, which may miss the dense open subset where the model is identifiable.</p>
     </div>
 
-    <p>We conclude by describing the fibers of MLPs (<a href="#ex-perceptrons">Example 4</a>). They always contain the following parameters. Permuting the neurons of a hidden layer $j$, i.e., the rows of $W_j$ and $b_j$ and, accordingly, the columns of $W_{j+1}$, does not change $f_\theta$. Neither does rescaling a hidden neuron by $\lambda \in \Sigma$ (<a href="#ex-subnetworks">Example 9</a>), i.e., multiplying its incoming weights and bias by $\lambda$ and its outgoing weights by $c^{-1}$, where $\sigma(\lambda t) = c\, \sigma(t)$. We say that $\theta$ is <em>identifiable</em> if every parameter in its fiber is obtained from $\theta$ by such permutations and rescalings.</p>
+    <p>We conclude by describing the fibers of MLPs (<a href="#ex-perceptrons"></a>). They always contain the following parameters. Permuting the neurons of a hidden layer $j$, i.e., the rows of $W_j$ and $b_j$ and, accordingly, the columns of $W_{j+1}$, does not change $f_\theta$. Neither does rescaling a hidden neuron by $\lambda \in \Sigma$ (<a href="#ex-subnetworks"></a>), i.e., multiplying its incoming weights and bias by $\lambda$ and its outgoing weights by $c^{-1}$, where $\sigma(\lambda t) = c\, \sigma(t)$. We say that $\theta$ is <em>identifiable</em> if every parameter in its fiber is obtained from $\theta$ by such permutations and rescalings.</p>
 
     <p>To show that, outside of subnetworks, the fibers contain no other parameters, we need the following notion. The resulting theorem generalizes Corollary 4.1 of <a href="#kohn2026linear">Kohn et al. (2026)</a>, whose proof we follow.</p>
 
     <div class="definition" id="def-regular-map">
-      <p><span class="label">Definition 23</span> (Regular map). Let $A$ be a set and $W$ a vector space. A map $g \colon A \to W$ is <em>$s$-regular</em> if, for all $k \le s$ and all pairwise distinct $a_1, \ldots, a_k \in A$, the vectors $g(a_1), \ldots, g(a_k)$ are linearly independent (<a href="#borsuk1957independent">Borsuk, 1957</a>).</p>
+      <p><span class="label">Definition</span> (Regular map). Let $A$ be a set and $W$ a vector space. A map $g \colon A \to W$ is <em>$s$-regular</em> if, for all $k \le s$ and all pairwise distinct $a_1, \ldots, a_k \in A$, the vectors $g(a_1), \ldots, g(a_k)$ are linearly independent (<a href="#borsuk1957independent">Borsuk, 1957</a>).</p>
     </div>
 
     <div class="theorem" id="thm-mlp-identifiability">
-      <p><span class="label">Theorem 24.</span> Consider an MLP with $L \ge 2$ layers and activation $\sigma \in \K[t]$ of degree $r$. Let $\overline{d} = \max\{d_1, \ldots, d_{L-1}\}$, and let $P$ be a set of representatives of the $\Sigma$-orbits of the nonconstant polynomials $p \in \K[x_1, \ldots, x_{\din}]$ of degree at most $r^{L-2}$. If the map $P \to \K[x_1, \ldots, x_{\din}]/\K$, $p \mapsto \sigma \circ p + \K$, is $2\overline{d}$-regular, then $\theta \in \Theta$ is identifiable if it is not a subnetwork.</p>
+      <p><span class="label">Theorem</span> Consider an MLP with $L \ge 2$ layers and activation $\sigma \in \K[t]$ of degree $r$. Let $\overline{d} = \max\{d_1, \ldots, d_{L-1}\}$, and let $P$ be a set of representatives of the $\Sigma$-orbits of the nonconstant polynomials $p \in \K[x_1, \ldots, x_{\din}]$ of degree at most $r^{L-2}$. If the map $P \to \K[x_1, \ldots, x_{\din}]/\K$, $p \mapsto \sigma \circ p + \K$, is $2\overline{d}$-regular, then $\theta \in \Theta$ is identifiable if it is not a subnetwork.</p>
     </div>
 
     <details class="proof">
@@ -497,27 +502,27 @@
 
     <p>Without biases, the same proof applies under a weaker assumption. If the biases vanish and $\sigma(0) = 0$, all the pre-activations vanish at $0$, so that it suffices to take $P$ among the polynomials with $p(0) = 0$; then $\sigma \circ p$ vanishes at $0$ as well, and the quotient by $\K$ is immaterial. This is the setting of <a href="#kohn2026linear">Kohn et al. (2026)</a>.</p>
 
-    <p>The assumption of Theorem 24 holds for monomials and for generic polynomials of large degree $r = \Omega(\overline{d}^2)$. For $\sigma(t) = t^r$, we have $\Sigma = \K \setminus \{0\}$, and the assumption states that the $r$-th powers of at most $s$ pairwise non-proportional polynomials are linearly independent. This follows from the Newman–Slater theorem, i.e., Fermat's last theorem for polynomials (<a href="#finkel2025activation">Finkel et al., 2025</a>). For a generic $\sigma$ with $\sigma(0) = 0$, we have $\Sigma = \{1\}$, and the assumption has been proven by <a href="#chang2026linear">Chang and Hendi (2026)</a>, as conjectured by <a href="#kohn2026linear">Kohn et al. (2026)</a>.</p>
+    <p>The assumption of <a href="#thm-mlp-identifiability"></a> holds for monomials and for generic polynomials of large degree $r = \Omega(\overline{d}^2)$. For $\sigma(t) = t^r$, we have $\Sigma = \K \setminus \{0\}$, and the assumption states that the $r$-th powers of at most $s$ pairwise non-proportional polynomials are linearly independent. This follows from the Newman–Slater theorem, i.e., Fermat's last theorem for polynomials (<a href="#finkel2025activation">Finkel et al., 2025</a>). For a generic $\sigma$ with $\sigma(0) = 0$, we have $\Sigma = \{1\}$, and the assumption has been proven by <a href="#chang2026linear">Chang and Hendi (2026)</a>, as conjectured by <a href="#kohn2026linear">Kohn et al. (2026)</a>.</p>
 
     <p>On the other hand, subnetworks have higher-dimensional fibers, since one can freely change the incoming weights $W_j[i,:]$ and bias $b_j[i]$ of a neuron whose outgoing weights $W_{j+1}[:,i]$ vanish, as well as the outgoing weights and bias of a neuron whose incoming weights vanish, absorbing its constant output $\sigma(b_j[i])$ into $b_{j+1}$. In particular, if a neuron of layer $j$ is inactive or redundant, then $\dim \varphi^{-1}(f_\theta) \ge \max\{d_{j-1}, d_{j+1}\} + 1$.</p>
 
-    <p>Combining Theorem 24 with Theorem 20 computes the dimension of the neuromanifold of an MLP and bounds its degree. Indeed, a generic $\theta$ is not a subnetwork, so that its fiber is its orbit under permutations and rescalings, which act freely on it. Since permutations are $0$-dimensional, this orbit is finite when $\Sigma$ is, i.e., when $\sigma$ is not a monomial, while for a monomial the rescalings form a torus of dimension $d_1 + \cdots + d_{L-1}$. Moreover, $\deg_\theta f_\theta = 1 + r + \cdots + r^{L-1}$.</p>
+    <p>Combining <a href="#thm-mlp-identifiability"></a> with <a href="#thm-generic-fiber"></a> computes the dimension of the neuromanifold of an MLP and bounds its degree. Indeed, a generic $\theta$ is not a subnetwork, so that its fiber is its orbit under permutations and rescalings, which act freely on it. Since permutations are $0$-dimensional, this orbit is finite when $\Sigma$ is, i.e., when $\sigma$ is not a monomial, while for a monomial the rescalings form a torus of dimension $d_1 + \cdots + d_{L-1}$. Moreover, $\deg_\theta f_\theta = 1 + r + \cdots + r^{L-1}$.</p>
 
     <div class="theorem" id="cor-mlp-dimension">
-      <p><span class="label">Corollary 25.</span> Under the assumptions of Theorem 24, if $\sigma$ is not a monomial, then $\dim \M = \dpar = \sum_{i=1}^{L} d_i (d_{i-1} + 1)$ and
+      <p><span class="label">Corollary</span> Under the assumptions of <a href="#thm-mlp-identifiability"></a>, if $\sigma$ is not a monomial, then $\dim \M = \dpar = \sum_{i=1}^{L} d_i (d_{i-1} + 1)$ and
       $$
       \deg \M \le \frac{(1 + r + \cdots + r^{L-1})^{\dpar}}{\prod_{j=1}^{L-1} |\Sigma|^{d_j}\, d_j!}.
       $$
       If $\sigma$ is a monomial, then $\dim \M = \dpar - d_1 - \cdots - d_{L-1}$.</p>
     </div>
 
-    <p>Through Theorem 18 and Corollary 19, Corollary 25 yields bounds on the covering numbers and on the sample complexity of MLPs. These match, up to constants, the classical bounds through the pseudo-dimension, i.e., the Vapnik–Chervonenkis dimension of real-valued classes, which <a href="#goldberg1995bounding">Goldberg and Jerrum (1995)</a> bound in terms of $\dpar$ and $\deg_\theta f_\theta$. They improve those of <a href="#zhang2025covering">Zhang and Kileel (2025)</a>, which, specialized to polynomial activations, contain additional logarithmic factors in the widths and in the number of samples.</p>
+    <p>Through <a href="#thm-covering"></a> and <a href="#cor-sample-complexity"></a>, <a href="#cor-mlp-dimension"></a> yields bounds on the covering numbers and on the sample complexity of MLPs. These match, up to constants, the classical bounds through the pseudo-dimension, i.e., the Vapnik–Chervonenkis dimension of real-valued classes, which <a href="#goldberg1995bounding">Goldberg and Jerrum (1995)</a> bound in terms of $\dpar$ and $\deg_\theta f_\theta$. They improve those of <a href="#zhang2025covering">Zhang and Kileel (2025)</a>, which, specialized to polynomial activations, contain additional logarithmic factors in the widths and in the number of samples.</p>
 
     <!-- ResNet identifiability (commented out)
-    <p>Finally, we turn to residual networks (<a href="#ex-skip-connections">Example 6</a>). A <em>ResNet</em> of width $d$ and depth $L$ is the deep model of Example 6 whose layers are the perceptrons $y \mapsto \sigma(W_k y + b_k)$ (<a href="#ex-perceptrons">Example 4</a>), with $W_k \in \K^{d \times d}$ and $b_k \in \K^d$. Its function is $f_\theta = h_L$, where $h_0 = x \in \K^d$ and $h_k = h_{k-1} + \sigma(W_k h_{k-1} + b_k)$ for $1 \le k \le L$. The identifiability of ResNets has been studied by <a href="#dahlgren2026polynomial">Dahlgren et al. (2026)</a>, by comparing homogeneous components of highest degree, as in the following lemma.</p>
+    <p>Finally, we turn to residual networks (<a href="#ex-skip-connections"></a>). A <em>ResNet</em> of width $d$ and depth $L$ is the deep model of <a href="#ex-skip-connections"></a> whose layers are the perceptrons $y \mapsto \sigma(W_k y + b_k)$ (<a href="#ex-perceptrons"></a>), with $W_k \in \K^{d \times d}$ and $b_k \in \K^d$. Its function is $f_\theta = h_L$, where $h_0 = x \in \K^d$ and $h_k = h_{k-1} + \sigma(W_k h_{k-1} + b_k)$ for $1 \le k \le L$. The identifiability of ResNets has been studied by <a href="#dahlgren2026polynomial">Dahlgren et al. (2026)</a>, by comparing homogeneous components of highest degree, as in the following lemma.</p>
 
     <div class="theorem" id="lem-degree-gap">
-      <p><span class="label">Lemma 26</span> (Degree gap). Let $\K$ have characteristic $0$, let $\sigma \in \K[t]$ have degree $r \ge 2$, and let $p, q \in \K[x_1, \ldots, x_n]$, where $p$ has degree $\delta \ge 1$. If $\sigma \circ p - \sigma \circ q$ has degree at most $\delta$, then $q = \zeta p + e$ for some $\zeta, e \in \K$ such that $\sigma(\zeta t + e) - \sigma(t)$ has degree at most $1$.</p>
+      <p><span class="label">Lemma</span> (Degree gap). Let $\K$ have characteristic $0$, let $\sigma \in \K[t]$ have degree $r \ge 2$, and let $p, q \in \K[x_1, \ldots, x_n]$, where $p$ has degree $\delta \ge 1$. If $\sigma \circ p - \sigma \circ q$ has degree at most $\delta$, then $q = \zeta p + e$ for some $\zeta, e \in \K$ such that $\sigma(\zeta t + e) - \sigma(t)$ has degree at most $1$.</p>
     </div>
 
     <details class="proof">
@@ -526,16 +531,16 @@
     </details>
 
     <div class="theorem" id="cor-resnet-identifiability">
-      <p><span class="label">Corollary 27.</span> Let $\K$ have characteristic $0$, and let $\sigma \in \K[t]$ be nonconstant and such that, for all $\zeta, e \in \K$, the polynomial $\sigma(\zeta t + e) - \sigma(t)$ is either zero or of degree at least $2$. Consider a ResNet. If $W_1, \ldots, W_{L-1}$ are invertible and $W_L$ has no zero row, then the fiber of $\theta$ consists of the parameters obtained from $\theta$ by replacing each row $(W_k[i,:], b_k[i])$ with $(\zeta W_k[i,:], \zeta b_k[i] + e)$, where $\zeta, e \in \K$, which may depend on $k$ and $i$, satisfy $\sigma(\zeta t + e) = \sigma(t)$.</p>
+      <p><span class="label">Corollary</span> Let $\K$ have characteristic $0$, and let $\sigma \in \K[t]$ be nonconstant and such that, for all $\zeta, e \in \K$, the polynomial $\sigma(\zeta t + e) - \sigma(t)$ is either zero or of degree at least $2$. Consider a ResNet. If $W_1, \ldots, W_{L-1}$ are invertible and $W_L$ has no zero row, then the fiber of $\theta$ consists of the parameters obtained from $\theta$ by replacing each row $(W_k[i,:], b_k[i])$ with $(\zeta W_k[i,:], \zeta b_k[i] + e)$, where $\zeta, e \in \K$, which may depend on $k$ and $i$, satisfy $\sigma(\zeta t + e) = \sigma(t)$.</p>
     </div>
 
     <details class="proof">
       <summary>Proof.</summary>
       <p>Let $r$ and $a$ be the degree and the leading coefficient of $\sigma$. The assumption forces $r \ge 3$, since $\sigma(t + 1) - \sigma(t)$ is nonzero of degree $r - 1$. By induction on $k < L$, $h_k$ has degree $r^k$, and its homogeneous component $H_k$ of degree $r^k$ has algebraically independent coordinates. Indeed, $H_0 = x$, and if this holds for $H_{k-1}$, then the coordinates of $W_k H_{k-1}$ are algebraically independent, since $W_k$ is invertible, hence nonzero of degree $r^{k-1}$, so that $H_k = a\, (W_k H_{k-1})^r$, with the power taken component-wise, whose coordinates are algebraically independent as well. As a consequence, $1, h_{L-1,1}, \ldots, h_{L-1,d}$ are linearly independent, and, since $W_L$ has no zero row, the coordinates of $p = W_L h_{L-1} + b_L$ have degree $\delta = r^{L-1}$.</p>
-      <p>The parameters in the statement lie in the fiber of $\theta$, since they do not change the $h_k$. Conversely, let $\theta'$ be in the fiber, with hidden states $h'_k$, and let $q = W'_L h'_{L-1} + b'_L$. For every $i$, the polynomial $\sigma \circ p_i - \sigma \circ q_i = h'_{L-1,i} - h_{L-1,i}$ has degree at most $\delta$. By Lemma 26 and the assumption, $q_i = \zeta_i p_i + e_i$ with $\sigma(\zeta_i t + e_i) = \sigma(t)$, so that $\sigma \circ q_i = \sigma \circ p_i$, and thus $h'_{L-1} = h_{L-1}$. Since the first $L - 1$ layers of $\theta$ satisfy the assumptions for depth $L - 1$, by induction on $L$, the case $L = 0$ being trivial, those of $\theta'$ are obtained from them as in the statement. Finally, $W'_L h_{L-1} + b'_L = q = Z p + e$, where $Z$ is diagonal with entries $\zeta_i$ and $e = (e_i)_i$, so that $W'_L = Z W_L$ and $b'_L = Z b_L + e$, by linear independence.</p>
+      <p>The parameters in the statement lie in the fiber of $\theta$, since they do not change the $h_k$. Conversely, let $\theta'$ be in the fiber, with hidden states $h'_k$, and let $q = W'_L h'_{L-1} + b'_L$. For every $i$, the polynomial $\sigma \circ p_i - \sigma \circ q_i = h'_{L-1,i} - h_{L-1,i}$ has degree at most $\delta$. By <a href="#lem-degree-gap"></a> and the assumption, $q_i = \zeta_i p_i + e_i$ with $\sigma(\zeta_i t + e_i) = \sigma(t)$, so that $\sigma \circ q_i = \sigma \circ p_i$, and thus $h'_{L-1} = h_{L-1}$. Since the first $L - 1$ layers of $\theta$ satisfy the assumptions for depth $L - 1$, by induction on $L$, the case $L = 0$ being trivial, those of $\theta'$ are obtained from them as in the statement. Finally, $W'_L h_{L-1} + b'_L = q = Z p + e$, where $Z$ is diagonal with entries $\zeta_i$ and $e = (e_i)_i$, so that $W'_L = Z W_L$ and $b'_L = Z b_L + e$, by linear independence.</p>
     </details>
 
-    <p>The affine maps $t \mapsto \zeta t + e$ with $\sigma(\zeta t + e) = \sigma(t)$ form a group of order at most $r$, as $\zeta^r = 1$ and $e$ is determined by $\zeta$. For $\sigma(t) = t^r$ with $r \ge 3$, the assumption of Corollary 27 holds, and these maps are $t \mapsto \zeta t$ with $\zeta^r = 1$. For a generic $\sigma$ of degree $r \ge 5$, the assumption holds as well, and the group is trivial, so that each parameter of Corollary 27 is the only point of its fiber (<a href="#dahlgren2026polynomial">Dahlgren et al., 2026</a>). In all cases, the parameters of Corollary 27 form a dense open subset of $\Theta$, so that the generic fiber is finite and $\dim \M = \dpar = L d(d + 1)$, by Theorem 20.</p>
+    <p>The affine maps $t \mapsto \zeta t + e$ with $\sigma(\zeta t + e) = \sigma(t)$ form a group of order at most $r$, as $\zeta^r = 1$ and $e$ is determined by $\zeta$. For $\sigma(t) = t^r$ with $r \ge 3$, the assumption of <a href="#cor-resnet-identifiability"></a> holds, and these maps are $t \mapsto \zeta t$ with $\zeta^r = 1$. For a generic $\sigma$ of degree $r \ge 5$, the assumption holds as well, and the group is trivial, so that each parameter of <a href="#cor-resnet-identifiability"></a> is the only point of its fiber (<a href="#dahlgren2026polynomial">Dahlgren et al., 2026</a>). In all cases, the parameters of <a href="#cor-resnet-identifiability"></a> form a dense open subset of $\Theta$, so that the generic fiber is finite and $\dim \M = \dpar = L d(d + 1)$, by <a href="#thm-generic-fiber"></a>.</p>
     -->
   </details>
 
@@ -547,7 +552,7 @@
     <p>In machine learning, the role of singularities has been highlighted by <em>singular learning theory</em> (<a href="#watanabe2009algebraic">Watanabe, 2009</a>), according to which they bias the learning process. One way to see this is via Voronoi cells.</p>
 
     <div class="definition" id="def-voronoi-cell">
-      <p><span class="label">Definition 26</span> (Voronoi cell). Let $V$ be real, of dimension $N$, with a scalar product, and let $Z \subseteq V$. The <em>Voronoi cell</em> of $f \in Z$ is
+      <p><span class="label">Definition</span> (Voronoi cell). Let $V$ be real, of dimension $N$, with a scalar product, and let $Z \subseteq V$. The <em>Voronoi cell</em> of $f \in Z$ is
       $$
       \mathrm{Vor}_Z(f) = \{ u \in V : \|u - f\| \le \|u - q\| \text{ for all } q \in Z \},
       $$
@@ -588,17 +593,17 @@
       </div>
     </figure>
 
-    <p>In neural networks, the singularities of $\M$ often arise from subnetworks (<a href="#ex-subnetworks">Example 9</a>). The relation between subnetworks and singularities is intuitive: both are degenerate objects, from the neural and the geometric perspective, respectively. For MLPs, the link goes through the differential $d\varphi_\theta$, whose image consists of tangent vectors in $T_{f_\theta} \overline{\M}$. For subnetworks, as shown below, as $\theta$ varies in the fiber $\varphi^{-1}(f_\theta)$, these images span a space of dimension larger than $\dim \M$ (cf. <a href="#shahverdi2026learning">Shahverdi et al., 2026</a>, Theorem 4.2).</p>
+    <p>In neural networks, the singularities of $\M$ often arise from subnetworks (<a href="#ex-subnetworks"></a>). The relation between subnetworks and singularities is intuitive: both are degenerate objects, from the neural and the geometric perspective, respectively. For MLPs, the link goes through the differential $d\varphi_\theta$, whose image consists of tangent vectors in $T_{f_\theta} \overline{\M}$. For subnetworks, as shown below, as $\theta$ varies in the fiber $\varphi^{-1}(f_\theta)$, these images span a space of dimension larger than $\dim \M$ (cf. <a href="#shahverdi2026learning">Shahverdi et al., 2026</a>, Theorem 4.2).</p>
 
     <div class="theorem" id="thm-subnetworks-singular">
-      <p><span class="label">Theorem 27.</span> Let $\K$ have characteristic $0$, let $\sigma \in \K[t]$ have degree $r \ge 1$, and consider an MLP (<a href="#ex-perceptrons">Example 4</a>). Let $0 < j < L$, let $e = \min\{d_0, \ldots, d_{j-1}\}$, and let $N = \binom{e + r}{r}$, multiplied by $\dout$ if $j = L - 1$. If $\dim \M < N$, then $f_\theta$ is a singular point of $\overline{\M}$ for every $\theta$ at which some neuron of layer $j$ is inactive or redundant. In particular, if $r \ge \dim \M$, the functions of all subnetworks are singular points of $\overline{\M}$.</p>
+      <p><span class="label">Theorem</span> Let $\K$ have characteristic $0$, let $\sigma \in \K[t]$ have degree $r \ge 1$, and consider an MLP (<a href="#ex-perceptrons"></a>). Let $0 < j < L$, let $e = \min\{d_0, \ldots, d_{j-1}\}$, and let $N = \binom{e + r}{r}$, multiplied by $\dout$ if $j = L - 1$. If $\dim \M < N$, then $f_\theta$ is a singular point of $\overline{\M}$ for every $\theta$ at which some neuron of layer $j$ is inactive or redundant. In particular, if $r \ge \dim \M$, the functions of all subnetworks are singular points of $\overline{\M}$.</p>
     </div>
 
     <details class="proof">
       <summary>Proof.</summary>
       <p>If the $i$-th neuron of layer $j$ is inactive or redundant, then $f_\theta$ is also computed by a parameter at which its outgoing weights $W_{j+1}[:,i]$ vanish: if $W_j[i,:] = 0$, its constant output $\sigma(b_j[i])$ can be absorbed by $b_{j+1}$, and if it is redundant, its output is $c$ times that of the $k$-th neuron, where $\sigma(\lambda t) = c\, \sigma(t)$, which can be absorbed by $W_{j+1}[:,k]$. Since the singular locus of $\overline{\M}$ is Zariski closed, it then suffices to consider a generic $\theta$ in the linear subspace $S \subseteq \Theta$ where $W_{j+1}[:,i] = 0$.</p>
       <p>For $\theta \in S$, the neuron does not affect $f_\theta$: replacing its incoming weights and bias by any $u \in \K^{d_{j-1}}$ and $b \in \K$ yields a parameter in the fiber of $f_\theta$, at which the derivative of the output with respect to $W_{j+1}[k,i]$ is $\lambda_k(x)\, \sigma(u \cdot h_\theta(x) + b)$. Here, $h_\theta \colon \K^{\din} \to \K^{d_{j-1}}$ is computed by the first $j - 1$ layers ($h_\theta(x) = x$ if $j = 1$), and $\lambda_k$, the derivative of the output with respect to the $k$-th pre-activation of layer $j + 1$, does not depend on $(u, b)$. Hence, $T_{f_\theta} \overline{\M}$ contains $\lambda_k E_\theta$, where $E_\theta$ is the span of the functions $\sigma(u \cdot h_\theta(x) + b)$. If $j = L - 1$, $\lambda_k$ is the $k$-th standard basis vector of $\K^{\dout}$, so that $T_{f_\theta} \overline{\M}$ contains $E_\theta^{\dout}$. Otherwise, $\lambda_k$ is a product of the matrices $W_L, \ldots, W_{j+2}$ and of diagonal matrices with entries $\sigma'(\cdot)$, applied to the $k$-th standard basis vector, hence nonzero for generic $\theta$, and multiplication by $\lambda_k$ is injective, since $\K[x]$ is a domain. In both cases, $\dim T_{f_\theta} \overline{\M} \ge N > \dim \M$ as soon as $\dim E_\theta \ge \binom{e + r}{r}$.</p>
-      <p>By <a href="#lem-translates">Lemma 12</a>, with $t = u \cdot h_\theta(x)$, $E_\theta$ contains the powers $(u \cdot h_\theta(x))^s$ for $s \le r$, hence, by the polarization identity in the proof of <a href="#thm-fixed-depth">Theorem 13</a>, all the polynomials of degree at most $r$ in $h_\theta(x)$. For generic $\theta$, the Jacobian matrix of $h_\theta$, a product of the matrices $W_{j-1}, \ldots, W_1$ and of diagonal matrices with entries $\sigma'(\cdot)$, has rank $e$ at generic $x$, so that, up to relabeling, the first $e$ coordinates $h_1, \ldots, h_e$ of $h_\theta$ have a Jacobian matrix $J$ of rank $e$. Then no nonzero polynomial $q$ satisfies $q(h_1, \ldots, h_e) = 0$: otherwise, for such a $q$ of minimal degree, the chain rule gives $(\nabla q)(h_1, \ldots, h_e)\, J = 0$, hence $(\nabla q)(h_1, \ldots, h_e) = 0$, so that $\nabla q = 0$ by minimality, and $q$ is a nonzero constant. Thus, the $\binom{e + r}{r}$ monomials of degree at most $r$ in $h_1, \ldots, h_e$ are linearly independent elements of $E_\theta$. Finally, $N \ge \binom{1 + r}{r} = r + 1$ gives the last claim.</p>
+      <p>By <a href="#lem-translates"></a>, with $t = u \cdot h_\theta(x)$, $E_\theta$ contains the powers $(u \cdot h_\theta(x))^s$ for $s \le r$, hence, by the polarization identity in the proof of <a href="#thm-fixed-depth"></a>, all the polynomials of degree at most $r$ in $h_\theta(x)$. For generic $\theta$, the Jacobian matrix of $h_\theta$, a product of the matrices $W_{j-1}, \ldots, W_1$ and of diagonal matrices with entries $\sigma'(\cdot)$, has rank $e$ at generic $x$, so that, up to relabeling, the first $e$ coordinates $h_1, \ldots, h_e$ of $h_\theta$ have a Jacobian matrix $J$ of rank $e$. Then no nonzero polynomial $q$ satisfies $q(h_1, \ldots, h_e) = 0$: otherwise, for such a $q$ of minimal degree, the chain rule gives $(\nabla q)(h_1, \ldots, h_e)\, J = 0$, hence $(\nabla q)(h_1, \ldots, h_e) = 0$, so that $\nabla q = 0$ by minimality, and $q$ is a nonzero constant. Thus, the $\binom{e + r}{r}$ monomials of degree at most $r$ in $h_1, \ldots, h_e$ are linearly independent elements of $E_\theta$. Finally, $N \ge \binom{1 + r}{r} = r + 1$ gives the last claim.</p>
     </details>
 
     <p>The converse is believed to hold, under appropriate assumptions on $\sigma$, e.g., that it is generic and of large enough degree. This would imply that singular points of $\overline{\M}$ that lie in $\M$ are precisely the functions of subnetworks. This is still open (<a href="#shahverdi2026learning">Shahverdi et al., 2026</a>).</p>
@@ -610,7 +615,7 @@
     <p>As we have seen in <a href="#learning">Learning as distance optimization</a>, a model learns by minimizing a loss $L$ over $\M$ through its parameters, i.e., by minimizing $L \circ \varphi$ over $\Theta$. We now look at the dynamics of this process. Consider an algebraic model over $\K = \R$, fix a scalar product on $V$ and one on $\Theta = \R^{\dpar}$ (e.g., the standard one), and let $L \colon V \to \R$ be differentiable, e.g., the MSE. Gradients are taken with respect to these scalar products, and $d\varphi_\theta^* \colon V \to \Theta$ denotes the adjoint of the differential $d\varphi_\theta \colon \Theta \to V$ of the parametrization map at $\theta \in \Theta$.</p>
 
     <div class="definition" id="def-gradient-flow">
-      <p><span class="label">Definition 28</span> (Gradient flow). The <em>gradient flow</em> of the model for the loss $L$ is the differential equation
+      <p><span class="label">Definition</span> (Gradient flow). The <em>gradient flow</em> of the model for the loss $L$ is the differential equation
       $$
       \dot\theta(t) = -\nabla (L \circ \varphi)(\theta(t))
       $$
@@ -622,7 +627,7 @@
     <p>The trajectory in function space is governed by the following equation.</p>
 
     <div class="theorem" id="prop-ntk">
-      <p><span class="label">Proposition 29.</span> Along every trajectory of the gradient flow,
+      <p><span class="label">Proposition</span> Along every trajectory of the gradient flow,
       \begin{equation}\label{eq:function-space-flow}
       \dot f(t) = -K_{\theta(t)} \nabla L(f(t)), \qquad K_\theta = d\varphi_\theta\, d\varphi_\theta^* \colon V \to V.
       \end{equation}
@@ -641,13 +646,13 @@
     <p>Quantities that do not change during training are a basic tool to analyze its dynamics. They confine the trajectories to subsets of $\Theta$ determined by the initialization, reducing the effective dimension of the dynamics, and influencing the solution eventually reached.</p>
 
     <div class="definition" id="def-conserved-quantity">
-      <p><span class="label">Definition 30</span> (Conserved quantity). A <em>conserved quantity</em> of the model is a differentiable function $Q \colon \Theta \to \R$ such that $\nabla Q(\theta) \in \ker d\varphi_\theta$ for all $\theta \in \Theta$.</p>
+      <p><span class="label">Definition</span> (Conserved quantity). A <em>conserved quantity</em> of the model is a differentiable function $Q \colon \Theta \to \R$ such that $\nabla Q(\theta) \in \ker d\varphi_\theta$ for all $\theta \in \Theta$.</p>
     </div>
 
     <p>The name is justified by the following lemma (<a href="#marcotte2023abide">Marcotte et al., 2023</a>).</p>
 
     <div class="theorem" id="lem-conserved-quantities">
-      <p><span class="label">Lemma 31.</span> A differentiable function $Q \colon \Theta \to \R$ is a conserved quantity if and only if it is constant along every trajectory of the gradient flow, for every differentiable loss $L \colon V \to \R$.</p>
+      <p><span class="label">Lemma</span> A differentiable function $Q \colon \Theta \to \R$ is a conserved quantity if and only if it is constant along every trajectory of the gradient flow, for every differentiable loss $L \colon V \to \R$.</p>
     </div>
 
     <details class="proof">
@@ -659,18 +664,18 @@
       which vanishes if $Q$ is a conserved quantity. Conversely, let $\theta_0 \in \Theta$ and $u \in V$, and consider the linear loss $L = \langle u, \cdot \rangle$, so that $\nabla L = u$. Since $L \circ \varphi$ is a polynomial, the Picard–Lindelöf theorem provides a trajectory with $\theta(0) = \theta_0$. As $Q$ is constant along it, the derivative above vanishes at $t = 0$, i.e., $\langle d\varphi_{\theta_0} \nabla Q(\theta_0), u \rangle = 0$. Since $u$ is arbitrary, $\nabla Q(\theta_0) \in \ker d\varphi_{\theta_0}$.</p>
     </details>
 
-    <p>Since $\ker d\varphi_\theta$ is the tangent space of the fiber for generic $\theta$, non-constant conserved quantities exist only if the generic fiber is positive-dimensional, i.e., if $\dim \M < \dpar$. Such fibers often come from continuous parameter symmetries, whose orbits lie in the fibers (as in <a href="#prop-equivariance-fibers">Proposition 22</a>), and some of these symmetries yield conserved quantities.</p>
+    <p>Since $\ker d\varphi_\theta$ is the tangent space of the fiber for generic $\theta$, non-constant conserved quantities exist only if the generic fiber is positive-dimensional, i.e., if $\dim \M < \dpar$. Such fibers often come from continuous parameter symmetries, whose orbits lie in the fibers (as in <a href="#prop-equivariance-fibers"></a>), and some of these symmetries yield conserved quantities.</p>
 
     <div class="theorem" id="thm-gradient-map">
-      <p><span class="label">Theorem 32</span> (Gradient map). Let $G$ be a Lie group acting linearly on $\Theta$ with $f_{g \cdot \theta} = f_\theta$ for all $g \in G$ and $\theta \in \Theta$. For $\xi$ in its Lie algebra $\mathfrak{g}$, let $\xi \cdot \theta = \frac{d}{dt}\big|_{t = 0} \exp(t\xi) \cdot \theta$, let $\mathfrak{p} \subseteq \mathfrak{g}$ be the subspace of the $\xi$ acting by self-adjoint operators, and let $\mu \colon \Theta \to \mathfrak{p}^*$ be the quadratic map defined by $\mu(\theta)(\xi) = \mu_\xi(\theta) = \frac{1}{2} \langle \xi \cdot \theta, \theta \rangle$. Then, for every $\xi \in \mathfrak{p}$, $\mu_\xi$ is a conserved quantity, with $\nabla \mu_\xi(\theta) = \xi \cdot \theta$. Hence, whatever the loss, every trajectory of the gradient flow stays in the real algebraic variety $\mu^{-1}(\mu(\theta(0)))$.</p>
+      <p><span class="label">Theorem</span> (Gradient map). Let $G$ be a Lie group acting linearly on $\Theta$ with $f_{g \cdot \theta} = f_\theta$ for all $g \in G$ and $\theta \in \Theta$. For $\xi$ in its Lie algebra $\mathfrak{g}$, let $\xi \cdot \theta = \frac{d}{dt}\big|_{t = 0} \exp(t\xi) \cdot \theta$, let $\mathfrak{p} \subseteq \mathfrak{g}$ be the subspace of the $\xi$ acting by self-adjoint operators, and let $\mu \colon \Theta \to \mathfrak{p}^*$ be the quadratic map defined by $\mu(\theta)(\xi) = \mu_\xi(\theta) = \frac{1}{2} \langle \xi \cdot \theta, \theta \rangle$. Then, for every $\xi \in \mathfrak{p}$, $\mu_\xi$ is a conserved quantity, with $\nabla \mu_\xi(\theta) = \xi \cdot \theta$. Hence, whatever the loss, every trajectory of the gradient flow stays in the real algebraic variety $\mu^{-1}(\mu(\theta(0)))$.</p>
     </div>
 
     <details class="proof">
       <summary>Proof.</summary>
-      <p>Let $\xi \in \mathfrak{g}$ and $\theta \in \Theta$. Differentiating $\varphi(\exp(t\xi) \cdot \theta) = \varphi(\theta)$ at $t = 0$ gives $d\varphi_\theta(\xi \cdot \theta) = 0$. If $\xi \in \mathfrak{p}$, then, by self-adjointness, $d(\mu_\xi)_\theta(v) = \frac{1}{2} \langle \xi \cdot v, \theta \rangle + \frac{1}{2} \langle \xi \cdot \theta, v \rangle = \langle \xi \cdot \theta, v \rangle$ for all $v \in \Theta$, i.e., $\nabla \mu_\xi(\theta) = \xi \cdot \theta \in \ker d\varphi_\theta$. The last claim follows from Lemma 31.</p>
+      <p>Let $\xi \in \mathfrak{g}$ and $\theta \in \Theta$. Differentiating $\varphi(\exp(t\xi) \cdot \theta) = \varphi(\theta)$ at $t = 0$ gives $d\varphi_\theta(\xi \cdot \theta) = 0$. If $\xi \in \mathfrak{p}$, then, by self-adjointness, $d(\mu_\xi)_\theta(v) = \frac{1}{2} \langle \xi \cdot v, \theta \rangle + \frac{1}{2} \langle \xi \cdot \theta, v \rangle = \langle \xi \cdot \theta, v \rangle$ for all $v \in \Theta$, i.e., $\nabla \mu_\xi(\theta) = \xi \cdot \theta \in \ker d\varphi_\theta$. The last claim follows from <a href="#lem-conserved-quantities"></a>.</p>
     </details>
 
-    <p>Theorem 32 is an analogue of Noether's theorem for gradient flows (<a href="#kunin2021neural">Kunin et al., 2021</a>), with the scalar product in place of the symplectic form: accordingly, $\mu$, characterized by $\nabla \mu_\xi(\theta) = \xi \cdot \theta$, is the analogue of a moment map, called a <em>gradient map</em> (<a href="#heinzner2008stratifications">Heinzner et al., 2008</a>). Unlike in the symplectic case, however, symmetries preserving the scalar product, i.e., generated by skew-adjoint $\xi$, such as rotations, yield no conserved quantity in this way; see <a href="#nguyen2026parameter">Nguyen and Montúfar (2026)</a> for the precise relation between symmetries and conservation laws.</p>
+    <p><a href="#thm-gradient-map"></a> is an analogue of Noether's theorem for gradient flows (<a href="#kunin2021neural">Kunin et al., 2021</a>), with the scalar product in place of the symplectic form: accordingly, $\mu$, characterized by $\nabla \mu_\xi(\theta) = \xi \cdot \theta$, is the analogue of a moment map, called a <em>gradient map</em> (<a href="#heinzner2008stratifications">Heinzner et al., 2008</a>). Unlike in the symplectic case, however, symmetries preserving the scalar product, i.e., generated by skew-adjoint $\xi$, such as rotations, yield no conserved quantity in this way; see <a href="#nguyen2026parameter">Nguyen and Montúfar (2026)</a> for the precise relation between symmetries and conservation laws.</p>
   </details>
 
   <details class="section">
@@ -678,13 +683,13 @@
 
     <p>The kernel of $d\varphi_\theta$ (see <a href="#gradient-flow">Gradient flow</a>) also governs how, and when, the neurons of a network activate during training.</p>
 
-    <p>Subnetworks (<a href="#ex-subnetworks">Example 9</a>) provide examples where $\ker d\varphi_\theta$ is larger than the tangent space of the fiber. Let $c \in \R$ be a critical point of $\sigma$ of order $k \ge 2$, i.e., $\sigma'(c) = \cdots = \sigma^{(k-1)}(c) = 0 \neq \sigma^{(k)}(c)$. For an MLP (<a href="#ex-perceptrons">Example 4</a>), possibly with skip connections (<a href="#ex-skip-connections">Example 6</a>), let $0 < j < L$ and $1 \le i \le d_j$, and let $S \subseteq \Theta$ be the affine subspace defined by $W_j[i,:] = 0$ and $b_j[i] = c$. For $\theta \in S$, the $i$-th neuron of layer $j$ is inactive, with pre-activation constantly equal to $c$. Since $\sigma'(c) = 0$, the derivatives of $f_\theta$ with respect to $W_j[i,:]$ and $b_j[i]$ vanish, so that the normal spaces of $S$ lie in $\ker d\varphi_\theta$. By the above, $S$ is invariant under the gradient flow, for every loss. Yet perturbing $W_j[i,:]$ by $\varepsilon$ changes $f_\theta$ at order $\varepsilon^k$, and, in general, these $d_{j-1}$ directions are not tangent to the fiber: the scheme-theoretic fiber is non-reduced. The order $k$ measures how flat the loss is near $S$: in the directions normal to $S$, it varies only at order $k$, and at distance $\varepsilon$ from $S$ the normal component of its gradient is $O(\varepsilon^{k-1})$. Hence, trajectories starting near $S$ move almost parallel to it, essentially following the dynamics of the network without this neuron, but they may escape. If the loss decreases away from $S$, the distance $\delta$ from $S$ grows according to $\dot\delta \propto \delta^{k-1}$, so that escaping from distance $\varepsilon$ takes a time of order $\log(1/\varepsilon)$ if $k = 2$, and of order $\varepsilon^{2-k}$ if $k \ge 3$.</p>
+    <p>Subnetworks (<a href="#ex-subnetworks"></a>) provide examples where $\ker d\varphi_\theta$ is larger than the tangent space of the fiber. Let $c \in \R$ be a critical point of $\sigma$ of order $k \ge 2$, i.e., $\sigma'(c) = \cdots = \sigma^{(k-1)}(c) = 0 \neq \sigma^{(k)}(c)$. For an MLP (<a href="#ex-perceptrons"></a>), possibly with skip connections (<a href="#ex-skip-connections"></a>), let $0 < j < L$ and $1 \le i \le d_j$, and let $S \subseteq \Theta$ be the affine subspace defined by $W_j[i,:] = 0$ and $b_j[i] = c$. For $\theta \in S$, the $i$-th neuron of layer $j$ is inactive, with pre-activation constantly equal to $c$. Since $\sigma'(c) = 0$, the derivatives of $f_\theta$ with respect to $W_j[i,:]$ and $b_j[i]$ vanish, so that the normal spaces of $S$ lie in $\ker d\varphi_\theta$. By the above, $S$ is invariant under the gradient flow, for every loss. Yet perturbing $W_j[i,:]$ by $\varepsilon$ changes $f_\theta$ at order $\varepsilon^k$, and, in general, these $d_{j-1}$ directions are not tangent to the fiber: the scheme-theoretic fiber is non-reduced. The order $k$ measures how flat the loss is near $S$: in the directions normal to $S$, it varies only at order $k$, and at distance $\varepsilon$ from $S$ the normal component of its gradient is $O(\varepsilon^{k-1})$. Hence, trajectories starting near $S$ move almost parallel to it, essentially following the dynamics of the network without this neuron, but they may escape. If the loss decreases away from $S$, the distance $\delta$ from $S$ grows according to $\dot\delta \propto \delta^{k-1}$, so that escaping from distance $\varepsilon$ takes a time of order $\log(1/\varepsilon)$ if $k = 2$, and of order $\varepsilon^{2-k}$ if $k \ge 3$.</p>
 
     <p>This mechanism is a starting point for a theory of feature learning and sparsity. Consider initializations at scale $\alpha \to 0$ around a parameter at which all the neurons are inactive in this way, e.g., with vanishing weights and hidden biases equal to $c$. Learning is then expected to proceed sequentially, through a <em>saddle-to-saddle</em> dynamics (<a href="#jacot2021saddle">Jacot et al., 2021</a>; <a href="#kunin2025alternating">Kunin et al., 2025</a>). During a plateau, the loss is almost constant, and the inactive neurons move almost parallel to their subspaces. Their weights stay small, but align with the directions along which activating them would decrease the loss the most, while accumulating this <em>utility</em> over time. Eventually, a neuron escapes: it suddenly activates, and the loss drops abruptly. Metaphorically, the neuron <em>learns a feature</em>. The active neurons then settle at a critical point of the loss of the subnetwork they form, which is a saddle of the full loss, and a new plateau begins, until convergence. Thus the trajectory visits a sequence of subnetworks, activating neurons only when needed, which biases learning towards sparse networks. All of this is an infinitesimal phenomenon: as $\alpha \to 0$, with time rescaled by the escape time, the trajectory degenerates into plateaus separated by instantaneous jumps between saddles, and the loss curve becomes piecewise constant. The limit has been proved in special cases, such as diagonal linear networks (<a href="#pesme2023saddle">Pesme and Flammarion, 2023</a>), but a general proof is not yet available.</p>
 
     <details class="note">
       <summary>What is this?</summary>
-      <p>Consider a shallow network (<a href="#ex-perceptrons">Example 4</a>) with three neurons, each reading its own input, no biases, and as activation the monomial $\sigma(t) = t^r$. It computes
+      <p>Consider a shallow network (<a href="#ex-perceptrons"></a>) with three neurons, each reading its own input, no biases, and as activation the monomial $\sigma(t) = t^r$. It computes
       $$
       f_\theta(x) = a_1 (w_1 x_1)^r + a_2 (w_2 x_2)^r + a_3 (w_3 x_3)^r = c_1 x_1^r + c_2 x_2^r + c_3 x_3^r, \qquad c_i = a_i w_i^r,
       $$
