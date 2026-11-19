@@ -35,7 +35,7 @@
 \maketitle
 
 \noindent
-This note proves Theorem~A of \texttt{saddle\_to\_saddle.tex} for ResNets of width $d=1$ without biases, where every neuron has a single weight. The proof is complete, and it is shorter than the general one for two reasons. First, the direction of a neuron is its sign, which the flow preserves. Hence the dormant flow is solved in closed form, condition \ND2 is void, and the limit process is a race between clocks that run at piecewise constant speeds. Second, in the escape from a saddle there is no direction to align. Only the active weights have to be controlled, and they are slaved to the escaping weight: compared at equal values of this weight, two trajectories do not move apart. So the weighted norm and the contraction rate of the general proof are not needed.
+This note proves Theorem~A of \texttt{saddle\_to\_saddle.tex} for ResNets of width $d=1$ without biases, where every neuron has a single weight (see Remark~\ref{rem:biases} for biases). The proof is complete, and it is shorter than the general one for two reasons. First, the direction of a neuron is its sign, which the flow preserves. Hence the dormant flow is solved in closed form, condition \ND2 is void, and the limit process is a race between clocks that run at piecewise constant speeds. Second, in the escape from a saddle there is no direction to align. Only the active weights have to be controlled, and they are slaved to the escaping weight: compared at equal values of this weight, two trajectories do not move apart. So the weighted norm and the contraction rate of the general proof are not needed. Two further shortcuts do not rely on $d=1$: during the escape, the bound on the active weights is read off from the plateau estimate (Lemma~\ref{lem:active}), and the convergence to the escape orbit backward in time follows from continuous dependence on the initial value.
 
 \section{Setting}
 
@@ -43,18 +43,20 @@ This note proves Theorem~A of \texttt{saddle\_to\_saddle.tex} for ResNets of wid
 \[
 h_0=x,\qquad h_n=h_{n-1}+\sigma(w_nh_{n-1})\quad(1\le n\le L),\qquad f_\theta=h_L,
 \]
-with $x\in\R$ and $\theta=(w_1,\dots,w_L)\in\Theta=\R^L$. Layer $n$ is a single \emph{neuron}, with weight $w_n$, and $f_\theta$ is a polynomial in $x$ of degree at most $r^L$, where $r=\deg\sigma$. Let $F(\theta)=\cL(f_\theta)$, where $\cL$ is a $C^\infty$ loss on the space $V$ of polynomials of degree at most $r^L$, e.g.\ $\cL(f)=\frac12\E|f(x)-y|^2$. Let $\theta^\alpha$ be the gradient flow $\dot\theta=-\nabla F(\theta)$ with $\theta^\alpha(0)=\alpha\xi$, where $\xi\in\Theta$ is fixed and $\alpha\to0$.
+with $x\in\R$ and $\theta=(w_1,\dots,w_L)\in\Theta=\R^L$. Layer $n$ is a single \emph{neuron}, with weight $w_n$, and $f_\theta$ is a polynomial in $x$ of degree at most $r^L$, where $r=\deg\sigma$. Let $F(\theta)=\cL(f_\theta)$, where $\cL$ is a $C^\infty$ loss on the space $V$ of polynomials of degree at most $r^L$, e.g.\ the mean squared error $\cL(f)=\frac12\E|f(x)-y|^2$ over a finite dataset, or over a distribution with $\E|x|^{2r^L}<\infty$ and $\E y^2<\infty$. For $\alpha>0$, let $\theta^\alpha$ be the maximal solution of the gradient flow $\dot\theta=-\nabla F(\theta)$ with $\theta^\alpha(0)=\alpha\xi$, where $\xi\in\Theta$ is fixed. We study the limit $\alpha\to0$.
 
-\paragraph{Notation.} For a set $A\subseteq\{1,\dots,L\}$ of (active) neurons, $S_A=\{\theta:w_n=0\ \forall n\notin A\}$, $\pi_A$ is the orthogonal projection onto $S_A$, $F_A=F|_{S_A}$, $\nabla_A=\pi_A\nabla$, and $\zeta_A(\theta)=\sum_{n\notin A}|w_n|^k$. We write $e_n$ for the $n$-th basis vector, $\partial_n$ for $\partial/\partial w_n$, and $\theta^{\sm n}=\theta-w_ne_n$. The \emph{utility} of neuron $n$ at $\theta$ is the monomial
+\paragraph{Notation.} For a set $A\subseteq\{1,\dots,L\}$ of (active) neurons, $S_A=\{\theta:w_n=0\ \forall n\notin A\}$, $\pi_A$ is the orthogonal projection onto $S_A$, $F_A=F|_{S_A}$, $\nabla_A=\pi_A\nabla$ and $\nabla_A^2$ are the gradient and the Hessian in the directions of $S_A$, and $\zeta_A(\theta)=\sum_{n\notin A}|w_n|^k$. We write $e_n$ for the $n$-th basis vector, $\partial_n$ for $\partial/\partial w_n$, and $\theta^{\sm n}=\theta-w_ne_n$. The $n$-th components of the trajectories $\theta^\alpha$ and $\gamma$ are $w^\alpha_n$ and $\gamma_n$. The \emph{utility} of neuron $n$ at $\theta$ is the monomial
 \[
 U_n(\theta;w)=c_n(\theta)\,w^k,\qquad c_n(\theta)=-\tfrac1{k!}\,\partial_n^kF(\theta^{\sm n}),\qquad w\in\R .
 \]
 
 \paragraph{Flatness.} Besides smoothness, the proof uses only
+\begingroup\renewcommand{\theHequation}{H}%
 \begin{equation}\tag{H}\label{eq:H}
 \partial_n^iF=0\ \text{ on }\{w_n=0\}\qquad\text{for every neuron $n$ and every $1\le i\le k-1$.}
 \end{equation}
-The network satisfies it: $f_\theta=\Phi_n\big(h_{n-1}+\sigma(w_nh_{n-1})\big)$, where $\Phi_n$ is the map computed by the layers after $n$, and neither $h_{n-1}$ nor $\Phi_n$ depends on $w_n$. Since $\sigma(t)=t^k\tau(t)$ for a polynomial $\tau$, we get $f_\theta-f_{\theta^{\sm n}}=w_n^k\Delta_\theta$ with $\Delta_\theta\in V$ polynomial in $\theta$. Hence $F(\theta)-F(\theta^{\sm n})=w_n^k\,g(\theta)$ with $g$ smooth. Depth plays no further role: everything below holds for every $F\in C^\infty(\R^L)$ satisfying~\eqref{eq:H}. For the mean squared error, the chain rule gives, with $c_\sigma=\sigma^{(k)}(0)/k!$ and the right-hand side computed at $\theta^{\sm n}$,
+\endgroup
+The network satisfies it: $f_\theta=\Phi_n\big(h_{n-1}+\sigma(w_nh_{n-1})\big)$, where $\Phi_n$ is the map computed by the layers after $n$, and neither $h_{n-1}$ nor $\Phi_n$ depends on $w_n$. Since $\sigma(t)=t^kq(t)$ for a polynomial $q$, we get $f_\theta-f_{\theta^{\sm n}}=w_n^k\Delta_\theta$ with $\Delta_\theta\in V$ polynomial in $\theta$. Hence $F(\theta)-F(\theta^{\sm n})=w_n^k\,g(\theta)$ with $g$ smooth. Depth plays no further role: everything below holds for every $F\in C^\infty(\R^L)$ satisfying~\eqref{eq:H}. For the mean squared error, the chain rule gives, with $c_\sigma=\sigma^{(k)}(0)/k!$ and the right-hand side computed at $\theta^{\sm n}$,
 \[
 c_n(\theta)=c_\sigma\,\E\big[h_{n-1}(x)^k\,\Phi_n'(h_n(x))\,(y-f_\theta(x))\big].
 \]
@@ -72,14 +74,14 @@ Assume \eqref{eq:H}.
 Let $g\in C^\infty(\Theta)$ with $\partial_n^ig=0$ on $\{w_n=0\}$ for all $i<j$. By Taylor's formula with integral remainder, $g=w_n^j\tilde g$ with $\tilde g$ smooth and $\tilde g=\partial_n^jg/j!$ on $\{w_n=0\}$. For (a), take $g=\partial_nF$ and $j=k-1$. For (b), let $n\notin A$ and $n'\in A$. Since $\partial_{n'}$ is tangent to $\{w_n=0\}$, the derivatives $\partial_n^i\partial_{n'}F=\partial_{n'}\partial_n^iF$, $1\le i\le k-1$, vanish on this hyperplane. So $\partial_{n'}F(\theta)-\partial_{n'}F(\theta^{\sm n})$ is $w_n^k$ times a smooth function: setting $w_n$ to zero changes $\nabla_AF$ by at most $C|w_n|^k$ on bounded sets. Setting the weights $w_n$, $n\notin A$, to zero one at a time gives (b).
 \end{proof}
 
-\paragraph{Consequences.} By (a), the gradient flow reads $\dot w_n=w_n^{k-1}G_n(\theta)$. Hence every hyperplane $\{w_n=0\}$ is invariant, and \emph{the sign of each weight is constant along every trajectory}. Every $S_A$ is invariant, the flow on $S_A$ is the gradient flow of $F_A$, and critical points of $F_A$ are critical points of $F$. If $w_n=0$, then $F(\theta+we_n)=F(\theta)-U_n(\theta;w)+O(|w|^{k+1})$. Hence a critical point $\theta$ of $F_A$ with $U_n(\theta;u)>0$ for some $n\notin A$ and some sign $u\in\{\pm1\}$ is a saddle point of $F$.
+\paragraph{Consequences.} By (a), the gradient flow reads $\dot w_n=w_n^{k-1}G_n(\theta)$. Hence every hyperplane $\{w_n=0\}$ is invariant, and \emph{the sign of each weight is constant along every trajectory}. Every $S_A$ is invariant, the flow on $S_A$ is the gradient flow of $F_A$, and critical points of $F_A$ are critical points of $F$. If $w_n=0$, then $F(\theta+we_n)=F(\theta)-U_n(\theta;w)+O(|w|^{k+1})$. Hence a critical point $\theta$ of $F_A$ with $U_n(\theta;u)>0$ for some $n\notin A$ and some sign $u\in\{\pm1\}$ is a \emph{saddle point} of $F$: a critical point which is not a local minimum.
 
 \section{The limit process and the result}
 
 A \emph{non-degenerate local minimum} of $F_A$ is a point $\theta^*\in S_A$ with $\nabla F_A(\theta^*)=0$ and $\nabla^2F_A(\theta^*)\succ0$; for $A=\emptyset$, $\theta^*=0$. Let $\theta^*$ be such a point, let $n\notin A$, and let $u\in\{\pm1\}$ with $U_n(\theta^*;u)>0$. The \emph{escape orbit} of $\theta^*$ along $(n,u)$ is the maximal gradient-flow trajectory $\gamma$ in $S_{A\cup\{n\}}$ with $u\gamma_n>0$ and $\gamma(t)\to\theta^*$ as $t\to-\infty$. It exists and is unique up to time translation (Lemma~\ref{lem:escape}(a)).
 
 \begin{definition}[Saddle-to-saddle process]\label{def:process}
-Let $u_n=\sgn\xi_n$. Set $s_0=0$, $A_0=\emptyset$, $\theta^{(0)}=0$ and $\Xi_n(0)=\xi_n$. At stage $m$, we are given $s_m$, $A_m$, a non-degenerate local minimum $\theta^{(m)}$ of $F_{A_m}$, and $\Xi_n(s_m)$ for $n\notin A_m$. Let $U^{(m)}_n=U_n(\theta^{(m)};\cdot)$. Each \emph{dormant} $\Xi_n$, $n\notin A_m$, solves
+Let $u_n=\sgn\xi_n\in\{-1,0,1\}$. Set $s_0=0$, $A_0=\emptyset$, $\theta^{(0)}=0$ and $\Xi_n(0)=\xi_n$. At stage $m$, we are given $s_m$, $A_m$, a non-degenerate local minimum $\theta^{(m)}$ of $F_{A_m}$, and $\Xi_n(s_m)$ for $n\notin A_m$. Let $U^{(m)}_n=U_n(\theta^{(m)};\cdot)$. Each \emph{dormant} $\Xi_n$, $n\notin A_m$, solves
 \begin{equation}\label{eq:dormant}
 \frac{d}{ds}\Xi_n=k\,c_n(\theta^{(m)})\,\Xi_n^{k-1},\qquad\text{that is,}\qquad \frac{d}{ds}|\Xi_n|^{2-k}=-k(k-2)\,U^{(m)}_n(u_n)\quad\text{if }\xi_n\ne0,
 \end{equation}
@@ -87,13 +89,13 @@ up to its blow-up time $s_m+T^{(m)}_n$, where
 \[
 T^{(m)}_n=\frac{|\Xi_n(s_m)|^{2-k}}{k(k-2)\,U^{(m)}_n(u_n)}\quad\text{if }U^{(m)}_n(u_n)>0,\qquad T^{(m)}_n=\infty\quad\text{otherwise.}
 \]
-Let $s_{m+1}=s_m+\min_{n\notin A_m}T^{(m)}_n$. Stage $m$ is \emph{non-degenerate} if $s_{m+1}<\infty$ and
+Let $s_{m+1}=s_m+\min_{n\notin A_m}T^{(m)}_n$, with $s_{m+1}=\infty$ if no neuron is dormant. Stage $m$ is \emph{non-degenerate} if $s_{m+1}<\infty$ and
 \begin{enumerate}[label=\textup{(ND\arabic*)},leftmargin=4em,nosep]
 \item the minimum is attained at a single neuron $n_{m+1}$;
 \setcounter{enumi}{2}
 \item the escape orbit $\gamma_{m+1}$ of $\theta^{(m)}$ along $(n_{m+1},u_{n_{m+1}})$ is defined for all $t\ge0$ and converges, as $t\to\infty$, to a non-degenerate local minimum $\theta^{(m+1)}$ of $F_{A_{m+1}}$, where $A_{m+1}=A_m\cup\{n_{m+1}\}$.
 \end{enumerate}
-In that case, set $\Xi_n(s_{m+1})=\lim_{s\uparrow s_{m+1}}\Xi_n(s)$ for $n\notin A_{m+1}$ and continue. Otherwise stop. The \emph{limit path} is $\bar\theta(s)=\theta^{(m)}$ for $s\in[s_m,s_{m+1})$, and $\bar s_n\in(0,\infty]$ is the time up to which $\Xi_n$ is defined, so that $\bar s_n=s_m$ if $n=n_m$.
+In that case, set $\Xi_n(s_{m+1})=\lim_{s\uparrow s_{m+1}}\Xi_n(s)$ for $n\notin A_{m+1}$ and continue. Otherwise stop. The \emph{limit path} is $\bar\theta(s)=\theta^{(m)}$ for $s\in[s_m,s_{m+1})$. Each $\Xi_n$ is defined on $[0,\bar s_n)$, where $\bar s_n=s_m$ if $n=n_m$, and $\bar s_n=s_m+T^{(m)}_n$ if $n$ is still dormant at the last stage $m$ reached.
 \end{definition}
 
 The numbering is that of the full note. Its condition \ND2, on the limit direction of the escaping neuron, is void: here the direction is the constant sign $u_{n_{m+1}}$, and $U^{(m)}_{n_{m+1}}(u_{n_{m+1}})>0$ because $T^{(m)}_{n_{m+1}}<\infty$.
@@ -124,7 +126,7 @@ Assume \eqref{eq:H} with $k\ge3$. In Lemmas~\ref{lem:active}--\ref{lem:escape}, 
 \end{equation}
 
 \begin{lemma}[Active neurons]\label{lem:active}
-There are $r_0\in(0,1)$ and $C_0$ such that the following holds. Let $\theta(t)$, $t\in[t_0,t_1]$, be a gradient-flow trajectory, and let $a=\pi_A\theta$. If $|a(t_0)-\theta^*|\le r_0$ and $\zeta_A(\theta)\le r_0$ on $[t_0,t_1]$, then
+There are $r_0\in(0,1)$ and $C_0>0$ such that the following holds. Let $\theta(t)$, $t\in[t_0,t_1]$, be a gradient-flow trajectory, and let $a=\pi_A\theta$. If $|a(t_0)-\theta^*|\le r_0$ and $\zeta_A(\theta)\le r_0$ on $[t_0,t_1]$, then
 \[
 |a(t)-\theta^*|\le e^{-\mu(t-t_0)}|a(t_0)-\theta^*|+C_0\sup_{[t_0,t]}\zeta_A(\theta)\qquad\text{for }t\in[t_0,t_1].
 \]
@@ -159,10 +161,10 @@ The escape from a saddle is the heart of the proof. Let $n\notin A$, $A'=A\cup\{
 \begin{lemma}[Escape]\label{lem:escape}
 For every $K\ge0$ there are $\rho_1,\eps_1\in(0,1]$ and $C$ with the following properties.
 \begin{enumerate}[label=\textup{(\alph*)},nosep]
-\item There is a gradient-flow trajectory $\gamma\colon(-\infty,0]\to S_{A'}$ with $u\gamma_n>0$ and $|\gamma_n(0)|=\rho_1$, such that $|\gamma_n|$ is increasing, $|\pi_A\gamma-\theta^*|\le C_0|\gamma_n|^k$, and $\gamma(t)\to\theta^*$ as $t\to-\infty$. Every gradient-flow trajectory $\tilde\gamma\colon(-\infty,t']\to S_{A'}$ with $u\tilde\gamma_n>0$ and $\tilde\gamma(t)\to\theta^*$ as $t\to-\infty$ is a time translate of $\gamma$.
+\item There is a gradient-flow trajectory $\gamma\colon(-\infty,0]\to S_{A'}$ with $u\gamma_n>0$ and $|\gamma_n(0)|=\rho_1$, such that $|\gamma_n|$ is increasing, $|\pi_A\gamma-\theta^*|\le C_0|\gamma_n|^k$, and $\gamma(t)\to\theta^*$ as $t\to-\infty$. Every gradient-flow trajectory $\tilde\gamma\colon(-\infty,\tilde t\,]\to S_{A'}$ with $u\tilde\gamma_n>0$ and $\tilde\gamma(t)\to\theta^*$ as $t\to-\infty$ coincides, for $t$ near $-\infty$, with a time translate of $\gamma$.
 \item Let $\theta(t)$ be a gradient-flow trajectory and $t_0$ a time such that $uw(t_0)>0$, $\rho_0:=\rho(t_0)<\rho_1$, $\eta:=|z(t_0)|\le\eps_1\rho_0$ and $|a(t_0)-\theta^*|\le K\rho_0^k$. Then $\rho$ increases and reaches $\rho_1$ at a time $t_1\le t_0+\rho_0^{2-k}/((k-2)\kappa_0)$. Moreover, for $t\in[t_0,t_1]$,
 \[
-|z(t)|\le2\eta\qquad\text{and}\qquad|\theta(t)-\gamma(t')|\le C(\rho_0^k+\eta),
+|\theta(t)-\theta^*|<1,\qquad|z(t)|\le2\eta\qquad\text{and}\qquad|\theta(t)-\gamma(t')|\le C(\rho_0^k+\eta),
 \]
 where $t'\le0$ is the time at which $|\gamma_n(t')|=\rho(t)$.
 \end{enumerate}
@@ -178,11 +180,11 @@ and $D(\theta^*)=k\,U_n(\theta^*;u)=2\kappa_0$. Fix $r_1\in(0,r_0]$ and $C_1$ su
 K'\rho_1^k+3\rho_1<r_1,\qquad C_1C_3\,\rho_1^k\le\frac{\mu\kappa_0}{12},\qquad\frac{C_1}{\kappa_0}\,\eps_1^{k-2}\le1-2^{2-k}.
 \end{equation}
 
-\emph{Step 2: a priori bounds.} In the situation of (b), let $t_1\le\infty$ be the first time at which $\rho=\rho_1$. We claim that, for $t\in[t_0,t_1]$,
+\emph{Step 2: a priori bounds.} In the situation of (b), let $t_1\le\infty$ be the first time at which $\rho=\rho_1$. We claim that the trajectory is defined and lies in $\cB$ on $[t_0,t_1]$, where
 \begin{equation}\label{eq:apriori}
 \dot\rho\ge\kappa_0\rho^{k-1},\qquad t-t_0<\frac{\rho_0^{2-k}}{(k-2)\kappa_0},\qquad|z|\le2\eta,\qquad|a-\theta^*|\le K'\rho^k .
 \end{equation}
-Let $[t_0,t^*]$, with $t^*\le t_1$, be the largest interval on which $\theta\in\cB$. On it, $\dot\rho\ge\kappa_0\rho^{k-1}$ by \eqref{eq:rho}. So $\rho$ increases and $\frac{d}{dt}\rho^{2-k}\le-(k-2)\kappa_0$, which bounds $t-t_0$ because $\rho^{2-k}>0$. Next, $|\dot w_{n'}|\le C_1|w_{n'}|^{k-1}$ for $n'\notin A'$, so $\frac{d}{dt}|z|\le C_1|z|^{k-1}$ and $\frac{d}{dt}|z|^{2-k}\ge-(k-2)C_1$. Hence
+Let $t^*\le t_1$ be the supremum of the times $t$ such that the trajectory is defined and lies in $\cB$ on $[t_0,t]$. Then $t^*>t_0$, because $|\theta(t_0)-\theta^*|\le K\rho_0^k+\rho_0+\eta<r_1$ by \eqref{eq:constants}. On $[t_0,t^*)$, $\dot\rho\ge\kappa_0\rho^{k-1}$ by \eqref{eq:rho}. So $\rho$ increases and $\frac{d}{dt}\rho^{2-k}\le-(k-2)\kappa_0$, which bounds $t-t_0$ because $\rho^{2-k}>0$. Next, $|\dot w_{n'}|\le C_1|w_{n'}|^{k-1}$ for $n'\notin A'$, so $\frac{d}{dt}|z|\le C_1|z|^{k-1}$ and $\frac{d}{dt}|z|^{2-k}\ge-(k-2)C_1$. Hence
 \[
 |z(t)|^{2-k}>\eta^{2-k}-\frac{C_1}{\kappa_0}\,\rho_0^{2-k}\ge\eta^{2-k}\Big(1-\frac{C_1}{\kappa_0}\,\eps_1^{k-2}\Big)\ge(2\eta)^{2-k}
 \]
@@ -190,38 +192,38 @@ by \eqref{eq:constants}; if $\eta=0$, then $z\equiv0$ because $S_{A'}$ is invari
 \[
 |a(t)-\theta^*|\le|a(t_0)-\theta^*|+C_0\big(\rho(t)^k+2^k\eta^k\big)\le K'\rho(t)^k,
 \]
-because $\eta\le\rho_0\le\rho(t)$. By \eqref{eq:constants}, these bounds give $|\theta-\theta^*|\le K'\rho^k+\rho+2\eta<r_1$ on $[t_0,t^*]$. Hence $t^*=t_1$, and $t_1<\infty$.
+because $\eta\le\rho_0\le\rho(t)$. By \eqref{eq:constants}, these bounds give $|\theta-\theta^*|\le K'\rho_1^k+3\rho_1<r_1$ on $[t_0,t^*)$. Since $t^*<\infty$, the trajectory is defined at $t^*$ and lies in the interior of $\cB$ there. Hence $t^*=t_1$, which proves the claim.
 
 \emph{Step 3: comparison at equal $\rho$.} For $0<\rho\le\rho_1$, let $\cR(\rho)$ be the set of the points $\theta=a+u\rho e_n+z$ with $|a-\theta^*|\le K'\rho^k$ and $|z|\le2\eps_1\rho$. It is contained in $\cB$ by \eqref{eq:constants}. By \eqref{eq:apriori}, the trajectory of (b) lies in $\cR(\rho(t))$, and since $\rho$ increases we may use it as the time variable:
 \[
 \frac{da}{d\rho}=\rho^{1-k}X(\theta),\qquad X:=-\frac{\nabla_AF}{D}.
 \]
-On $\cR(\rho)$, Lemma~\ref{lem:flat}(b) and $\nabla F_A(\theta^*)=0$ give $|\nabla_AF(\theta)|\le C_1(\rho^k+|z|^k)+C_1|a-\theta^*|\le C_3\rho^k$. Hence, for $v\in S_A$, by \eqref{eq:constants}, with $\lambda:=\mu/(12\kappa_0)$,
+On $\cR(\rho)$, Lemma~\ref{lem:flat}(b) and $\nabla F_A(\theta^*)=0$ give $|\nabla_AF(\theta)|\le C_1(\rho^k+|z|^k)+C_1|a-\theta^*|\le C_3\rho^k$. Let $D_aX$ be the derivative of $X$ in the directions of $S_A$, and $\lambda:=\mu/(12\kappa_0)$. For $v\in S_A$, by \eqref{eq:constants},
 \[
-\ip{v}{D_aX(\theta)\,v}=-\frac{\ip{v}{\nabla_A^2F\,v}}{D}+\frac{\ip{v}{\nabla_AF}\ip{\nabla_AD}{v}}{D^2}\le\Big(-\frac{\mu}{6\kappa_0}+\frac{C_1C_3\rho^k}{\kappa_0^2}\Big)|v|^2\le-\lambda|v|^2,
+\ip{v}{D_aX(\theta)\,v}=-\frac{\ip{v}{\nabla_A^2F\,v}}{D}+\frac{\ip{v}{\nabla_AF}\ip{\nabla_AD}{v}}{D^2}\le\Big(-\frac{\mu}{6\kappa_0}+\frac{C_1C_3\rho^k}{\kappa_0^2}\Big)|v|^2\le-\lambda|v|^2 .
 \]
-and, by Lemma~\ref{lem:flat}(b) for $A'$,
+Moreover, by Lemma~\ref{lem:flat}(b) for $A'$, and since $\rho,|z|\le1$,
 \[
-|X(\theta)-X(\pi_{A'}\theta)|\le\frac{C_1|z|^k}{\kappa_0}+\frac{C_3\rho^k\,C_1|z|}{\kappa_0^2}\le C_4|z| .
+|X(\theta)-X(\pi_{A'}\theta)|\le\frac{C_1|z|^k}{\kappa_0}+\frac{C_3\rho^k\,C_1|z|}{\kappa_0^2}\le C_4|z|,\qquad C_4:=\frac{C_1}{\kappa_0}+\frac{C_1C_3}{\kappa_0^2}.
 \]
-Now let $\theta_1(\rho)\in\cR(\rho)$ and $\theta_2(\rho)\in\cR(\rho)\cap S_{A'}$, $\rho\in[\rho_a,\rho_b]$, be two trajectories parametrized by $\rho$, and let $\delta=a_1-a_2$. Splitting $X(\theta_1)-X(\theta_2)=[X(\theta_1)-X(\pi_{A'}\theta_1)]+[X(\pi_{A'}\theta_1)-X(\theta_2)]$, and noting that the constraint on $a$ in $\cR(\rho)$ is convex, we get
+Now let $\theta_1(\rho)\in\cR(\rho)$ and $\theta_2(\rho)\in\cR(\rho)\cap S_{A'}$, $\rho\in[\rho_-,\rho_+]$, be two trajectories parametrized by $\rho$, and let $b=a_1-a_2$. Splitting $X(\theta_1)-X(\theta_2)=[X(\theta_1)-X(\pi_{A'}\theta_1)]+[X(\pi_{A'}\theta_1)-X(\theta_2)]$, and noting that the constraint on $a$ in $\cR(\rho)$ is convex, we get
 \[
-\frac{d}{d\rho}\frac{|\delta|^2}2=\rho^{1-k}\ip{\delta}{X(\theta_1)-X(\theta_2)}\le\rho^{1-k}|\delta|\big(C_4|z_1|-\lambda|\delta|\big).
+\frac{d}{d\rho}\frac{|b|^2}2=\rho^{1-k}\ip{b}{X(\theta_1)-X(\theta_2)}\le\rho^{1-k}|b|\big(C_4|z_1|-\lambda|b|\big).
 \]
-So $|\delta|$ decreases whenever it exceeds $C_4|z_1|/\lambda$, and
+So $|b|$ decreases whenever it exceeds $C_4|z_1|/\lambda$, and
 \begin{equation}\label{eq:comparison}
-|\delta(\rho)|\le\max\Big\{|\delta(\rho_a)|,\ \frac{C_4}{\lambda}\sup|z_1|\Big\}\qquad\text{for }\rho\in[\rho_a,\rho_b].
+|b(\rho)|\le\max\Big\{|b(\rho_-)|,\ \frac{C_4}{\lambda}\sup|z_1|\Big\}\qquad\text{for }\rho\in[\rho_-,\rho_+].
 \end{equation}
 
 \emph{Step 4: the escape orbit, proof of (a).} For $\rho_0<\rho_1$, the trajectory through $\theta^*+u\rho_0e_n$ satisfies the assumptions of (b) with $\eta=0$. By Step~2 and Lemma~\ref{lem:active}, it stays in $S_{A'}$ with $|a-\theta^*|\le C_0\rho^k$. Let $a^{\rho_0}(\rho)$, $\rho\in[\rho_0,\rho_1]$, be its parametrization by $\rho$. By \eqref{eq:comparison}, for $\rho_0'<\rho_0\le\rho$,
 \[
 |a^{\rho_0'}(\rho)-a^{\rho_0}(\rho)|\le|a^{\rho_0'}(\rho_0)-\theta^*|\le C_0\rho_0^k .
 \]
-Hence, as $\rho_0\to0$, $a^{\rho_0}$ converges uniformly on every $[\rho',\rho_1]$ to a solution $a^\gamma$ of $\frac{da}{d\rho}=\rho^{1-k}X(a+u\rho e_n)$ on $(0,\rho_1]$, with $|a^\gamma(\rho)-\theta^*|\le C_0\rho^k$. Let $t(\rho)=-\int_\rho^{\rho_1}r^{1-k}/D\,dr$, with $D$ evaluated at $a^\gamma(r)+ure_n$. Since $D\le3\kappa_0$, $t(\rho)\to-\infty$ as $\rho\to0$. The curve $\gamma(t(\rho))=a^\gamma(\rho)+u\rho e_n$ solves \eqref{eq:rho}, and the other components of $\nabla F$ vanish on $S_{A'}$. So $\gamma$ is a gradient-flow trajectory with the stated properties.
+Hence, as $\rho_0\to0$, $a^{\rho_0}$ converges uniformly on every $[\rho',\rho_1]$ to a solution $a^\gamma$ of $\frac{da}{d\rho}=\rho^{1-k}X(a+u\rho e_n)$ on $(0,\rho_1]$, with $|a^\gamma(\rho)-\theta^*|\le C_0\rho^k$. Let $t(\rho)=-\int_\rho^{\rho_1}\varrho^{1-k}/D\,d\varrho$, with $D$ evaluated at $a^\gamma(\varrho)+u\varrho e_n$. Since $D\le3\kappa_0$, $t(\rho)\to-\infty$ as $\rho\to0$. The curve $\gamma(t(\rho))=a^\gamma(\rho)+u\rho e_n$ solves \eqref{eq:rho}, and the other components of $\nabla F$ vanish on $S_{A'}$. So $\gamma$ is a gradient-flow trajectory with the stated properties.
 
-Let $\tilde\gamma$ be as in (a), and $\tilde\rho=|\tilde\gamma_n|$. For $t$ near $-\infty$, $\tilde\gamma$ lies in $\cB$, so $\tilde\rho$ increases, and Lemma~\ref{lem:active} on $[t_0,t]$ with $t_0\to-\infty$ gives $|\pi_A\tilde\gamma-\theta^*|\le C_0\tilde\rho^k$. Thus \eqref{eq:comparison} applies to $\tilde\gamma$ and $\gamma$, parametrized by $\rho$ as $\tilde a(\rho)$ and $a^\gamma(\rho)$: for small $\rho$ and every $\rho_a<\rho$, $|\tilde a(\rho)-a^\gamma(\rho)|\le2C_0\rho_a^k$. Hence $\tilde a=a^\gamma$. Since $t$ is determined by $\rho$ up to an additive constant, $\tilde\gamma$ is a time translate of $\gamma$.
+Let $\tilde\gamma$ be as in (a), and $\tilde\rho=|\tilde\gamma_n|$. For $t$ near $-\infty$, $\tilde\gamma$ lies in $\cB$, so $\tilde\rho$ increases, and Lemma~\ref{lem:active} on $[t_0,t]$ with $t_0\to-\infty$ gives $|\pi_A\tilde\gamma-\theta^*|\le C_0\tilde\rho^k$. Thus \eqref{eq:comparison} applies to $\tilde\gamma$ and $\gamma$, parametrized by $\rho$ as $\tilde a(\rho)$ and $a^\gamma(\rho)$: for small $\rho$ and every $\rho_-<\rho$, $|\tilde a(\rho)-a^\gamma(\rho)|\le2C_0\rho_-^k$. Hence $\tilde a(\rho)=a^\gamma(\rho)$ for small $\rho$. Since $t$ is determined by $\rho$ up to an additive constant, $\tilde\gamma$ coincides near $-\infty$ with a time translate of $\gamma$.
 
-\emph{Step 5: proof of (b).} The first assertions are in \eqref{eq:apriori}. By \eqref{eq:comparison}, applied to $\theta$ and $\gamma$ from $\rho_a=\rho_0$,
+\emph{Step 5: proof of (b).} The first assertions are in Step~2, since $r_1<1$. By \eqref{eq:comparison}, applied to $\theta$ and $\gamma$ from $\rho_-=\rho_0$,
 \[
 |\theta(t)-\gamma(t')|\le|a-a^\gamma|(\rho(t))+|z(t)|\le\max\Big\{(K+C_0)\rho_0^k,\ \frac{2C_4}{\lambda}\,\eta\Big\}+2\eta .\qedhere
 \]
@@ -229,7 +231,7 @@ Let $\tilde\gamma$ be as in (a), and $\tilde\rho=|\tilde\gamma_n|$. For $t$ near
 
 \subsection*{Proof of Theorem~\ref{thm:main}}
 
-Fix $\xi$, $M$ and $S$. For $m\le M$, let $\mu_m$, $r^{(m)}_0$ and $C^{(m)}_0$ be the constants of Lemma~\ref{lem:active} at $(A_m,\theta^{(m)})$. For $m<M$, apply Lemma~\ref{lem:escape} to $(A_m,\theta^{(m)},n_{m+1},u_{n_{m+1}})$ with $K=2^{k+1}LC^{(m)}_0$. It gives constants $\rho_1,\eps_1,C$ and $\kappa_0$, and the trajectory $\gamma=\gamma_{m+1}$, normalized by $|\gamma_{n_{m+1}}(0)|=\rho_1$. All the times $\tau$ below satisfy $\alpha^{k-2}\tau\to s$ for some $s$, and the limit objects are uniformly continuous. So statements about $\theta^\alpha(\tau+\alpha^{2-k}(s'-s))$ for $s'$ in a compact interval transfer to $\theta^\alpha(\alpha^{2-k}s')$ on slightly smaller intervals. We use this without comment. We prove by induction on $m\le M$:
+Fix $\xi$, $M$ and $S$. For $m\le M$, let $\mu_m$, $r^{(m)}_0$ and $C^{(m)}_0$ be the constants of Lemma~\ref{lem:active} at $(A_m,\theta^{(m)})$. For $m<M$, apply Lemma~\ref{lem:escape} to $(A_m,\theta^{(m)},n_{m+1},u_{n_{m+1}})$ with $K=2^{k+1}LC^{(m)}_0$. It gives constants $\rho_1,\eps_1,C$ and $\kappa_0$, which depend on $m$, and the trajectory $\gamma=\gamma_{m+1}$, normalized by $|\gamma_{n_{m+1}}(0)|=\rho_1$. All the times $\tau$ below satisfy $\alpha^{k-2}\tau\to s$ for some $s$, and the limit objects are uniformly continuous. So statements about $\theta^\alpha(\tau+\alpha^{2-k}(s'-s))$ for $s'$ in a compact interval transfer to $\theta^\alpha(\alpha^{2-k}s')$ on slightly smaller intervals. We use this without comment. We prove by induction on $m\le M$:
 
 \smallskip\noindent$(\mathcal C_m)$\quad There are times $\tau^\alpha_m$ with $\alpha^{k-2}\tau^\alpha_m\to s_m$, $|\pi_{A_m}\theta^\alpha(\tau^\alpha_m)-\theta^{(m)}|\le r^{(m)}_0/2$, and $\alpha^{-1}w^\alpha_n(\tau^\alpha_m)\to\Xi_n(s_m)$ for all $n\notin A_m$.
 
@@ -249,32 +251,32 @@ Apply the plateau step with $s_+=s_{m+1}-\delta$, so that $R=R_\delta$, and let 
 \begin{itemize}[nosep]
 \item $\rho_0:=|w^\alpha_{n_*}(t_0)|=\alpha(R_\delta+o(1))<\rho_1$, and $|w^\alpha_{n_*}|\le\alpha(R_\delta+1)<\rho_1$ on $[\tau^\alpha_m,t_0]$; the sign of $w^\alpha_{n_*}$ is $u_{n_*}$ at all times;
 \item $\eta:=|z(t_0)|\le\alpha(\sqrt L\,R'+o(1))\le\eps_1\rho_0$;
-\item $|a(t_0)-\theta^{(m)}|\le e^{-\mu_m\alpha^{2-k}(s_{m+1}-\delta-s_m)}\,r^{(m)}_0/2+C^{(m)}_0L(R_\delta+1)^k\alpha^k\le K\rho_0^k$. Indeed, the first term is $o(\alpha^k)$, and $(R_\delta+1)\alpha\le2(R_\delta-1)\alpha\le2\rho_0$.
+\item $|a(t_0)-\theta^{(m)}|\le e^{-\mu_m\alpha^{2-k}(s_{m+1}-\delta-s_m)}\,r^{(m)}_0/2+C^{(m)}_0L(R_\delta+1)^k\alpha^k\le K\rho_0^k$. Indeed, the first term is $o(\alpha^k)$, and the second is at most $\frac K2\rho_0^k$, since $(R_\delta+1)\alpha\le2(R_\delta-1)\alpha\le2\rho_0$.
 \end{itemize}
 So Lemma~\ref{lem:escape}(b) applies. Let $t^\alpha_{m+1}:=t_1$ be the first time after $\tau^\alpha_m$ at which $|w^\alpha_{n_*}|=\rho_1$; this definition does not involve $\delta$. We obtain:
 \begin{enumerate}[label=(J\arabic*),leftmargin=3em,nosep]
 \item $\alpha^{k-2}(t_1-t_0)\le(\alpha^{-1}\rho_0)^{2-k}/((k-2)\kappa_0)=(R_\delta+o(1))^{2-k}/((k-2)\kappa_0)$;
 \item $|\theta^\alpha(t_1)-\gamma(0)|\le C(\rho_0^k+\eta)\to0$;
-\item on $[t_0,t_1]$, $|z|\le2\eta$. So, for $n\notin A_{m+1}$, $|\frac{d}{ds}(\alpha^{-1}w^\alpha_n)|=\alpha^{1-k}|\partial_nF(\theta^\alpha)|\le C(R')$ in the time $s=\alpha^{k-2}t$, by Lemma~\ref{lem:flat}(a). By (J1), these rescaled weights move by at most $C(R')R_\delta^{2-k}+o(1)$ during $[t_0,t_1]$.
+\item on $[t_0,t_1]$, $|z|\le2\eta$ and $|\theta^\alpha-\theta^{(m)}|<1$. So, for $n\notin A_{m+1}$, Lemma~\ref{lem:flat}(a) gives $|\frac{d}{ds}(\alpha^{-1}w^\alpha_n)|=\alpha^{1-k}|\partial_nF(\theta^\alpha)|\le C(R')$ in the time $s=\alpha^{k-2}t$, with $C(R')$ independent of $\delta$. By (J1), these rescaled weights move by at most $C(R')R_\delta^{2-k}+o(1)$ during $[t_0,t_1]$.
 \end{enumerate}
-By (J2) and the continuous dependence of solutions on their initial value, $\theta^\alpha(t_1+\cdot)\to\gamma$ uniformly on compact subsets of $\R$. By \ND3, there is $T>0$ with $|\gamma(t)-\theta^{(m+1)}|\le r^{(m+1)}_0/4$ for $t\ge T$. Set $\tau^\alpha_{m+1}=t_1+T$, so that $|\pi_{A_{m+1}}\theta^\alpha(\tau^\alpha_{m+1})-\theta^{(m+1)}|\le r^{(m+1)}_0/4+o(1)$. On $[t_1,t_1+T]$, the weights $w^\alpha_n$, $n\notin A_{m+1}$, stay $O(\alpha)$, hence they move by $O(\alpha^{k-1})$, again by Lemma~\ref{lem:flat}(a). Together with (P1), (J1) and (J3), this gives, for $n\notin A_{m+1}$,
+By (J2) and the continuous dependence of solutions on their initial value, $\theta^\alpha(t_1+\cdot)\to\gamma$ uniformly on compact subsets of $\R$. By \ND3, there is $T>0$ with $|\gamma(t)-\theta^{(m+1)}|\le r^{(m+1)}_0/4$ for $t\ge T$. Set $\tau^\alpha_{m+1}=t_1+T$, so that $|\pi_{A_{m+1}}\theta^\alpha(\tau^\alpha_{m+1})-\theta^{(m+1)}|\le r^{(m+1)}_0/4+o(1)$. On $[t_1,t_1+T]$, the trajectory stays in a bounded set, where $\frac{d}{dt}|w_n|^{2-k}\ge-C$ for every $n$, by Lemma~\ref{lem:flat}(a). Since $|w^\alpha_n(t_1)|\le2\eta$ for $n\notin A_{m+1}$, these weights stay below $4\eta$ for small $\alpha$, hence they move by $O(\alpha^{k-1})$. Together with (P1), (J1) and (J3), this gives, for $n\notin A_{m+1}$,
 \begin{gather*}
 s_{m+1}-\delta\le\liminf_{\alpha\to0}\alpha^{k-2}\tau^\alpha_{m+1}\le\limsup_{\alpha\to0}\alpha^{k-2}\tau^\alpha_{m+1}\le s_{m+1}-\delta+\frac{R_\delta^{2-k}}{(k-2)\kappa_0},\\
 \limsup_{\alpha\to0}\big|\alpha^{-1}w^\alpha_n(\tau^\alpha_{m+1})-\Xi_n(s_{m+1})\big|\le C(R')R_\delta^{2-k}+\sup_{[s_{m+1}-\delta,\,s_{m+1}]}|\Xi_n-\Xi_n(s_{m+1})| .
 \end{gather*}
 Since $\tau^\alpha_{m+1}$ does not depend on $\delta$, and $R_\delta\to\infty$ as $\delta\to0$, this proves $(\mathcal C_{m+1})$.
 
-\emph{Conclusion.} By induction, the plateau and jump steps hold at all stages, and they cover $[0,\alpha^{2-k}S]$. The trajectory stays bounded there, so $\theta^\alpha$ is defined on this interval. Statement (i) is (P2), and (ii) follows from (P1), together with (J3) and the last display for the dormant neurons during a jump. The loss converges because $F$ is continuous, and $F(\theta^{(m)})>F(\theta^{(m+1)})$ because $F$ decreases strictly along $\gamma_{m+1}$. Each $\theta^{(m)}$ is a critical point of $F$, and a saddle point for $m<M$, by the consequences of Lemma~\ref{lem:flat}, since $U^{(m)}_{n_{m+1}}(u_{n_{m+1}})>0$. The local uniform convergence in (iii) was shown in the jump step, with $t^\alpha_{m+1}=t_1$.
+\emph{Conclusion.} By induction, the plateau and jump steps hold at all stages, and they cover $[0,\alpha^{2-k}S]$. The trajectory stays bounded there, so $\theta^\alpha$ is defined on this interval. Statement (i) is (P2), and (ii) is (P1) on the plateaus. During a jump, i.e., on $[t_0,\tau^\alpha_{m+1}]$, the rescaled weight of a neuron $n\notin A_{m+1}$ varies by at most $C(R')R_\delta^{2-k}+o(1)$, by (J3), and $\Xi_n$ varies by at most $\sup_{[s_{m+1}-\delta,\,s_{m+1}]}|\Xi_n-\Xi_n(s_{m+1})|+o(1)$ on the corresponding interval of times $s$. Both are arbitrarily small for small $\delta$, which gives (ii). The loss converges because $F$ is continuous, and $F(\theta^{(m)})>F(\theta^{(m+1)})$ because $F$ decreases strictly along $\gamma_{m+1}$. Each $\theta^{(m)}$ is a critical point of $F$, and a saddle point for $m<M$, by the consequences of Lemma~\ref{lem:flat}, since $U^{(m)}_{n_{m+1}}(u_{n_{m+1}})>0$. The local uniform convergence in (iii) was shown in the jump step, with $t^\alpha_{m+1}=t_1$.
 
-For the Hausdorff convergence at $s_{m+1}$, let $0<\eps\le r^{(m+1)}_0/4$, and choose $T',T>0$ with $\gamma((-\infty,-T'])\subseteq B(\theta^{(m)},\eps)$ and $\gamma([T,\infty))\subseteq B(\theta^{(m+1)},\eps)$. Run the jump step with this $T$, and with some $\delta'<\delta$ in place of $\delta$. The curve $\Gamma^\alpha=\{\theta^\alpha(\alpha^{2-k}s):|s-s_{m+1}|\le\delta\}$ consists of four pieces. Before $t_0$, it is $o(1)$-close to $\theta^{(m)}$, by (P2). On $[t_0,t_1]$, it is $o(1)$-close to $\gamma((-\infty,0])$, by Lemma~\ref{lem:escape}(b). On $[t_1,t_1+T]$, it is $o(1)$-close to $\gamma([0,T])$. Afterwards, it is $(\eps+o(1))$-close to $\theta^{(m+1)}$, by Lemma~\ref{lem:active} and (P1) at stage $m+1$. Conversely, every point of $\gamma(\R)\cup\{\theta^{(m)},\theta^{(m+1)}\}$ is $(\eps+o(1))$-close to $\Gamma^\alpha$: the points of $\gamma([-T',T])$ by the local uniform convergence, and the others by (P2) at $s_{m+1}\pm\delta$. Hence $\limsup_{\alpha\to0}d_H\big(\Gamma^\alpha,\gamma(\R)\cup\{\theta^{(m)},\theta^{(m+1)}\}\big)\le\eps$ for every small $\eps>0$.\qed
+For the Hausdorff convergence at $s_{m+1}$, let $0<\eps\le r^{(m+1)}_0/4$, and choose $T',T>0$ such that $\gamma((-\infty,-T'])$ and $\gamma([T,\infty))$ lie in the balls of radius $\eps$ around $\theta^{(m)}$ and $\theta^{(m+1)}$, respectively. Run the jump step with this $T$, and with some small $\delta'<\delta$ in place of $\delta$. The curve $\Gamma^\alpha=\{\theta^\alpha(\alpha^{2-k}s):|s-s_{m+1}|\le\delta\}$ consists of four pieces. Before $t_0$, it is $o(1)$-close to $\theta^{(m)}$, by (P2). On $[t_0,t_1]$, it is $o(1)$-close to $\gamma((-\infty,0])$, by Lemma~\ref{lem:escape}(b). On $[t_1,t_1+T]$, it is $o(1)$-close to $\gamma([0,T])$. Afterwards, it is $(\eps+o(1))$-close to $\theta^{(m+1)}$, by Lemma~\ref{lem:active} and (P1) at stage $m+1$. Conversely, every point of $\gamma(\R)\cup\{\theta^{(m)},\theta^{(m+1)}\}$ is $(\eps+o(1))$-close to $\Gamma^\alpha$: the points of $\gamma([-T',T])$ by the local uniform convergence, and the others by (P2) at $s_{m+1}\pm\delta$. Hence the Hausdorff distance between $\Gamma^\alpha$ and $\gamma(\R)\cup\{\theta^{(m)},\theta^{(m+1)}\}$ is at most $\eps+o(1)$, for every small $\eps>0$.\qed
 
 \section{Remarks}
 
 \begin{remark}[Random initialization]
-Theorem~B of the full note simplifies in the same way. Let $\cK$ be the set of the configurations $(A,\theta)$ that are reached from $(\emptyset,0)$ along escape orbits converging to non-degenerate local minima, as in the full note. It is finite, since a configuration has at most $2L$ successors, and condition (G2) is void. Assume (G1): for every $(A,\theta)\in\cK$, every $n\notin A$ and every $u\in\{\pm1\}$ with $U_n(\theta;u)>0$, the escape orbit of $\theta$ along $(n,u)$ is defined for all $t\ge0$ and converges to a non-degenerate local minimum of $F_{A\cup\{n\}}$. Then every stage is non-degenerate, unless $\xi$ lies in a finite union of hypersurfaces. In particular, this holds almost surely if $\xi$ has a density. Indeed, \ND3 follows from (G1). For \ND1, fix the signs $u_n$ and the first activations $n_1,\dots,n_m$. They determine $(A_j,\theta^{(j)})_{j\le m}$, hence the speeds of the clocks. By Remark~\ref{rem:race}, the times $s_1,\dots,s_m$ are then linear functions of $y=(|\xi_n|^{2-k})_n$, and the clock of a dormant neuron $n$ at $s_m$ is $y_n$ minus a linear function of $y_{n_1},\dots,y_{n_m}$. So a tie between two dormant neurons at stage $m$ is a non-trivial linear equation in $y$, and there are finitely many such equations. Similarly, a fixed $s>0$ is a jump time only if $y$ solves one of finitely many non-trivial affine equations. So $\theta^\alpha(\alpha^{2-k}s)\to\bar\theta(s)$ almost surely, for every $s\ge0$.
+Theorem~B of the full note simplifies in the same way. Let $\cK$ be the set of the configurations $(A,\theta)$ that are reached from $(\emptyset,0)$ along escape orbits converging to non-degenerate local minima, as in the full note. It is finite, since a configuration has at most $2L$ successors, and condition (G2) is void. Assume (G1): for every $(A,\theta)\in\cK$, every $n\notin A$ and every $u\in\{\pm1\}$ with $U_n(\theta;u)>0$, the escape orbit of $\theta$ along $(n,u)$ is defined for all $t\ge0$ and converges to a non-degenerate local minimum of $F_{A\cup\{n\}}$. Then \ND1 and \ND3 hold at every stage with $s_{m+1}<\infty$, so that the process stops only when $s_{m+1}=\infty$, unless $\xi$ lies in a finite union of hypersurfaces. In particular, this holds almost surely if $\xi$ has a density. Indeed, \ND3 follows from (G1). For \ND1, fix the signs $u_n$ and the first activations $n_1,\dots,n_m$. They determine $(A_j,\theta^{(j)})_{j\le m}$, hence the speeds of the clocks. By Remark~\ref{rem:race}, the times $s_1,\dots,s_m$ are then linear functions of $y=(|\xi_n|^{2-k})_n$, and the clock of a dormant neuron $n$ at $s_m$ is $y_n$ minus a linear function of $y_{n_1},\dots,y_{n_m}$. So a tie between two dormant neurons at stage $m$ is a non-trivial linear equation in $y$, and there are finitely many such equations. Similarly, a fixed $s>0$ is a jump time only if $y$ solves one of finitely many non-trivial affine equations. So, for every fixed $s\ge0$, $\theta^\alpha(\alpha^{2-k}s)\to\bar\theta(s)$ almost surely.
 \end{remark}
 
-\begin{remark}[Biases]
+\begin{remark}[Biases]\label{rem:biases}
 With biases, $h_n=h_{n-1}+\sigma(w_nh_{n-1}+b_n)$, the incoming weights of a neuron form a vector $(w_n,b_n)\in\R^2$, the loss is flat along $\{(w_n,b_n)=0\}$, and the utility is a binary form of degree $k$. The direction of a neuron is then a point of the circle, and it moves, by gradient ascent of the utility. So the dormant flow is no longer explicit, \ND2 is a genuine condition, and the escape lemma has the direction as an additional variable, which is contracted only at rate $O(1)$ in the time $\log\rho$. This is the general proof with $p=2$, for which we refer to the full note.
 \end{remark}
 

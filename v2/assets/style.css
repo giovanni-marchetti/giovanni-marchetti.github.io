@@ -5,11 +5,12 @@
   --ink: #141414;
   --muted: #5C5C5C;
   --rule: #D6D6D2;
-  --shade: #F1F1EC;   /* background of a hovered button */
+  --shade: #F1F1EC;   /* background of a hovered button in the viewers, and of the reference a link leads to */
   --orange: #E3876D;  /* the one accent, taken from the animated drawing */
   --orange-deep: #C2593C;  /* the same accent, darker, for lines and labels */
-  --nm-front: #EDEDE8;  /* the two sides of a neuromanifold, in the figure and in the viewer of the home page */
-  --nm-back: #D3D3CD;
+  --orange-tint: color-mix(in srgb, var(--orange) 15%, transparent);  /* the same accent, transparent, for fills */
+  --nm-front: #F2F2ED;  /* the two sides of a neuromanifold, in the figure and in the viewer of the home page */
+  --nm-back: #DCDCD6;
   --link-line: rgba(20, 20, 20, .35);
   --measure: 640px;   /* width of the reading column, about 65 characters */
   --serif: "EB Garamond", Garamond, "Times New Roman", serif;
@@ -143,6 +144,11 @@ mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width:
   font-variant: small-caps;
   letter-spacing: .05em;
 }
+/* Definitions and theorems (lemmas, corollaries and propositions included), but not examples, are shaded boxes with
+   slightly rounded corners, in light orange (--orange-tint). The last paragraph or list in a box keeps no margin below
+   it, so that the text has as much room below it as above. */
+.theorem, .definition { padding: .8rem 1rem; border-radius: 6px; background: var(--orange-tint); }
+.theorem > :last-child, .definition > :last-child { margin-bottom: 0; }
 /* A proof is a <details>, closed at first. Its summary line is "Proof.", in italics; once open, the summary runs
    into the first paragraph, as in a book. */
 .proof > summary { font-style: italic; }
@@ -178,7 +184,8 @@ tbody tr:last-child td { border-bottom: 1px solid var(--ink); }
 /* Dictionary: a column of buttons, each split into a geometry half and a deep-learning half. The buttons are
    stacked flush, and every line between them is black; only the corners of the stack are rounded. Each line is
    drawn once (a button after the first has no top border), so that it keeps the same weight at every zoom level.
-   A hovered button is shaded. (It does not lift: that would open a gap in the outline.) */
+   A hovered button is shaded in light orange (--orange-tint). (It does not lift: that would open a gap in the
+   outline.) */
 .dictionary { display: grid; margin: 1rem 0 1.4rem; font-size: .92em; }
 .dictionary-head, .dict-entry {
   display: grid;
@@ -201,7 +208,7 @@ tbody tr:last-child td { border-bottom: 1px solid var(--ink); }
 .dict-entry:last-child { border-radius: 0 0 6px 6px; }
 .dict-entry > span { padding: .5rem .8rem; align-content: center; }
 .dict-entry > span + span { border-left: 1px solid var(--rule); transition: border-color .15s; }
-.dict-entry:hover, .dict-entry:focus-visible { background: var(--shade); }
+.dict-entry:hover, .dict-entry:focus-visible { background: var(--orange-tint); }
 .dict-entry:hover > span + span, .dict-entry:focus-visible > span + span { border-left-color: var(--ink); }
 @media (prefers-reduced-motion: reduce) {
   .dict-entry, .dict-entry > span { transition: none; }
@@ -321,7 +328,7 @@ tbody tr:last-child td { border-bottom: 1px solid var(--ink); }
 
 /* Filters, above the list of the Literature page (assets/literature.js): a column for each kind of tag, side by side,
    its name in small caps at the top and its tags under it, one per line, outlined, with the slightly rounded corners
-   of the buttons of the viewer on the home page, and filled in very light gray with a black border when selected;
+   of the buttons of the viewer on the home page, and filled in light orange with a black border when selected;
    they have only these two looks, and do not change under the pointer or when tapped. In each tag, in old-style
    figures, the number of papers it would show; a tag that would show none is dashed. Under the columns, a hairline.
    On narrow screens, the kinds of tag are one under the other, each name above its tags, which wrap. */
@@ -363,7 +370,7 @@ tbody tr:last-child td { border-bottom: 1px solid var(--ink); }
 }
 .tag-count { color: var(--muted); font-variant-numeric: oldstyle-nums; transition: color .15s; }
 .tag.tag-none { color: var(--muted); border-style: dashed; }
-.tag[aria-pressed="true"] { background: var(--shade); border: 1px solid var(--ink); color: var(--ink); }
+.tag[aria-pressed="true"] { background: var(--orange-tint); border: 1px solid var(--ink); color: var(--ink); }
 .tag:focus-visible { outline: 1px solid var(--muted); outline-offset: 2px; }
 /* Hover effects only where there is a pointer, so that a tapped tag does not stay underlined on a touch screen. */
 @media (hover: hover) {
@@ -380,9 +387,9 @@ tbody tr:last-child td { border-bottom: 1px solid var(--ink); }
   .ref-tag, .tag, .tag-count { transition: none; }
 }
 
-/* "Visualize and Play", on the home page: a <details> whose summary is a tag, as above, centred, with an orange
-   border; it shows and hides the neuromanifold viewer and the text that introduces it. While they are shown, the tag
-   is shaded, as a selected tag is. */
+/* "Visualize and Play", on the home page: a <details> whose summary is a tag, as above, centred; it shows and hides
+   the neuromanifold viewer and the text that introduces it. While they are shown, the tag looks like a selected tag:
+   shaded, with an ink border. */
 .play { margin: 0 0 1rem; }
 /* The figure above it ends with its captions, which are invisible until a dictionary button is pointed at but keep
    their room: so only a small margin between the two. */
@@ -390,13 +397,12 @@ tbody tr:last-child td { border-bottom: 1px solid var(--ink); }
 .play > summary.tag { display: block; width: fit-content; margin: 0 auto; list-style: none;
   padding: .2rem .9rem .25rem; font-size: 1rem; }  /* a larger tag than those of the Literature page */
 .play > summary::-webkit-details-marker { display: none; }
-.tag.tag-accent { border-color: var(--orange-deep); }
-.play[open] > summary.tag { margin-bottom: 2.75rem; background: var(--shade); }  /* a blank line before the text */
+.play[open] > summary.tag { margin-bottom: 2.75rem;  /* a blank line before the text */
+  background: var(--orange-tint); border-color: var(--ink); }
 
 /* Buttons that change a figure (assets/toggles.js), centred under it, side by side: the tags of the Literature page,
-   outlined in grey and, while pressed, shaded with an ink outline, but in the letters of the text, not in small caps. */
+   outlined in grey and, while pressed, shaded with an ink outline. */
 .toggles { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem .8rem; margin-top: 1rem; }
-.toggles > .tag { font-variant: normal; letter-spacing: normal; }
 
 /* News: date column and text. */
 .news { list-style: none; padding: 0; }

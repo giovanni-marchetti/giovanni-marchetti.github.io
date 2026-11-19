@@ -28,7 +28,8 @@ Math is rendered by MathJax, so you can write LaTeX directly in the HTML:
 
 Theorem-like blocks are plain HTML; see `primer.html`. Their numbers are automatic (`assets/numbering.js`): the label
 holds only the kind, and the id (`def-`, `thm-`, `lem-`, `cor-`, `prop-` or `ex-`, then a name) is used to refer to
-the block.
+the block. Definitions and theorems (lemmas, corollaries and propositions included) are drawn in a shaded box, in the
+light orange of the highlighted buttons (`--orange-tint`, at the top of `assets/style.css`).
 
 ```html
 <div class="theorem" id="thm-name"><p><span class="label">Theorem</span> Statement.</p></div>        <!-- Theorem 3. -->

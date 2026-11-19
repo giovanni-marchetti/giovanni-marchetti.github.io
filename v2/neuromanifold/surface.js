@@ -374,14 +374,14 @@ function srgbToOklab(rgb) {
 // do, the angle on the loop is four times the angle of (|w1|, |w2|); when
 // (w1, w2) and (−w1, −w2) do, it is twice the angle of (w1, w2).
 // The palette is that of the figure on the home page, warm greys and orange:
-// the weights 0 get its warm grey --nm-back (#D3D3CD, of OKLab coordinates
+// the weights 0 get its warm grey --nm-back (#DCDCD6, of OKLab coordinates
 // WARM), and the loop, at the rim of the disk, is an ellipse in the (a, b)
 // plane of OKLab, centred TOWARD the orange of the page (--nm-dot), with
 // semi-axes ALONG the orange and ACROSS it. The colors are most orange, and
 // a little darker, at the angle 0; they turn through amber on one side and
 // salmon on the other to a pale grey opposite to it. (A circle would also
 // pass through yellow, which the shading of the surface turns olive.)
-const WARM = [0.865, -0.002, 0.008], TOWARD = 0.06, ALONG = 0.06, ACROSS = 0.03, DARKER = 0.03;
+const WARM = [0.893, -0.002, 0.008], TOWARD = 0.06, ALONG = 0.06, ACROSS = 0.03, DARKER = 0.03;
 const ORANGE = (() => {                         // the hue of the orange, as a unit vector of the (a, b) plane
   const [, a, b] = srgbToOklab(PAL.dot), c = Math.hypot(a, b);
   return c > 1e-6 ? [a / c, b / c] : [0.8, 0.6];

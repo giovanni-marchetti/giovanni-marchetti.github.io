@@ -624,6 +624,21 @@
 
     <p>In practice, the gradient flow is usually discretized, via the Euler method, as $\theta_{t+1} = \theta_t - \eta\, \nabla (L \circ \varphi)(\theta_t)$, where $\eta > 0$ is the <em>learning rate</em>. This is <em>gradient descent</em>.</p>
 
+    <p>A first question is whether trajectories converge. For analytic models, algebraic or not, the only alternative is escaping to infinity (<a href="#lojasiewicz1984trajectoires">Łojasiewicz, 1984</a>).</p>
+
+    <div class="theorem" id="thm-lojasiewicz">
+      <p><span class="label">Theorem</span> (Łojasiewicz). Assume that $L \circ \varphi \colon \Theta \to \R$ is real analytic and bounded below, e.g., that the model is algebraic and $L$ is the MSE. Then every trajectory of the gradient flow extends to all $t \ge 0$, and either $\|\theta(t)\| \to \infty$ as $t \to \infty$, or $\theta(t)$ converges to a critical point of $L \circ \varphi$.</p>
+    </div>
+
+    <details class="proof">
+      <summary>Proof.</summary>
+      <p>Let $F = L \circ \varphi$. Along a trajectory, $\frac{d}{dt} F(\theta(t)) = -\|\dot\theta(t)\|^2$, so that, by the Cauchy–Schwarz inequality, $\|\theta(t) - \theta(0)\|^2 \le t \int_0^t \|\dot\theta(s)\|^2\, ds \le t\, \big(F(\theta(0)) - \inf F\big)$: trajectories do not blow up in finite time. Assume that $\|\theta(t)\|$ does not tend to $\infty$. Then $\theta(t_n) \to \theta^*$ for some $\theta^* \in \Theta$ and some $t_n \to \infty$, and $F(\theta(t))$ decreases to $F(\theta^*)$, which we may assume to be $0$. If $F(\theta(t)) = 0$ for some $t$, the trajectory is constant from then on. Otherwise, by the Łojasiewicz gradient inequality (<a href="#lojasiewicz1963propriete">Łojasiewicz, 1963</a>), there are $\delta, c > 0$ and $\rho \in [\tfrac{1}{2}, 1)$ such that $\|\nabla F(\theta)\| \ge c\, |F(\theta)|^\rho$ whenever $\|\theta - \theta^*\| \lt \delta$. As long as $\theta(t)$ stays in this ball,
+      $$
+      \frac{d}{dt} F(\theta(t))^{1 - \rho} = -(1 - \rho)\, F(\theta(t))^{-\rho}\, \|\nabla F(\theta(t))\|\, \|\dot\theta(t)\| \le -c\, (1 - \rho)\, \|\dot\theta(t)\|.
+      $$
+      Choose $n$ such that $\|\theta(t_n) - \theta^*\| \lt \delta/2$ and $F(\theta(t_n))^{1 - \rho} \lt c\, (1 - \rho)\, \delta/2$. By the above, the length of the trajectory after $t_n$ is less than $\delta/2$, as long as it stays in the ball. Hence it never leaves the ball, it has finite length, and it converges, necessarily to $\theta^*$. Finally, $\nabla F(\theta^*) = 0$, since otherwise $F(\theta(t))$ would decrease without bound.</p>
+    </details>
+
     <p>The trajectory in function space is governed by the following equation.</p>
 
     <div class="theorem" id="prop-ntk">
@@ -794,6 +809,8 @@
       <li id="kunin2025alternating">Daniel Kunin, Giovanni Luca Marchetti, Feng Chen, Dhruva Karkada, James B. Simon, Michael R. DeWeese, Surya Ganguli, Nina Miolane. <cite>Alternating Gradient Flows: A Theory of Feature Learning in Two-layer Neural Networks.</cite> Advances in Neural Information Processing Systems (NeurIPS), 2025. <a href="https://arxiv.org/abs/2506.06489">arXiv:2506.06489</a></li>
       <li id="lelong1957integration">Pierre Lelong. <cite>Intégration sur un ensemble analytique complexe.</cite> Bulletin de la Société Mathématique de France 85, 239–262, 1957. <a href="https://doi.org/10.24033/bsmf.1488">doi:10.24033/bsmf.1488</a></li>
       <li id="leshno1993multilayer">Moshe Leshno, Vladimir Ya. Lin, Allan Pinkus, Shimon Schocken. <cite>Multilayer Feedforward Networks with a Nonpolynomial Activation Function Can Approximate Any Function.</cite> Neural Networks 6(6), 861–867, 1993. <a href="https://doi.org/10.1016/S0893-6080(05)80131-5">doi:10.1016/S0893-6080(05)80131-5</a></li>
+      <li id="lojasiewicz1963propriete">Stanisław Łojasiewicz. <cite>Une propriété topologique des sous-ensembles analytiques réels.</cite> Les Équations aux Dérivées Partielles, Colloques Internationaux du CNRS 117, 87–89, 1963.</li>
+      <li id="lojasiewicz1984trajectoires">Stanisław Łojasiewicz. <cite>Sur les trajectoires du gradient d'une fonction analytique.</cite> Seminari di Geometria 1982–1983, Università di Bologna, 115–117, 1984.</li>
       <li id="marchetti2025invitation">Giovanni Luca Marchetti, Vahid Shahverdi, Stefano Mereta, Matthew Trager, Kathlén Kohn. <cite>Algebra Unveils Deep Learning – An Invitation to Neuroalgebraic Geometry.</cite> International Conference on Machine Learning (ICML), 2025. <a href="https://arxiv.org/abs/2501.18915">arXiv:2501.18915</a></li>
       <li id="marcotte2023abide">Sibylle Marcotte, Rémi Gribonval, Gabriel Peyré. <cite>Abide by the Law and Follow the Flow: Conservation Laws for Gradient Flows.</cite> Advances in Neural Information Processing Systems (NeurIPS), 2023. <a href="https://arxiv.org/abs/2307.00144">arXiv:2307.00144</a></li>
       <li id="nguyen2026parameter">Khang Nguyen, Guido Montúfar. <cite>On Parameter Symmetries and Conservation Laws in Gradient Flow.</cite> Preprint, 2026. <a href="https://arxiv.org/abs/2609.34549">arXiv:2609.34549</a></li>
