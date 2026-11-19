@@ -1,0 +1,437 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black]{hyperref}
+
+\newtheorem{maintheorem}{Theorem}
+\renewcommand{\themaintheorem}{\Alph{maintheorem}}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}[lemma]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[lemma]{Definition}
+\newtheorem{example}[lemma]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[lemma]{Remark}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\Mbar}{\overline{\M}}
+\newcommand{\cO}{\mathcal{O}}
+\newcommand{\cC}{\mathcal{C}}
+\newcommand{\fm}{\mathfrak{m}}
+\newcommand{\dpar}{d_{\mathrm{par}}}
+\newcommand{\sm}{\setminus}
+\newcommand{\ip}[2]{\langle #1,#2\rangle}
+\DeclareMathOperator{\dist}{dist}
+\DeclareMathOperator{\Spec}{Spec}
+\DeclareMathOperator{\im}{im}
+
+\title{Convergence rates of gradient flows of polynomial models\\[4pt]\large {\L}ojasiewicz exponents, worst cases, and the scheme-theoretic fiber}
+\author{}
+\date{November 2026}
+
+\begin{document}
+\maketitle
+
+\noindent
+The Primer proves that a trajectory of the gradient flow of an analytic model either converges to a critical point or escapes to infinity (Theorem ({\L}ojasiewicz), in the section on gradient flow). This note records what can be added: how fast trajectories converge, what is specific to polynomial models, and which invariant of the model governs the rate. The convergence theorem itself uses analyticity only. Polynomiality adds two things: the loss can only tend to finitely many values, whether the trajectory converges or not, and the {\L}ojasiewicz exponent is bounded in terms of the degree and of the number of parameters (Theorem~\ref{thm:poly}). The resulting worst-case rates are poor. Along a convergent trajectory the loss gap always decays faster than $1/t$, but in the worst case barely so, and the dependence on the number of parameters is exponential and cannot be avoided (Example~\ref{ex:chain}). At a limit with zero loss, the rate is governed by the scheme-theoretic fiber of the parametrization map through the limit: the convergence is exponential if and only if this fiber is smooth there, and otherwise it follows a power law determined by the \emph{order of contact} of the fiber, which is at most its multiplicity (Theorem~\ref{thm:fiber}). In particular, slow convergence detects the ramification of the parametrization map, and not the singularities of the neuromanifold (Remark~\ref{rem:intrinsic}).
+
+\smallskip\noindent
+Theorem~\ref{thm:poly} collects results from the literature, except for its first part, which is proved in Section~\ref{sec:limits}. Theorem~\ref{thm:fiber} and the propositions are proved here; part~\ref{B3} of Theorem~\ref{thm:fiber} rests on a theorem of Gwo\'zdziewicz. The asymptotics of Example~\ref{ex:divergence} are heuristic. All the rates of Section~\ref{sec:examples} were also checked numerically (Table~\ref{tab:examples}).
+
+\section{Setting and results}
+
+Throughout, we consider an algebraic model over $\R$ as in the Primer, with parametrization map $\varphi\colon\Theta=\R^n\to V$, where $n=\dpar$, and with scalar products on $\Theta$ and on $V$. We write $D=\deg_\theta f_\theta$ for the degree of $\varphi$; for an MLP with $N$ layers and an activation of degree $r$, $D=1+r+\dots+r^{N-1}$. For a loss $L\colon V\to\R$, let $F=L\circ\varphi$. A \emph{trajectory} is a solution of the gradient flow $\dot\theta=-\nabla F(\theta)$. As in the Primer, $K_\theta=d\varphi_\theta\,d\varphi_\theta^*$ is the neural tangent kernel, and we write $\lambda_+(K_\theta)$ for its smallest nonzero eigenvalue.
+
+Most of the note concerns the \emph{ideal loss} $L(f)=\|f-f^*\|^2$ for a target $f^*\in V$. We then write $g=\varphi-f^*\colon\Theta\to V$, so that
+\begin{equation}\label{eq:ideal}
+F=\|g\|^2,\qquad\nabla F(\theta)=2\,d\varphi_\theta^*\,g(\theta),\qquad\|\nabla F(\theta)\|^2=4\,\ip{K_\theta\,g(\theta)}{g(\theta)}.
+\end{equation}
+The mean squared error of a dataset is of the same form, with $\varphi$ replaced by its composition with the evaluation at the inputs, which is linear, and everything below applies to it as well. In both cases $F$ is a polynomial of degree at most $2D$. We write $A\lesssim B$ if $A\le CB$ for a constant $C$, locally uniform in the parameters, and $A\asymp B$ if $A\lesssim B\lesssim A$.
+
+\begin{definition}[{\L}ojasiewicz exponent]\label{def:exponent}
+Let $F$ be real analytic near $\theta^*\in\R^n$. We say that $F$ satisfies the \emph{{\L}ojasiewicz inequality at $\theta^*$ with exponent $\rho\in[\frac12,1)$} if there are $c,\delta>0$ such that
+\begin{equation}\tag{\L}\label{eq:L}
+\|\nabla F(\theta)\|\;\ge\;c\,|F(\theta)-F(\theta^*)|^{\rho}\qquad\text{whenever }|\theta-\theta^*|<\delta .
+\end{equation}
+The \emph{{\L}ojasiewicz exponent} $\rho_F(\theta^*)$ is the infimum of these $\rho$.
+\end{definition}
+
+Some such $\rho$ always exists \cite{Loj63}, and if \eqref{eq:L} holds with exponent $\rho$, it holds with every exponent in $[\rho,1)$. The exponent turns into a rate as follows.
+
+\begin{lemma}[From exponents to rates]\label{lem:rates}
+Let $\theta(t)$ be a trajectory converging to $\theta^*$, assume \eqref{eq:L} with exponent $\rho$, and let $G(t)=F(\theta(t))-F(\theta^*)\ge0$. Then $|\theta(t)-\theta^*|\le G(t)^{1-\rho}/(c(1-\rho))$ for $t$ large, and
+\[
+G(t)=O\big(e^{-c^2t}\big)\ \text{ if }\rho=\tfrac12,\qquad\qquad G(t)=O\big(t^{-1/(2\rho-1)}\big)\ \text{ if }\rho>\tfrac12 .
+\]
+In the second case, $|\theta(t)-\theta^*|=O\big(t^{-(1-\rho)/(2\rho-1)}\big)$.
+\end{lemma}
+
+Thus the exponent $\frac12$ means exponential convergence, and every exponent $\rho<1$ gives a loss gap that is $o(1/t)$, since $1/(2\rho-1)>1$.
+
+\begin{maintheorem}[Polynomial losses]\label{thm:poly}
+Let $F\colon\R^n\to\R$ be a polynomial of degree $d\ge2$; for instance $F=L\circ\varphi$ for the ideal loss or the mean squared error, with $d\le2D$.
+\begin{enumerate}[label=\textup{(\roman*)},leftmargin=2.6em]
+\item\label{A1} \emph{(Finitely many limits.)} If $F$ is bounded below, there is a finite set $\cC(F)\subset\R$, the set of critical and asymptotic critical values of $F$, such that $F(\theta(t))$ converges to an element of $\cC(F)$ along every trajectory, whether the trajectory converges or not.
+\item\label{A2} \emph{(Worst case.)} $F$ satisfies \eqref{eq:L} at every point with exponent $1-1/R$, where $R=d\,(3d-3)^{n-1}$ \cite{DK05}. Hence, along every trajectory converging to some $\theta^*$, if $R>2$,
+\[
+F(\theta(t))-F(\theta^*)=O\big(t^{-R/(R-2)}\big),\qquad|\theta(t)-\theta^*|=O\big(t^{-1/(R-2)}\big).
+\]
+\item\label{A3} \emph{(Strict minima.)} Let $\theta^*$ be a critical point of $F$ that is an isolated zero of $F-F(\theta^*)$, e.g.\ a strict local minimum, and let $\alpha$ be the least exponent such that $|F(\theta)-F(\theta^*)|\ge c\,|\theta-\theta^*|^{\alpha}$ near $\theta^*$. Then $\alpha\le(d-1)^n+1$ and $\rho_F(\theta^*)=1-1/\alpha$, the infimum being attained \cite{Gwo99}.
+\end{enumerate}
+\end{maintheorem}
+
+For the ideal loss, the points with zero loss form the fiber $Z=\varphi^{-1}(f^*)$, and the exponent at such a point is controlled by the \emph{scheme-theoretic} fiber, i.e., by the ideal generated by the coordinates of $g$. Its order of contact $\ell$ and its multiplicity $\mu$ at a point are defined in Section~\ref{sec:fiber}.
+
+\begin{maintheorem}[Zero-loss limits and the fiber]\label{thm:fiber}
+Let $L$ be the ideal loss, let $\theta^*\in Z=\varphi^{-1}(f^*)$, and let $\ell=\ell(\theta^*)$ be the order of contact of the fiber at $\theta^*$ (Definition~\ref{def:contact}).
+\begin{enumerate}[label=\textup{(\roman*)},leftmargin=2.6em]
+\item\label{B1} \emph{(Lower bound.)} If \eqref{eq:L} holds at $\theta^*$ with exponent $\rho$, then $\|g(\theta)\|\ge c'\dist(\theta,Z)^{1/(2(1-\rho))}$ near $\theta^*$, for some $c'>0$. Hence $\rho_F(\theta^*)\ge1-\frac1{2\ell}$.
+\item\label{B2} \emph{(Exponential convergence.)} The following are equivalent:
+  \begin{enumerate}[label=\textup{(\alph*)},nosep]
+  \item\label{B2a} the scheme-theoretic fiber is smooth at $\theta^*$, i.e., $\dim\ker d\varphi_{\theta^*}=\dim_{\theta^*}Z$;
+  \item\label{B2b} \eqref{eq:L} holds at $\theta^*$ with exponent $\frac12$;
+  \item\label{B2c} $\|g(\theta)\|\ge c\,\dist(\theta,Z)$ near $\theta^*$, for some $c>0$.
+  \end{enumerate}
+  In this case, $F(\theta(t))=O(e^{-ct})$ for every trajectory converging to $\theta^*$ and every $c<4\lambda_+(K_{\theta^*})$.
+\item\label{B3} \emph{(Isolated points.)} If $\theta^*$ is an isolated point of $Z$, then $\rho_F(\theta^*)=1-\frac1{2\ell}$, the infimum being attained. If moreover the local algebra of the fiber at $\theta^*$ has finite dimension $\mu$, then $\ell\le\mu\le D^n$. Hence a trajectory converging to $\theta^*$ satisfies $F(\theta(t))=O(t^{-\ell/(\ell-1)})$ if $\ell>1$, and at worst $F(\theta(t))=O(t^{-D^n/(D^n-1)})$.
+\end{enumerate}
+\end{maintheorem}
+
+Beyond isolated points, the equality $\rho_F(\theta^*)=1-\frac1{2\ell}$ holds in all the cases that we can treat: when the fiber is a manifold thickened in one direction (Proposition~\ref{prop:curvilinear}), and along the flat directions of an inactive neuron (Proposition~\ref{prop:flat}). We do not know whether it always holds. Limits with nonzero loss are discussed in Proposition~\ref{prop:spurious}.
+
+\paragraph{Worst-case rates, in summary.} Let $\theta(t)$ be a trajectory converging to $\theta^*$, let $d=\deg F\le2D$ and $n=\dpar$. The loss gap $F(\theta(t))-F(\theta^*)$ is bounded as follows, where a power law with infinite exponent ($\alpha=2$, or $\ell=1$) stands for exponential convergence.
+\begin{center}\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+Limit $\theta^*$ & {\L}ojasiewicz exponent & Loss gap\\
+\midrule
+any critical point of $F$ & $\rho\le1-1/R$,\quad $R=d\,(3d-3)^{n-1}$ & $O\big(t^{-R/(R-2)}\big)$\\
+strict local minimum & $\rho=1-1/\alpha$,\quad $\alpha\le(d-1)^n+1$ & $O\big(t^{-\alpha/(\alpha-2)}\big)$\\
+zero loss, isolated in $Z$, $\mu<\infty$ & $\rho=1-1/(2\ell)$,\quad $\ell\le\mu\le D^n$ & $O\big(t^{-\ell/(\ell-1)}\big)$\\
+zero loss, fiber smooth at $\theta^*$ & $\rho=\frac12$ & $O\big(e^{-ct}\big)$,\quad $c<4\lambda_+(K_{\theta^*})$\\
+\bottomrule
+\end{tabular}
+\end{center}
+In the first three lines the worst-case exponent of $t$ tends to $-1$ as $n$ grows: the rate $1/t$ is never reached, but it is approached. The third line is attained by a polynomial model (Example~\ref{ex:chain}), so the exponential dependence on the number of parameters is not an artifact of the proofs, and no bound in terms of the degree alone can hold for general polynomial models. For neural networks the question is open (Remark~\ref{rem:open}). No bound of this kind holds for trajectories that escape to infinity: in Example~\ref{ex:divergence} the loss decays like $t^{-1/2}$.
+
+\section{Convergence, and what it uses}\label{sec:convergence}
+
+The theorem of the Primer states that, if $F=L\circ\varphi$ is real analytic and bounded below, every trajectory is defined for all $t\ge0$, and either $|\theta(t)|\to\infty$ or $\theta(t)$ converges to a critical point of $F$. Its proof rests on \eqref{eq:L}, which holds for all analytic functions \cite{Loj63,Loj84}. Polynomiality is not used, and the theorem applies, for instance, to networks with activation $\tanh$. What polynomiality adds is Theorem~\ref{thm:poly}.
+
+\begin{proof}[Proof of Lemma~\ref{lem:rates}]
+Let $t_0$ be such that $|\theta(t)-\theta^*|<\delta$ for $t\ge t_0$. Since $F(\theta(t))$ is non-increasing and tends to $F(\theta^*)$, $G\ge0$. If $G(t_1)=0$ for some $t_1$, the trajectory is constant from $t_1$ on. Otherwise, for $t\ge t_0$, $\dot G=-\|\nabla F\|^2\le-c^2G^{2\rho}$. For $\rho=\frac12$ this gives $G(t)\le G(t_0)e^{-c^2(t-t_0)}$, and for $\rho>\frac12$ it gives $\frac{d}{dt}G^{-(2\rho-1)}\ge(2\rho-1)c^2$, hence $G(t)\le((2\rho-1)c^2(t-t_0))^{-1/(2\rho-1)}$. Moreover,
+\[
+\tfrac{d}{dt}G^{1-\rho}=-(1-\rho)\,G^{-\rho}\,\|\nabla F\|\,|\dot\theta|\le-c\,(1-\rho)\,|\dot\theta| ,
+\]
+so that $|\theta(t)-\theta^*|\le\int_t^\infty|\dot\theta|\le G(t)^{1-\rho}/(c(1-\rho))$.
+\end{proof}
+
+\begin{remark}[Smooth is not enough]
+For $C^\infty$ functions \eqref{eq:L} can fail, and so does the theorem: there are smooth functions on $\R^2$ with a bounded trajectory that spirals towards a circle of critical points \cite[p.~14]{PdM82}, \cite{AMA05}. On the other hand, the conclusion of the theorem extends to functions definable in an o-minimal structure, e.g.\ to semi-algebraic losses that are not polynomial, with a general desingularizing function in place of the power in \eqref{eq:L} \cite{Kur98}.
+\end{remark}
+
+\begin{remark}[Weight decay]\label{rem:decay}
+Let $L\ge0$ be analytic, let $\gamma>0$, and let $F_\gamma=L\circ\varphi+\gamma|\theta|^2$. Along a trajectory of $F_\gamma$, $\gamma|\theta(t)|^2\le F_\gamma(\theta(0))$. So trajectories are bounded and, by the theorem, \emph{every} trajectory converges to a critical point of $F_\gamma$. Let a Lie group act on $\Theta$ as in the theorem on the gradient map of the Primer, with conserved quantities $Q_\xi(\theta)=\frac12\ip{\xi\cdot\theta}{\theta}$. Since $\nabla Q_\xi(\theta)=\xi\cdot\theta$ lies in $\ker d\varphi_\theta$, it is orthogonal to $\nabla(L\circ\varphi)(\theta)$, and along a trajectory of $F_\gamma$
+\[
+\tfrac{d}{dt}Q_\xi(\theta)=\ip{\xi\cdot\theta}{-\nabla(L\circ\varphi)(\theta)-2\gamma\theta}=-4\gamma\,Q_\xi(\theta),\qquad\text{i.e.,}\qquad Q_\xi(\theta(t))=e^{-4\gamma t}\,Q_\xi(\theta(0)).
+\]
+The limit is therefore \emph{balanced}: $Q_\xi=0$ for all $\xi$.
+\end{remark}
+
+\begin{remark}[Boundedness]\label{rem:bounded}
+Without weight decay, boundedness has to come from the model. Conserved quantities can provide it: see Example~\ref{ex:neuron} for one neuron and \cite{BRTW22} for linear networks. It can also fail (Example~\ref{ex:divergence}).
+\end{remark}
+
+\begin{remark}[Gradient descent]
+The same dichotomy holds in discrete time: for analytic $F$, the iterates of a descent method satisfying a sufficient-decrease condition, such as gradient descent with a small enough learning rate on a bounded set, either converge to a single point or escape to infinity \cite{AMA05}.
+\end{remark}
+
+\section{The limit of the loss, and trajectories at infinity}\label{sec:limits}
+
+Let $\cC_0(F)$ be the set of critical values of $F$, and let $\cC_\infty(F)$ be the set of its \emph{asymptotic critical values}: the numbers $c$ such that $F(\theta_k)\to c$ for some sequence with $|\theta_k|\to\infty$ and $|\theta_k|\,\|\nabla F(\theta_k)\|\to0$. Let $\cC(F)=\cC_0(F)\cup\cC_\infty(F)$.
+
+\begin{proposition}\label{prop:limits}
+Let $F$ be real analytic and bounded below. Along every trajectory, $F(\theta(t))$ converges to an element of $\cC_0(F)$ if the trajectory converges, and to an element of $\cC_\infty(F)$ otherwise. If $F$ is a polynomial, $\cC(F)$ is finite.
+\end{proposition}
+
+\begin{proof}
+Along a trajectory, $F(\theta(t))$ is non-increasing and bounded below, so it has a limit $c$. If the trajectory converges, its limit is a critical point and $c\in\cC_0(F)$. Otherwise $|\theta(t)|\to\infty$, by the theorem of the Primer. Suppose that $|\theta(t)|\,\|\nabla F(\theta(t))\|\ge\varepsilon>0$ for all $t\ge t_0$. Since $\frac{d}{dt}|\theta|\le|\dot\theta|=\|\nabla F(\theta)\|$,
+\[
+-\tfrac{d}{dt}F(\theta(t))=\|\nabla F(\theta(t))\|\,|\dot\theta(t)|\ \ge\ \varepsilon\,\frac{|\dot\theta(t)|}{|\theta(t)|}\ \ge\ \varepsilon\,\tfrac{d}{dt}\log|\theta(t)| ,
+\]
+so that $F(\theta(t_0))-F(\theta(t))\ge\varepsilon\log(|\theta(t)|/|\theta(t_0)|)\to\infty$, which contradicts the boundedness of $F$ from below. Hence $|\theta(t_k)|\,\|\nabla F(\theta(t_k))\|\to0$ for some $t_k\to\infty$, and $c\in\cC_\infty(F)$.
+
+Let now $F$ be a polynomial. The set $\cC(F)$ is semi-algebraic, by the Tarski--Seidenberg theorem: for instance, $c\in\cC_\infty(F)$ if and only if for every $\varepsilon>0$ there is $\theta$ with $|\theta|>1/\varepsilon$, $|F(\theta)-c|<\varepsilon$ and $|\theta|\,\|\nabla F(\theta)\|<\varepsilon$. It has measure zero, by the semi-algebraic Sard theorem for generalized critical values \cite{KOS00}. A semi-algebraic subset of $\R$ of measure zero is finite.
+\end{proof}
+
+This proves Theorem~\ref{thm:poly}\ref{A1}. Only the finiteness uses polynomiality; it also holds in o-minimal structures, and fails for general analytic functions such as $\theta\sin\theta$.
+
+\begin{example}[A trajectory that escapes to infinity]\label{ex:divergence}
+Consider the MLP with widths $(1,1,1)$, no biases and activation $\sigma(t)=t+t^2$:
+\[
+f_\theta(x)=a\,\sigma(wx)=aw\,x+aw^2\,x^2,\qquad\theta=(a,w)\in\R^2 .
+\]
+In the basis $(x,x^2)$ of $V$, taken orthonormal, $\varphi(a,w)=(aw,aw^2)$ and $\M=\{(X,Y):X\ne0\}\cup\{0\}$, which is not closed. For the target $f^*=x^2$, with $u=aw^2-1$,
+\[
+F(a,w)=a^2w^2+u^2,\qquad\nabla F(a,w)=\big(2w^2(a+u),\ 2aw(a+2u)\big).
+\]
+The critical points of $F$ are the points of the line $w=0$, where $F=1$: if $w\ne0$, the equations $a+u=0$ and $a(a+2u)=0$ give $a=u=0$, while $u=-1$ when $a=0$. Hence $\cC_0(F)=\{1\}$, and every trajectory with $F(\theta(0))<1$ escapes to infinity. It does so along the valley $a=1/(1+w^2)$, where $\partial_aF=0$ and $F=1/(1+w^2)$. There, $\dot w=2a^2w\approx2w^{-3}$, which suggests
+\[
+w(t)\approx(8t)^{1/4},\qquad F(\theta(t))\approx(8t)^{-1/2}.
+\]
+This is heuristic, but it agrees with a numerical integration: the fitted exponents are $0.250$ and $-0.500$, and $w^4/8t\to1.000$. Thus $0\in\cC_\infty(F)$, and the loss decays more slowly than $1/t$, which cannot happen along a convergent trajectory.
+\end{example}
+
+\begin{remark}[Neuromanifolds that are not closed]\label{rem:closed}
+If $f^*$ lies in the closure of $\M$ but not in $\M$, then $\inf F=0$ is not attained, and every sequence with $F(\theta_k)\to0$ satisfies $|\theta_k|\to\infty$: a bounded subsequence would have a limit point $\theta$ with $f_\theta=f^*$. This is the case in Example~\ref{ex:divergence}, and for the target $x_1^{r-1}x_2$ of a shallow monomial network of width two (Primer, Examples). We do not know whether $f_{\theta(t)}$ always converges in $V$ when $|\theta(t)|\to\infty$.
+\end{remark}
+
+\section{The scheme-theoretic fiber}\label{sec:fiber}
+
+Let $L$ be the ideal loss, and let $I\subseteq\R[\theta]$ be the ideal generated by the coordinates of $g=\varphi-f^*$ in a basis of $V$. The \emph{scheme-theoretic fiber} of $\varphi$ over $f^*$ is the subscheme of $\Theta$ defined by $I$. Its real points form $Z=\varphi^{-1}(f^*)$, and its Zariski tangent space at $\theta\in Z$ is $\ker d\varphi_\theta$ (Primer, Gradient flow). Fix $\theta^*\in Z$, and let $\cO$ be the ring of germs of real analytic functions at $\theta^*$, with maximal ideal $\fm$. The \emph{local algebra} of the fiber at $\theta^*$ is $\cO/I\cO$, and its \emph{multiplicity} is $\mu=\dim_\R\cO/I\cO\le\infty$.
+
+\begin{definition}[Order of contact]\label{def:contact}
+The \emph{order of contact} $\ell(\theta^*)$ of the fiber at $\theta^*$ is the infimum of the $\alpha\ge1$ such that $\|g(\theta)\|\ge c\,\dist(\theta,Z)^\alpha$ near $\theta^*$, for some $c>0$.
+\end{definition}
+
+It is finite, by Theorem~\ref{thm:fiber}\ref{B1}, and at least $1$, since $g$ is Lipschitz and vanishes on $Z$. If $h_1,\dots,h_q$ generate $I\cO$, then $\|h\|\asymp\|g\|$ near $\theta^*$. So $\ell$ depends only on the germ of the scheme-theoretic fiber at $\theta^*$, and not on the scalar product of $V$; it is also invariant under analytic changes of coordinates on $\Theta$. It measures how flat $\|f_\theta-f^*\|$ is in the directions transverse to the fiber.
+
+\begin{lemma}[Generators]\label{lem:generators}
+Let $v_1,\dots,v_q\in\cO$ be a minimal system of generators of $I\cO$, and $v=(v_1,\dots,v_q)$. Then $g=Av$ near $\theta^*$, where $A$ is an analytic family of linear maps $\R^q\to V$ and $A(\theta^*)$ is injective. Consequently $F=\ip{v}{Gv}$, where $G=A^*A$ is positive definite near $\theta^*$, and $\|g\|\asymp\|v\|$.
+\end{lemma}
+
+\begin{proof}
+The coordinates of $g$ lie in $I\cO$, which gives $A$. By Nakayama's lemma, the classes of $v_1,\dots,v_q$ form a basis of $I\cO/\fm I\cO$. The classes of the coordinates of $g$ span this space, and they are the images of the classes of the $v_j$ under $A(\theta^*)$. Hence $A(\theta^*)$ has rank $q$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:fiber}]
+\ref{B1} Let \eqref{eq:L} hold on the ball $B(\theta^*,\delta)$, where $F(\theta^*)=0$. Let $\theta_0$ be such that $|\theta_0-\theta^*|<\delta/2$ and $F(\theta_0)^{1-\rho}<c(1-\rho)\delta/2$, which holds near $\theta^*$. As in the proof of Lemma~\ref{lem:rates}, the trajectory from $\theta_0$ has length at most $F(\theta_0)^{1-\rho}/(c(1-\rho))<\delta/2$ as long as it stays in the ball. So it stays in the ball and converges to a critical point $\theta_\infty$ in it. By \eqref{eq:L}, $F(\theta_\infty)=0$, i.e., $\theta_\infty\in Z$. Therefore $\dist(\theta_0,Z)\le|\theta_0-\theta_\infty|\le F(\theta_0)^{1-\rho}/(c(1-\rho))$, and $\|g(\theta_0)\|=F(\theta_0)^{1/2}\ge(c(1-\rho)\dist(\theta_0,Z))^{1/(2(1-\rho))}$. Thus $\ell\le1/(2(1-\rho))$ for every admissible $\rho$.
+
+\ref{B2} Let $q=n-\dim\ker d\varphi_{\theta^*}$ be the rank of $dg_{\theta^*}$.
+
+\ref{B2a}$\Rightarrow$\ref{B2b}. Choose $q$ linear forms on $V$ whose compositions $u_1,\dots,u_q$ with $g$ have independent differentials at $\theta^*$, and complete them to analytic coordinates $(s,u)$ centred at $\theta^*$. Then $Z\subseteq Z'=\{u=0\}$, and by \ref{B2a} both have dimension $n-q$ at $\theta^*$. So, in every neighbourhood of $\theta^*$, $Z$ contains a non-empty open subset of the manifold $Z'$. Each coordinate of $g$ is analytic on $Z'$ and vanishes on $Z$, hence on $Z'$ near $\theta^*$, so it lies in the ideal generated by $u_1,\dots,u_q$. Thus $I\cO=(u_1,\dots,u_q)$, and $F=\ip{u}{Gu}$ with $G$ positive definite, by Lemma~\ref{lem:generators}. In the coordinates $(s,u)$, in which the norm of the gradient is comparable to $\|\nabla F\|$, we have $\partial_uF=2Gu+O(|u|^2)$ and $F\lesssim|u|^2$. Hence $\|\nabla F\|\gtrsim|u|\gtrsim F^{1/2}$.
+
+\ref{B2b}$\Rightarrow$\ref{B2c} is \ref{B1} with $\rho=\frac12$.
+
+\ref{B2c}$\Rightarrow$\ref{B2a}. Let $T$ be the tangent cone of $Z$ at $\theta^*$, i.e., the set of the limits of $(z_j-\theta^*)/t_j$ for $z_j\in Z$, $z_j\to\theta^*$ and $t_j\downarrow0$. It is a closed semi-algebraic cone of dimension at most $e=\dim_{\theta^*}Z$ \cite[\S2.8]{BCR98}. If \ref{B2a} fails, then $\dim\ker dg_{\theta^*}>e$, and there is a unit vector $v\in\ker dg_{\theta^*}$ outside $T$. Then $\dist(\theta^*+tv,Z)\ge c't$ for some $c'>0$ and all small $t>0$, by the definition of $T$, while $\|g(\theta^*+tv)\|=O(t^2)$. This contradicts \ref{B2c}. See \cite{RB24} for these equivalences for general $C^2$ functions.
+
+\emph{Rate.} Assume \ref{B2a}, and for $\theta=(s,u)$ let $\theta_Z=(s,0)\in Z$. Then $g(\theta)=dg_{\theta_Z}(\theta-\theta_Z)+O(|u|^2)$, where the first term lies in $\im K_{\theta_Z}$ and has norm $\asymp|u|$. The rank of $K_\theta$ is $q$ on $Z$ near $\theta^*$, so that $\lambda_+(K_{\theta_Z})\to\lambda_+(K_{\theta^*})$ as $\theta\to\theta^*$, and $\ip{K_\theta g}{g}\ge(\lambda_+(K_{\theta^*})-o(1))\,\|g\|^2$. By \eqref{eq:ideal}, $\frac{d}{dt}F=-4\ip{K_\theta g}{g}\le-(4\lambda_+(K_{\theta^*})-o(1))F$ along a trajectory converging to $\theta^*$.
+
+\ref{B3} Near $\theta^*$ we have $Z=\{\theta^*\}$, so $F$ has an isolated zero at $\theta^*$, and $2\ell$ is the least exponent $\alpha$ such that $F(\theta)\ge c|\theta-\theta^*|^\alpha$. Hence $\rho_F(\theta^*)=1-\frac1{2\ell}$, by Theorem~\ref{thm:poly}\ref{A3}. Assume now that $\mu<\infty$. Then $\cO/I\cO$ is a local ring of length $\mu$, in which the powers of the maximal ideal decrease strictly until they vanish; so $\fm^\mu\subseteq I\cO$. Hence every monomial of degree $\mu$ in $\theta-\theta^*$ is a combination of the coordinates of $g$ with analytic coefficients, and $|\theta-\theta^*|^\mu\lesssim\|g(\theta)\|$, i.e., $\ell\le\mu$. Finally, $\mu$ is also the multiplicity of $\theta^*$ in the complex fiber, in which $\theta^*$ is therefore isolated. Replacing the coordinates of $g$ by $n$ generic linear combinations of them makes the ideal smaller, hence the local algebra larger, and keeps $\theta^*$ isolated, since a generic linear projection is finite on the germ of the image of $g$. By B\'ezout's theorem, the multiplicities of the isolated solutions of $n$ equations of degree at most $D$ in $\C^n$ add up to at most $D^n$ \cite[\S12.3]{Ful98}. So $\mu\le D^n$. The rates follow from Lemma~\ref{lem:rates}. If $\mu=\infty$, Theorem~\ref{thm:poly}\ref{A3} still gives $2\ell\le(2D-1)^n+1$.
+\end{proof}
+
+\begin{remark}[Order of contact, nilpotency, multiplicity]\label{rem:mult}
+The proof of \ref{B3} gives $\ell\le\nu\le\mu$, where $\nu$ is the least $p$ with $\fm^p\subseteq I\cO$. The three numbers can differ: $(\ell,\nu,\mu)=(2,3,4)$ for the ideal $(x^2,y^2)$, and $(3,3,4)$ for $(x^2,xy,y^3)$. It is $\ell$, and not the multiplicity, that governs the rate (Table~\ref{tab:examples}). Over $\C$, $\ell$ only depends on the integral closure of the ideal \cite{LT08}; for instance, $xy$ is integral over $(x^2,y^2)$.
+\end{remark}
+
+The next two propositions give the exponent at points of the fiber that are not isolated.
+
+\begin{proposition}[A manifold thickened in one direction]\label{prop:curvilinear}
+Assume that, in analytic coordinates $(s,u,x)\in\R^e\times\R^q\times\R$ centred at $\theta^*$, the ideal $I\cO$ is generated by $u_1,\dots,u_q$ and $x^m$, with $m\ge2$: near $\theta^*$, the scheme-theoretic fiber is the product of the manifold $Z=\{u=0,\,x=0\}$ and the fat point $\Spec\R[x]/(x^m)$. Then $\ell(\theta^*)=m$ and $\rho_F(\theta^*)=1-\frac1{2m}$, the infimum being attained.
+\end{proposition}
+
+\begin{proof}
+By Lemma~\ref{lem:generators}, $F=\ip{v}{Gv}$ with $v=(u,x^m)$, so that $\|g\|\asymp|u|+|x|^m$, while $\dist(\theta,Z)\asymp|u|+|x|$. Hence $\ell=m$, and $\rho_F(\theta^*)\ge1-\frac1{2m}$ by Theorem~\ref{thm:fiber}\ref{B1}. For the converse, write $G$ in blocks along $v=(u,x^m)$, and let $\tilde u=u+G_{uu}^{-1}G_{ux}\,x^m$ and $S=G_{xx}-G_{xu}G_{uu}^{-1}G_{ux}>0$. In the coordinates $(s,u,x)$,
+\[
+\partial_uF=2\,G_{uu}\tilde u+O(|v|^2),\qquad\partial_xF=2m\,x^{m-1}\big(G_{xu}\tilde u+S\,x^m\big)+O(|v|^2).
+\]
+In all cases $|\partial_uF|\ge c|\tilde u|-C|v|^2$. If $|\tilde u|\le\varepsilon|x|^m$ with $\varepsilon$ small, then also $|\partial_xF|\ge c|x|^{2m-1}-C|v|^2$; otherwise $|\tilde u|\gtrsim|\tilde u|+|x|^m$. Since $|v|^2\lesssim|\tilde u|^2+x^{2m}$ is negligible with respect to $|\tilde u|+|x|^{2m-1}$, in both cases $\|\nabla F\|\gtrsim|\tilde u|+|x|^{2m-1}$ near $\theta^*$. On the other hand $F\asymp|\tilde u|^2+x^{2m}$, so that $F^{1-1/(2m)}\lesssim|\tilde u|^{2-1/m}+|x|^{2m-1}\le|\tilde u|+|x|^{2m-1}$.
+\end{proof}
+
+\begin{proposition}[Flat directions]\label{prop:flat}
+Let $\Theta=\R^{n-p}\times\R^p\ni(a,w)$, $S=\{w=0\}$ and $\theta^*=(a^*,0)\in Z$, and let $k\ge2$. Assume that the derivatives of $\varphi$ with respect to $w$ of orders $1,\dots,k-1$ vanish on $S$, so that
+\[
+\varphi(a,w)=\varphi(a,0)+P(a;w)+O(|w|^{k+1}),
+\]
+where $P(a;\cdot)$ is a $V$-valued form of degree $k$. Assume moreover that
+\begin{enumerate}[label=\textup{(\arabic*)},nosep]
+\item the scheme-theoretic fiber of the restriction $\varphi|_S$ is smooth at $a^*$, and
+\item $P(a^*;w)$ does not lie in $\im d(\varphi|_S)_{a^*}$, for every $w\ne0$.
+\end{enumerate}
+Then $Z\subseteq S$ near $\theta^*$, $\ell(\theta^*)=k$ and $\rho_F(\theta^*)=1-\frac1{2k}$, the infimum being attained.
+\end{proposition}
+
+This is the situation of the subspaces $S$ of the section on feature learning of the Primer, where $k$ is the order of the critical point of the activation, when the target is a function of the subnetwork. There $P(a;w)$ is the leading term of the contribution of the inactive neuron, and (2) says that, to leading order, this contribution cannot be imitated by the subnetwork.
+
+\begin{proof}
+Let $e(a)=\varphi(a,0)-f^*$ and $C=\{a:e(a)=0\}$, and for $a$ near $a^*$ let $\bar a$ be a point of $C$ closest to $a$, and $\delta=|a-\bar a|$. By (1) and Theorem~\ref{thm:fiber}\ref{B2}, applied to $\varphi|_S$, $C$ is a manifold near $a^*$ and $e(a)=de_{\bar a}(a-\bar a)+O(\delta^2)$, where the first term has norm $\asymp\delta$ and lies in $T_{\bar a}=\im de_{\bar a}$, which depends continuously on $\bar a$. By (2), homogeneity and compactness, there is $c_0>0$ such that $\|\tau+P(a;w)\|\ge c_0(\|\tau\|+|w|^k)$ for all $\tau\in T_{\bar a}$, $w\in\R^p$ and $a$ near $a^*$. Hence
+\[
+g(a,w)=de_{\bar a}(a-\bar a)+P(a;w)+O(\delta^2+|w|^{k+1})\qquad\text{satisfies}\qquad\|g\|\asymp\delta+|w|^k .
+\]
+So $Z=C\times\{0\}$ near $\theta^*$, $\dist(\theta,Z)\asymp\delta+|w|$, and $\ell=k$; thus $\rho_F(\theta^*)\ge1-\frac1{2k}$ by Theorem~\ref{thm:fiber}\ref{B1}. For the converse, consider the vector $\eta=(a-\bar a,\,w/k)$. By Euler's identity, $\frac1kD_wP(a;w)\,w=P(a;w)$, so that
+\[
+dg_\theta\,\eta=de_{\bar a}(a-\bar a)+P(a;w)+O(\delta^2+\delta|w|^k+|w|^{k+1})=g+o(\|g\|).
+\]
+Therefore $\ip{\nabla F}{\eta}=2\ip{g}{dg_\theta\,\eta}\ge\|g\|^2=F$ near $\theta^*$, and $\|\nabla F\|\ge F/(\delta+|w|)$. Finally, $F^{1/(2k)}=\|g\|^{1/k}\gtrsim\max(\delta^{1/k},|w|)\gtrsim\delta+|w|$, which gives $\|\nabla F\|\gtrsim F^{1-1/(2k)}$.
+\end{proof}
+
+When the loss at the limit is not zero, the fiber of $\varphi$ is no longer the relevant object, but the same computation applies to $F$ itself.
+
+\begin{proposition}[Flat directions, nonzero loss]\label{prop:spurious}
+Let $F$ be analytic near $\theta^*=(a^*,0)\in\R^{n-p}\times\R^p$, and let $k\ge2$. Assume that the derivatives of $F$ with respect to $w$ of orders $1,\dots,k-1$ vanish on $S=\{w=0\}$, so that
+\[
+F(a,w)=F(a,0)-U(a;w)+O(|w|^{k+1}),
+\]
+where $U(a;\cdot)$ is a form of degree $k$. Assume that $a^*$ is a Morse--Bott critical point of $F|_S$, and that $\nabla_wU(a^*;w)\ne0$ for every $w\ne0$. Then $\theta^*$ is a critical point of $F$ and $\rho_F(\theta^*)=\max(\frac12,1-\frac1k)$, the infimum being attained. Hence a trajectory converging to $\theta^*$ has a loss gap $O(t^{-k/(k-2)})$ if $k\ge3$, and converges exponentially if $k=2$.
+\end{proposition}
+
+Here $U$ is the utility of the notes on saddle-to-saddle dynamics, and the assumption on the derivatives of $F$ is their flatness condition (H). The condition on $\nabla_wU$ says that $0$ is not a critical value of the restriction of $U(a^*;\cdot)$ to the unit sphere.
+
+\begin{proof}
+Let $C$ be the manifold of critical points of $F|_S$ near $a^*$, on which $F|_S$ is constant, let $\delta=\dist(a,C)$ and $Q(a)=F(a,0)-F(\theta^*)$. Since $a^*$ is Morse--Bott, $|Q|\lesssim\delta^2$ and $\|\nabla Q\|\gtrsim\delta$. By homogeneity and compactness, $\|\nabla_wU(a;w)\|\gtrsim|w|^{k-1}$ for $a$ near $a^*$. Now $\nabla_aF=\nabla Q+O(|w|^k)$ and $\nabla_wF=-\nabla_wU(a;w)+O(|w|^k)$, so that $\|\nabla F\|\gtrsim\delta+|w|^{k-1}$ near $\theta^*$, while $|F-F(\theta^*)|\lesssim\delta^2+|w|^k$. With $\rho=\max(\frac12,1-\frac1k)$, this gives $|F-F(\theta^*)|^\rho\lesssim\delta^{2\rho}+|w|^{k\rho}\le\delta+|w|^{k-1}$. Conversely, let $k\ge3$. Since $\nabla_wU(a^*;\cdot)$ does not vanish identically, $U(a^*;w_0)\ne0$ for some $w_0$. Along $\theta=(a^*,tw_0)$, $|F-F(\theta^*)|\asymp t^k$ and $\|\nabla F\|\lesssim t^{k-1}$, so no exponent smaller than $1-\frac1k$ is admissible.
+\end{proof}
+
+\section{Examples}\label{sec:examples}
+
+\begin{example}[The worst case is attained]\label{ex:chain}
+Let $D\ge2$, and consider the polynomial map of degree $D$
+\[
+\varphi(\theta)=\big(\theta_1^D-\theta_2,\ \theta_2^D-\theta_3,\ \dots,\ \theta_{n-1}^D-\theta_n,\ \theta_n^D\big)\colon\R^n\to\R^n,\qquad f^*=0 .
+\]
+Its fiber over $0$ is the origin, also over $\C$, and its local algebra is $\R[\theta_1]/(\theta_1^{D^n})$: here $\mu=\nu=D^n$. On the curve $\theta_{i+1}=\theta_i^D$, $i<n$, we have $\|g(\theta)\|=|\theta_1|^{D^n}$ and $|\theta|\asymp|\theta_1|$, so that $\ell=D^n$ as well. By Theorem~\ref{thm:fiber}\ref{B3}, $\rho_F(0)=1-1/(2D^n)$, and the bound $\ell\le D^n$ is attained. Numerically, the loss decays like $t^{-D^n/(D^n-1)}$, and not faster (Table~\ref{tab:examples}). Since $\deg F=2D$, the constant $R$ of Theorem~\ref{thm:poly}\ref{A2} cannot be replaced by anything smaller than $2D^n$, compared with $R=2D(6D-3)^{n-1}$. This $\varphi$ is a polynomial model, but not a neural network.
+\end{example}
+
+\begin{example}[One neuron]\label{ex:neuron}
+Let $r\ge2$, and consider $\varphi(a,w)=c=aw^r$ on $\Theta=\R^2$, with $V=\R$ and target $c^*$. This is one coordinate of the flat model of the Primer. Here
+\[
+F=(c-c^*)^2,\qquad K_\theta=w^{2r-2}(w^2+r^2a^2),\qquad\dot c=-2K_\theta\,(c-c^*),\qquad\tfrac{d}{dt}F=-4K_\theta F ,
+\]
+and the imbalance $\Delta=w^2-ra^2$ is conserved, being the gradient map of the rescalings $(a,w)\mapsto(\lambda^{-r}a,\lambda w)$. In particular $c$ moves monotonically towards $c^*$. The line $w=0$ consists of critical points, so that the sign of $w$ is constant along trajectories. Since $|c|$ is bounded along a trajectory and $\Delta$ is conserved, trajectories are bounded (Remark~\ref{rem:bounded}), hence convergent.
+\begin{enumerate}[label=\textup{(\alph*)},leftmargin=2.6em]
+\item \emph{$\Delta>0$.} Then $w^2\ge\Delta$ and $K_\theta\ge\Delta^r$, so that $F(\theta(t))\le F(\theta(0))\,e^{-4\Delta^rt}$, for every target. The conserved quantity bounds the neural tangent kernel from below, as in \cite{MTVM21} for linear networks.
+\item \emph{$\Delta<0$.} Then $a^2\ge|\Delta|/r$, and the signs of $a$, $w$ and $c$ are constant. If $c(0)$ has the sign of $c^*$, then $c\to c^*$ exponentially. If $c^*=0$, the trajectory converges to $(a_\infty,0)$, where the fiber is $\{w^r=0\}$, and $F\asymp t^{-r/(r-1)}$ (Proposition~\ref{prop:curvilinear} with $m=r$). If $c(0)$ and $c^*$ have opposite signs, the neuron \emph{dies}: $w\to0$, the loss tends to $(c^*)^2$, and the gap is $O(t^{-r/(r-2)})$ for $r\ge3$ (Proposition~\ref{prop:spurious} with $k=r$ and $U=2c^*aw^r$).
+\item \emph{$\Delta=0$.} On this balanced locus $K_\theta=\kappa_r\,|c|^{2r/(r+1)}$ with $\kappa_r=(r+1)\,r^{r/(r+1)}$, and the dynamics closes up in function space:
+\begin{equation}\label{eq:balanced}
+\dot c=-\kappa_r\,|c|^{2-\frac2{r+1}}\,L'(c).
+\end{equation}
+If $c(0)$ has the sign of $c^*$, then $c\to c^*$ exponentially, with $F=O(e^{-\beta t})$ for every $\beta<4\kappa_r|c^*|^{2r/(r+1)}$: small targets are learned slowly, increasingly so with the degree. If $c^*=0$, the trajectory converges to the origin, where the fiber is $\{aw^r=0\}$ and $\ell=r+1$, and $F\asymp t^{-(r+1)/r}$.
+\end{enumerate}
+For a Gaussian initialization of any scale, $\Delta<0$ with probability $\frac2\pi\arctan\sqrt r$, and the sign of $c(0)$ is independent of $\Delta$. Hence, for $c^*\ne0$, the neuron dies with probability $\frac1\pi\arctan\sqrt r$, i.e., $\frac13$ for $r=3$ (0.32 in a simulation): a set of initializations of positive measure converges to a critical point that is not a global minimum. For odd $r$ this point is a saddle, which the results on the avoidance of strict saddles \cite{LSJR16} do not exclude, since the loss is flat to order $r$ at it; for even $r$ it is a local minimum.
+\end{example}
+
+\begin{example}[Scalar linear networks]\label{ex:linear}
+Let $\varphi(w)=c=w_1\cdots w_N$ on $\Theta=\R^N$. Then $K_\theta=\sum_i\prod_{j\ne i}w_j^2$, and the differences $w_i^2-w_j^2$ are conserved. If $|w_{i_0}(0)|<|w_j(0)|$ for all $j\ne i_0$, then $K_\theta\ge\kappa:=\prod_{j\ne i_0}(w_j(0)^2-w_{i_0}(0)^2)$ along the trajectory, and $F(\theta(t))\le F(\theta(0))\,e^{-4\kappa t}$ for every target. On the balanced locus, where all the $|w_i|$ are equal, $K_\theta=N|c|^{2-2/N}$ and
+\begin{equation}\label{eq:scalar}
+\dot c=-N\,|c|^{2-\frac2N}\,L'(c).
+\end{equation}
+For the target $c^*=0$ the trajectory converges to the origin, where $\ell=N$, and $F\asymp t^{-N/(N-1)}$. For matrices, balanced trajectories obey a matrix version of \eqref{eq:scalar} \cite{ACH18,BRTW22}; in the aligned case, where the end-to-end matrix and the target have the same singular vectors, each singular value obeys \eqref{eq:scalar}. A target of lower rank then gives the rate $t^{-N/(N-1)}$, in agreement with the sublinear rates known for over-parametrized matrix factorization when $N=2$ \cite{ZKHC24}. We have not checked the matrix case beyond this.
+\end{example}
+
+In Examples~\ref{ex:neuron} and~\ref{ex:linear} the degree of the parametrization bounds the order of contact. This is general for monomial parametrizations, at least for the zero target.
+
+\begin{proposition}[Monomial parametrizations]\label{prop:monomial}
+Assume that, in an orthonormal basis of $V$, the coordinates of $\varphi$ are monomials $c_i\theta^{\alpha_i}$, and let $f^*=0$ and $D=\max_i|\alpha_i|$. Then, on every bounded set $B$, $\|\nabla F\|\ge c_B\,F^{1-1/(2D)}$. Hence every bounded trajectory satisfies $F(\theta(t))=O(t^{-D/(D-1)})$ if $D\ge2$.
+\end{proposition}
+
+\begin{proof}
+Write $F=\sum_iT_i$ with $T_i=c_i^2\theta^{2\alpha_i}\ge0$, let $\theta\in B$ with $F(\theta)>0$, and let $T_{i_0}$ be the largest term, so that $T_{i_0}\ge F/N$ with $N=\dim V$. Let $j$ be an index in the support of $\alpha_{i_0}$ for which $|\theta_j|$ is the smallest. In $\partial_jF=\sum_i2\alpha_{ij}T_i/\theta_j$ all the terms have the same sign, so $|\partial_jF|\ge2T_{i_0}/|\theta_j|$. Moreover $T_{i_0}\ge c_{i_0}^2|\theta_j|^{2|\alpha_{i_0}|}$. Hence $|\partial_jF|\gtrsim T_{i_0}^{1-1/(2|\alpha_{i_0}|)}\gtrsim T_{i_0}^{1-1/(2D)}\gtrsim F^{1-1/(2D)}$, since $T_{i_0}$ is bounded on $B$. The rate follows as in Lemma~\ref{lem:rates}.
+\end{proof}
+
+Table~\ref{tab:examples} collects these examples. The row $w\mapsto(w^2,w^3)$ is the neuron $x\mapsto\sigma(wx)$ with $\sigma(t)=t^2+t^3$, whose neuromanifold is the cuspidal cubic. The row $(x^2,y^2)$ is the transverse structure of two neurons that become inactive together, for $r=2$.
+
+\begin{table}[ht]
+\centering\footnotesize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}lccccl@{}}
+\toprule
+Model, at the limit point & mult. & $\ell$ & $\rho$ & Loss gap & Fitted $p$, for a gap $\asymp t^{-p}$\\
+\midrule
+any, at a regular point of $\varphi$ & $1$ & $1$ & $\frac12$ & exponential & \\[2pt]
+$aw^r$ at $(a_\infty,0)$ & $r$ & $r$ & $1-\frac1{2r}$ & $t^{-r/(r-1)}$ & $r=2,3,4$: \ $2.000$, $1.500$, $1.333$\\[2pt]
+$aw^r$ at $(0,0)$ & $r+1$ & $r+1$ & $1-\frac1{2(r+1)}$ & $t^{-(r+1)/r}$ & $r=1,2,3,4$: \ $2.000$, $1.500$, $1.333$, $1.250$\\[2pt]
+$w_1\cdots w_N$ at $0$ & $N$ & $N$ & $1-\frac1{2N}$ & $t^{-N/(N-1)}$ & $N=2,3,5$: \ $2.000$, $1.500$, $1.250$\\[2pt]
+$w\mapsto(w^2,w^3)$ at $0$ & $2$ & $2$ & $\frac34$ & $t^{-2}$ & $2.000$\\[2pt]
+$(x^2,y^2)$ at $0$ & $4$ & $2$ & $\frac34$ & $t^{-2}$ & $2.000$\\[2pt]
+$(x^2,xy,y^3)$ at $0$ & $4$ & $3$ & $\frac56$ & $t^{-3/2}$ & $1.500$\\[2pt]
+Example~\ref{ex:chain} at $0$ & $D^n$ & $D^n$ & $1-\frac1{2D^n}$ & $t^{-D^n/(D^n-1)}$ & $(D,n)=(2,2),(3,2),(2,3)$:\\
+ & & & & & $1.335$, $1.132$, $1.149$\\
+\midrule
+$aw^r$, dying neuron, $c^*\ne0$ & & & $1-\frac1r$ & $t^{-r/(r-2)}$ & $r=3,4,5$: \ $3.000$, $2.000$, $1.667$\\[2pt]
+Example~\ref{ex:divergence}, $|\theta|\to\infty$ & & & & $t^{-1/2}$ & $0.500$\\
+\bottomrule
+\end{tabular}
+\caption{Limits with zero loss and target $0$ (above the rule), and other cases (below). ``mult.''\ is the multiplicity of the local ring of the fiber at the limit: its dimension $\mu$ at isolated points, the order of vanishing for hypersurfaces. The last column is minus the slope of the logarithm of the loss gap against $\log t$, over the last decade and a half of a numerical integration of the gradient flow. For Example~\ref{ex:chain} the predicted values are $\frac43$, $\frac98$ and $\frac87$. In the rows $(x^2,y^2)$ and $(x^2,xy,y^3)$, the multiplicity would predict $\frac43$, in place of $2$ and $\frac32$. The rate of the last row is heuristic.}
+\label{tab:examples}
+\end{table}
+
+\section{Remarks}
+
+\begin{remark}[What is intrinsic]\label{rem:intrinsic}
+The exponent $\rho_F(\theta^*)$ is invariant under analytic changes of coordinates on $\Theta$, which change gradient norms by bounded factors, although the flow itself is not. It is not an invariant of the neuromanifold. The parametrizations $c=\theta$, $c=\theta^N$ and $c=aw^r$ of $\M=\R$, with the same loss $c^2$, give a loss that decays exponentially, like $t^{-N/(N-1)}$, and in a way that depends on the imbalance, respectively. This is the counterpart of the fact that $K_\theta$ depends on $\theta$ and not only on $f_\theta$.
+
+By Theorem~\ref{thm:fiber}\ref{B2}, slow convergence to a zero-loss limit requires $\theta^*$ to be a critical point of $\varphi$. It is unrelated to the singularities of $\Mbar$. In the flat model, $\M$ is a linear space, and the convergence to its coordinate planes is slow. At a node of $\Mbar$ whose branches are immersed, $d\varphi_{\theta^*}$ is injective and the convergence is exponential. For the cuspidal cubic of Table~\ref{tab:examples}, $\varphi$ is injective, but its fiber over the cusp is a double point, and the loss decays like $t^{-2}$: the scheme-theoretic fiber sees what identifiability does not.
+
+The dynamics becomes intrinsic to $\M$ in two situations. For the natural gradient, $K_\theta$ is replaced by the orthogonal projector onto $\im d\varphi_\theta$. On the balanced locus of linear networks, the flow descends to a Riemannian gradient flow on matrices of fixed rank \cite{BRTW22}; in the scalar case this is \eqref{eq:scalar}, whose cometric $N|c|^{2-2/N}$ degenerates at the singular point $c=0$, at an order that records the degree $N$ of the parametrization. The same holds for \eqref{eq:balanced}.
+\end{remark}
+
+\begin{remark}[The learning coefficient]
+Let $\lambda(\theta^*)$ be the supremum of the $s\ge0$ such that $F^{-s}$ is integrable near $\theta^*$. For the ideal loss, this is the local learning coefficient of singular learning theory, i.e., the real log canonical threshold of $F$ at $\theta^*$ \cite{Wat09}; like $\ell$, it is an invariant of the scheme-theoretic fiber. Assume that $Z$ is a manifold of codimension $q$ near $\theta^*$, and that \eqref{eq:L} holds with exponent $\rho$. By Theorem~\ref{thm:fiber}\ref{B1}, $F\gtrsim\dist(\theta,Z)^{1/(1-\rho)}$, and $\dist(\theta,Z)^{-\tau}$ is integrable near $\theta^*$ for $\tau<q$. Hence
+\[
+\lambda(\theta^*)\ \ge\ q\,\big(1-\rho_F(\theta^*)\big).
+\]
+A small learning coefficient forces slow convergence. Equality holds when the fiber is smooth ($\lambda=q/2$, $\rho=\frac12$), and at the limit $(a_\infty,0)$ of Example~\ref{ex:neuron} ($\lambda=\frac1{2r}$, $q=1$).
+\end{remark}
+
+\begin{remark}[Saddle-to-saddle dynamics]
+In the notes on saddle-to-saddle dynamics, an escape orbit is required to be defined for all $t\ge0$ and to converge to a non-degenerate local minimum of the loss of the larger subnetwork. For an analytic loss bounded below, the first requirement is automatic, and the orbit converges to a critical point as soon as it does not escape to infinity; only the boundedness and the non-degeneracy of the limit are assumptions. Moreover, the order $k$ of flatness appears twice: it gives the time $\varepsilon^{2-k}$ of the escape from a saddle, and the exponent $1-\frac1k$ of the convergence to a critical point on an inactive subspace (Proposition~\ref{prop:spurious}).
+\end{remark}
+
+\begin{remark}[Open questions]\label{rem:open}
+We do not know the answers to the following.
+\begin{enumerate}[label=\textup{(\arabic*)},nosep,leftmargin=2.6em]
+\item For MLPs, is the order of contact at zero-loss points bounded by a polynomial in $D=\deg_\theta f_\theta$ and $\dpar$, or even by $D$, as for monomial parametrizations (Proposition~\ref{prop:monomial})? The model of Example~\ref{ex:chain}, which attains $D^n$, is not a network.
+\item Does $\rho_F(\theta^*)=1-\frac1{2\ell}$ hold at every zero-loss point?
+\item If $|\theta(t)|\to\infty$, does $f_{\theta(t)}$ converge in $V$, and at which rate can the loss decay?
+\item For which architectures are all trajectories bounded?
+\item Example~\ref{ex:linear} for matrices, beyond the aligned case.
+\end{enumerate}
+\end{remark}
+
+\begin{thebibliography}{99}\small
+
+\bibitem{AMA05} P.-A.~Absil, R.~Mahony, B.~Andrews. Convergence of the iterates of descent methods for analytic cost functions. SIAM Journal on Optimization 16(2), 531--547, 2005.
+
+\bibitem{ACH18} S.~Arora, N.~Cohen, E.~Hazan. On the optimization of deep networks: implicit acceleration by overparameterization. International Conference on Machine Learning (ICML), 2018. arXiv:1802.06509.
+
+\bibitem{BRTW22} B.~Bah, H.~Rauhut, U.~Terstiege, M.~Westdickenberg. Learning deep linear neural networks: Riemannian gradient flows and convergence to global minimizers. Information and Inference 11(1), 307--353, 2022. arXiv:1910.05505.
+
+\bibitem{BCR98} J.~Bochnak, M.~Coste, M.-F.~Roy. \emph{Real Algebraic Geometry}. Springer, 1998.
+
+\bibitem{DK05} D.~D'Acunto, K.~Kurdyka. Explicit bounds for the {\L}ojasiewicz exponent in the gradient inequality for polynomials. Annales Polonici Mathematici 87, 51--61, 2005.
+
+\bibitem{Ful98} W.~Fulton. \emph{Intersection Theory}. 2nd edition, Springer, 1998.
+
+\bibitem{Gwo99} J.~Gwo\'zdziewicz. The {\L}ojasiewicz exponent of an analytic function at an isolated zero. Commentarii Mathematici Helvetici 74(3), 364--375, 1999.
+
+\bibitem{Kur98} K.~Kurdyka. On gradients of functions definable in o-minimal structures. Annales de l'Institut Fourier 48(3), 769--783, 1998.
+
+\bibitem{KOS00} K.~Kurdyka, P.~Orro, S.~Simon. Semialgebraic Sard theorem for generalized critical values. Journal of Differential Geometry 56(1), 67--92, 2000.
+
+\bibitem{LT08} M.~Lejeune-Jalabert, B.~Teissier. Cl\^oture int\'egrale des id\'eaux et \'equisingularit\'e. Annales de la Facult\'e des Sciences de Toulouse 17(4), 781--859, 2008.
+
+\bibitem{LSJR16} J.~D.~Lee, M.~Simchowitz, M.~I.~Jordan, B.~Recht. Gradient descent only converges to minimizers. Conference on Learning Theory (COLT), 2016. arXiv:1602.04915.
+
+\bibitem{Loj63} S.~{\L}ojasiewicz. Une propri\'et\'e topologique des sous-ensembles analytiques r\'eels. Les \'Equations aux D\'eriv\'ees Partielles, Colloques Internationaux du CNRS 117, 87--89, 1963.
+
+\bibitem{Loj84} S.~{\L}ojasiewicz. Sur les trajectoires du gradient d'une fonction analytique. Seminari di Geometria 1982--1983, Universit\`a di Bologna, 115--117, 1984.
+
+\bibitem{MTVM21} H.~Min, S.~Tarmoun, R.~Vidal, E.~Mallada. On the explicit role of initialization on the convergence and implicit bias of overparametrized linear networks. International Conference on Machine Learning (ICML), 2021. arXiv:2105.06351.
+
+\bibitem{PdM82} J.~Palis, W.~de~Melo. \emph{Geometric Theory of Dynamical Systems}. Springer, 1982.
+
+\bibitem{RB24} Q.~Rebjock, N.~Boumal. Fast convergence to non-isolated minima: four equivalent conditions for $C^2$ functions. Mathematical Programming, 2024. arXiv:2303.00096.
+
+\bibitem{Wat09} S.~Watanabe. \emph{Algebraic Geometry and Statistical Learning Theory}. Cambridge University Press, 2009.
+
+\bibitem{ZKHC24} J.~Zhuo, J.~Kwon, N.~Ho, C.~Caramanis. On the computational and statistical complexity of over-parameterized matrix sensing. Journal of Machine Learning Research 25(169), 1--47, 2024.
+
+\end{thebibliography}
+
+\end{document}
