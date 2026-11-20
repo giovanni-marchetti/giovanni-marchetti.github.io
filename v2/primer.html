@@ -24,7 +24,6 @@
     <a href="primer.html" aria-current="page">Primer</a>
     <a href="literature.html">Literature</a>
     <a href="open-problems.html">Open problems</a>
-    <a href="community.html">Community</a>
   </nav>
 </header>
 
@@ -35,10 +34,12 @@
 
   <!-- Each section is collapsible: its heading is the summary line of a <details>, closed at first.
        Write <details class="section" open> for a section that starts open.
+       A section is divided into subsections by headings inside it, <h3 id="algebraic-models">Algebraic models</h3>, in the
+       accent color. Link to one by its title, <a href="#algebraic-models">Algebraic models</a>: the link opens its section.
        Definitions, theorems and examples are numbered by assets/numbering.js: write only the kind in the label,
        <span class="label">Theorem</span>, and refer to a block with an empty link, <a href="#thm-constructible"></a>. -->
 
-  <p class="lede">A self-contained mathematical introduction to neuroalgebraic geometry.</p>
+  <p class="lede">A self-contained mathematical overview of Neuroalgebraic Geometry.</p>
   <details class="section">
     <summary><h2 id="neuromanifolds">Neuromanifolds</h2></summary>
 
@@ -50,7 +51,11 @@
       where $Y^X$ is the set of functions $X \to Y$. The <em>neuromanifold</em> of the model is the image $\M = \varphi(\Theta) \subseteq Y^X$, i.e., the set of functions expressible by the model.</p>
     </div>
 
+    <p>Neuromanifolds are central objects in the theory of deep learning, and have been analyzed from several mathematical perspectives. In statistical learning theory, they are known as <em>hypothesis spaces</em>, and their capacity controls the amount of data needed to learn (see <a href="#sample-complexity">Dimension, degree, sample complexity</a>). In information geometry, where the name comes from, they are studied via Riemannian geometry, equipped with the Fisher information metric (see, e.g., <a href="#amari2001geometrical">Amari et al., 2001</a>). Despite the terminology, neuromanifolds are not manifolds in general: they have singularities, which affect learning (see <a href="#singularities">Singularities</a>).</p>
+
     <p>Models can be composed: the composition of $f_\theta \colon X \to Y$, $\theta \in \Theta$, and $g_{\theta'} \colon Y \to Z$, $\theta' \in \Theta'$, is the model $g_{\theta'} \circ f_\theta \colon X \to Z$ with parameters $(\theta, \theta') \in \Theta \times \Theta'$. This gives the category $\mathbf{Para}$ of <em>parametrized functions</em> (<a href="#fong2019backprop">Fong et al., 2019</a>), whose objects are sets and whose morphisms are models, up to bijections of parameter spaces. Compositionality is at the heart of <em>deep</em> learning: a <em>deep model</em> is a composition $f^{(L)} \circ \cdots \circ f^{(1)}$ of a sequence of models, called <em>layers</em>.</p>
+
+    <h3 id="algebraic-models">Algebraic models</h3>
 
     <div class="definition" id="def-algebraic-model">
       <p><span class="label">Definition</span> (Algebraic model). Let $\K$ be an infinite field. A model is <em>algebraic</em> if $X = \K^{\din}$, $Y = \K^{\dout}$, $\Theta = \K^{\dpar}$, and $f_\theta(x)$ is a polynomial in $(\theta, x)$.</p>
@@ -195,10 +200,10 @@
     <div class="definition" id="def-morphism">
       <p><span class="label">Definition</span> (Morphism). Let $\varphi \colon \Theta \to Y^X$ and $\varphi' \colon \Theta' \to Y^X$ be the parametrization maps of two models $f_\theta$ and $f'_{\theta'}$ with the same inputs $X$ and outputs $Y$. A <em>morphism</em> from the second model to the first is a map $\iota \colon \Theta' \to \Theta$ such that the triangle
       $$
-      \begin{array}{ccc}
-      \Theta' & \;\overset{\iota}{\longrightarrow}\; & \Theta \\[4pt]
-      & \llap{\scriptstyle \varphi'\;}{\Large\searrow} & \Big\downarrow\rlap{\scriptstyle \,\varphi} \\[4pt]
-      & & Y^X
+      \begin{array}{c@{\,}c@{\,}c}
+      \Theta' & \xrightarrow{\iota} & \Theta \\[4pt]
+      & \kern-0.75em\llap{\lower{6pt}{\scriptstyle\varphi'}\kern-6pt}\style{display:inline-block;transform:rotate(45deg)}{\xrightarrow{\hphantom{MMM}}}\kern-0.7em\style{display:inline-block;transform:rotate(-45deg)}{\xleftarrow{\hphantom{MMM}}}\rlap{\kern-6pt\lower{6pt}{\scriptstyle\varphi}}\kern-0.75em & \\[2pt]
+      & Y^X &
       \end{array}
       $$
       commutes, i.e., $\varphi \circ \iota = \varphi'$, or equivalently $f_{\iota(\theta')} = f'_{\theta'}$ for all $\theta' \in \Theta'$.</p>
@@ -237,6 +242,8 @@
     </p>
 
     <p>Thus, ideally, machine learning is a <em>distance minimization</em> problem over the neuromanifold, with respect to a distance induced by an inner product on $V$. This is one of the problems at the heart of <em>metric algebraic geometry</em> (<a href="#breiding2024metric">Breiding et al., 2024</a>), a field that studies the interplay between real algebraic varieties and a distance on their ambient space.</p>
+
+    <h3 id="datasets-and-losses">Datasets and losses</h3>
 
     <p>In practice, however, we do not have access to $f^*$, but only to finitely many samples from it, which form a dataset.</p>
 
@@ -376,7 +383,7 @@
     <div class="theorem" id="thm-covering">
       <p><span class="label">Theorem</span> Fix a scalar product on $V$, with closed unit ball $B$ and the induced distance. For every $\varepsilon > 0$,
       $$
-      \mathcal{N}_\varepsilon(\M \cap B) \le p \Big(1 + \frac{2}{\varepsilon}\Big)^{2m}, \quad \text{i.e.,} \quad \log \mathcal{N}_\varepsilon(\M \cap B) \le \log p + 2m \log\Big(1 + \frac{2}{\varepsilon}\Big),
+      \mathcal{N}_\varepsilon(\M \cap B) \le p \Big(1 + \frac{2}{\varepsilon}\Big)^{2m},
       $$
       The same bound holds for $T(\M) \cap B_U$, for every linear map $T \colon V \to U$ to a Euclidean space $U$ with closed unit ball $B_U$; for instance, for the image of $\M$ in $L^2(\mu)$, for every probability measure $\mu$ on the inputs under which the functions in $V$ are square-integrable, e.g., an empirical measure.</p>
     </div>
@@ -431,7 +438,7 @@
     <div class="theorem" id="thm-generic-fiber">
       <p><span class="label">Theorem</span> (Generic fiber). There is a dense Zariski-open subset $U \subseteq \overline{\M}$, contained in $\M$, such that the fibers $\varphi^{-1}(f)$, for $f \in U$, are equidimensional, with the same dimension and the same degree. Moreover, for $f \in U$:</p>
       <ul>
-        <li>(Fiber-dimension theorem) $\dim \M = \dim \Theta - \dim \varphi^{-1}(f)$.</li>
+        <li>(Fiber-dimension) $\dim \M = \dim \Theta - \dim \varphi^{-1}(f)$.</li>
         <li>(Bézout) $\deg \M \le \deg \varphi \,/\, \deg \varphi^{-1}(f)$.</li>
       </ul>
     </div>
@@ -478,12 +485,14 @@
       <p>Equivariant parameters are special. The $\theta$ for which $f_\theta$ is $G$-equivariant typically form a proper Zariski-closed subset of $\Theta$, which may miss the dense open subset where the model is identifiable.</p>
     </div>
 
+    <h3 id="identifiability-of-deep-networks">Identifiability of deep networks</h3>
+
     <p>We conclude by describing the fibers of MLPs (<a href="#ex-perceptrons"></a>). They always contain the following parameters. Permuting the neurons of a hidden layer $j$, i.e., the rows of $W_j$ and $b_j$ and, accordingly, the columns of $W_{j+1}$, does not change $f_\theta$. Neither does rescaling a hidden neuron by $\lambda \in \Sigma$ (<a href="#ex-subnetworks"></a>), i.e., multiplying its incoming weights and bias by $\lambda$ and its outgoing weights by $c^{-1}$, where $\sigma(\lambda t) = c\, \sigma(t)$. We say that $\theta$ is <em>identifiable</em> if every parameter in its fiber is obtained from $\theta$ by such permutations and rescalings.</p>
 
-    <p>To show that, outside of subnetworks, the fibers contain no other parameters, we need the following notion. The resulting theorem generalizes Corollary 4.1 of <a href="#kohn2026linear">Kohn et al. (2026)</a>, whose proof we follow.</p>
+    <p>To show that, outside of subnetworks, the fibers contain no other parameters, we need the following notion (<a href="#borsuk1957independent">Borsuk, 1957</a>). The resulting theorem generalizes Corollary 4.1 of <a href="#kohn2026linear">Kohn et al. (2026)</a>, whose proof we follow.</p>
 
     <div class="definition" id="def-regular-map">
-      <p><span class="label">Definition</span> (Regular map). Let $A$ be a set and $W$ a vector space. A map $g \colon A \to W$ is <em>$s$-regular</em> if, for all $k \le s$ and all pairwise distinct $a_1, \ldots, a_k \in A$, the vectors $g(a_1), \ldots, g(a_k)$ are linearly independent (<a href="#borsuk1957independent">Borsuk, 1957</a>).</p>
+      <p><span class="label">Definition</span> (Regular map). Let $A$ be a set and $W$ a vector space. A map $g \colon A \to W$ is <em>$s$-regular</em> if, for all $k \le s$ and all pairwise distinct $a_1, \ldots, a_k \in A$, the vectors $g(a_1), \ldots, g(a_k)$ are linearly independent.</p>
     </div>
 
     <div class="theorem" id="thm-mlp-identifiability">
@@ -593,6 +602,8 @@
       </div>
     </figure>
 
+    <h3 id="relation-to-subnetworks">Relation to subnetworks</h3>
+
     <p>In neural networks, the singularities of $\M$ often arise from subnetworks (<a href="#ex-subnetworks"></a>). The relation between subnetworks and singularities is intuitive: both are degenerate objects, from the neural and the geometric perspective, respectively. For MLPs, the link goes through the differential $d\varphi_\theta$, whose image consists of tangent vectors in $T_{f_\theta} \overline{\M}$. For subnetworks, as shown below, as $\theta$ varies in the fiber $\varphi^{-1}(f_\theta)$, these images span a space of dimension larger than $\dim \M$ (cf. <a href="#shahverdi2026learning">Shahverdi et al., 2026</a>, Theorem 4.2).</p>
 
     <div class="theorem" id="thm-subnetworks-singular">
@@ -607,6 +618,8 @@
     </details>
 
     <p>The converse is believed to hold, under appropriate assumptions on $\sigma$, e.g., that it is generic and of large enough degree. This would imply that singular points of $\overline{\M}$ that lie in $\M$ are precisely the functions of subnetworks. This is still open (<a href="#shahverdi2026learning">Shahverdi et al., 2026</a>).</p>
+
+    <p>However, singular points do not necessarily have larger Voronoi cells, and it has been shown that, for MLPs, those of subnetworks usually do not: for shallow MLPs, and for deep ones under some assumptions, the Voronoi cell of the function of a subnetwork with inactive neurons is reduced to the function itself, as at the node above (<a href="#ribot2026neural">Ribot et al., 2026</a>). For ResNets (<a href="#ex-skip-connections"></a>), instead, subnetworks are conjectured to have larger Voronoi cells. As argued above, this would provide a geometric explanation of the bias towards subnetworks (see <a href="#submodels">Submodels</a>). In any case, this bias can also be argued dynamically, as discussed in <a href="#feature-learning">Feature learning</a>.</p>
   </details>
 
   <details class="section">
@@ -624,39 +637,51 @@
 
     <p>In practice, the gradient flow is usually discretized, via the Euler method, as $\theta_{t+1} = \theta_t - \eta\, \nabla (L \circ \varphi)(\theta_t)$, where $\eta > 0$ is the <em>learning rate</em>. This is <em>gradient descent</em>.</p>
 
-    <p>A first question is whether trajectories converge. For analytic models, algebraic or not, the only alternative is escaping to infinity (<a href="#lojasiewicz1984trajectoires">Łojasiewicz, 1984</a>).</p>
+    <p>By the chain rule, the differential of $L \circ \varphi$ factors as $d(L \circ \varphi)_\theta = dL_{f_\theta} \circ d\varphi_\theta$, i.e., $\nabla (L \circ \varphi)(\theta) = d\varphi_\theta^* \nabla L(f_\theta)$. Since $\dot f = d\varphi_\theta\, \dot\theta$, this implies that, along the trajectories of the gradient flow,
+    \begin{equation}\label{eq:function-space-flow}
+    \dot f(t) = -K_{\theta(t)} \nabla L(f(t)), \qquad K_\theta = d\varphi_\theta\, d\varphi_\theta^* \colon V \to V.
+    \end{equation}</p>
 
-    <div class="theorem" id="thm-lojasiewicz">
-      <p><span class="label">Theorem</span> (Łojasiewicz). Assume that $L \circ \varphi \colon \Theta \to \R$ is real analytic and bounded below, e.g., that the model is algebraic and $L$ is the MSE. Then every trajectory of the gradient flow extends to all $t \ge 0$, and either $\|\theta(t)\| \to \infty$ as $t \to \infty$, or $\theta(t)$ converges to a critical point of $L \circ \varphi$.</p>
+    <p>The operator $K_\theta$, which is positive semi-definite with the same image as $d\varphi_\theta$, is the <em>neural tangent kernel</em> (NTK) of the model at $\theta$ (<a href="#jacot2018neural">Jacot et al., 2018</a>). Geometrically, $K_\theta$ is the push-forward along $d\varphi_\theta$ of the Euclidean cometric of $\Theta$, i.e., of the inverse of its scalar product. However, $K_\theta$ depends on $\theta$, and not only on $f_\theta$, so these push-forwards do not, in general, define a cometric on $\M$: technically, $\theta \mapsto K_\theta$ is a field of positive semi-definite quadratic forms on the pull-back bundle $\varphi^* T^*V$. The rank of $K_\theta$ equals that of $d\varphi_\theta$, which is $\dim \M$ for generic $\theta$ (see <a href="#identifiability">Identifiability</a>). The points $\theta$ at which it is smaller are, by definition, the <em>critical points</em> of $\varphi$; when $\dpar = \dim \M$, i.e., when the generic fiber is finite, they are also called <em>ramification points</em>.</p>
+
+    <p>Since $\operatorname{im} d\varphi_\theta^* = (\ker d\varphi_\theta)^\perp$, the gradient flow is orthogonal to $\ker d\varphi_\theta$ at every $\theta \in \Theta$. Consequently, whatever the loss, a closed submanifold of $\Theta$ whose tangent spaces contain $(\ker d\varphi_\theta)^\perp$, i.e., whose normal spaces lie in $\ker d\varphi_\theta$, is invariant to the gradient flow: trajectories never leave it. The kernel of the differential $d\varphi_\theta$ therefore plays a fundamental role in the training dynamics. Since $\varphi$ is constant on its fibers, their tangent spaces lie in $\ker d\varphi_\theta$, with equality for generic $\theta$; in particular, the gradient flow is orthogonal to the fibers. From the perspective of algebraic geometry, $\ker d\varphi_\theta$ is precisely the (Zariski) tangent space at $\theta$ to the <em>scheme-theoretic</em> fiber, i.e., to the subscheme of $\Theta$ cut out by the equations $\varphi = f_\theta$. The two tangent spaces coincide when the fiber is reduced, but not in general. Thus, describing $\ker d\varphi_\theta$ is, in a sense, an <a href="#identifiability">identifiability problem</a>.</p>
+
+    <p>A natural question is whether trajectories converge, and how fast. For analytic models, including algebraic ones, it is well-known that the only alternative to convergence is escaping to infinity (<a href="#lojasiewicz1984trajectoires">Łojasiewicz, 1984</a>). For algebraic models, the rate of convergence is bounded in terms of the degree and, at parameters computing the target, of the multiplicity of the fiber.</p>
+
+    <div class="theorem" id="thm-convergence">
+      <p><span class="label">Theorem</span> (Convergence). Let $F = L \circ \varphi$, and assume that it is real analytic and bounded below. Then every trajectory of the gradient flow extends to all $t \ge 0$, and either $\|\theta(t)\| \to \infty$ as $t \to \infty$, or $\theta(t)$ converges to a critical point $\theta_\infty$ of $F$.</p>
+      
+      <p> Moreover, assume that $\theta(t)$ converges, the model is algebraic, $L$ is a polynomial with $d = \deg F \ge 2$.
+      <ul>
+        <li>If $\dpar \ge 2$ then 
+        $$   
+        F(\theta(t)) - F(\theta_\infty) = O\big(t^{-R/(R - 2)}\big), \qquad \|\theta(t) - \theta_\infty\| = O\big(t^{-1/(R - 2)}\big),
+        $$
+        where $R = d\, (3d - 3)^{\dpar - 1}$. 
+        </li>
+        <li>If $L(f) = \|f - f^*\|^2$ for some $f^* \in V$, and $\theta_\infty$ is an isolated point, of multiplicity $\mu$, of the complex fiber of $\varphi$, then 
+        $$F(\theta(t)) = O\big(t^{-\mu/(\mu - 1)}\big), \qquad \|\theta(t) - \theta_\infty\| = O\big(t^{-1/(2\mu - 2)}\big)$$
+        if $\mu \ge 2$, and both decay exponentially if $\mu = 1$.</li>
+      </ul>
+      </p>
     </div>
 
     <details class="proof">
       <summary>Proof.</summary>
-      <p>Let $F = L \circ \varphi$. Along a trajectory, $\frac{d}{dt} F(\theta(t)) = -\|\dot\theta(t)\|^2$, so that, by the Cauchy–Schwarz inequality, $\|\theta(t) - \theta(0)\|^2 \le t \int_0^t \|\dot\theta(s)\|^2\, ds \le t\, \big(F(\theta(0)) - \inf F\big)$: trajectories do not blow up in finite time. Assume that $\|\theta(t)\|$ does not tend to $\infty$. Then $\theta(t_n) \to \theta^*$ for some $\theta^* \in \Theta$ and some $t_n \to \infty$, and $F(\theta(t))$ decreases to $F(\theta^*)$, which we may assume to be $0$. If $F(\theta(t)) = 0$ for some $t$, the trajectory is constant from then on. Otherwise, by the Łojasiewicz gradient inequality (<a href="#lojasiewicz1963propriete">Łojasiewicz, 1963</a>), there are $\delta, c > 0$ and $\rho \in [\tfrac{1}{2}, 1)$ such that $\|\nabla F(\theta)\| \ge c\, |F(\theta)|^\rho$ whenever $\|\theta - \theta^*\| \lt \delta$. As long as $\theta(t)$ stays in this ball,
+      <p>Along a trajectory, $\frac{d}{dt} F(\theta(t)) = -\|\dot\theta(t)\|^2$, so that, by the Cauchy–Schwarz inequality, $\|\theta(t) - \theta(0)\|^2 \le t \int_0^t \|\dot\theta(s)\|^2\, ds \le t\, \big(F(\theta(0)) - \inf F\big)$: trajectories do not blow up in finite time. Assume that $\|\theta(t)\|$ does not tend to $\infty$. Then $\theta(t_n) \to \theta_\infty$ for some $\theta_\infty \in \Theta$ and some $t_n \to \infty$, and $e(t) = F(\theta(t)) - F(\theta_\infty)$ decreases to $0$. If $e(t) = 0$ for some $t$, the trajectory is constant from then on, and all claims follow. Otherwise, by the Łojasiewicz gradient inequality (<a href="#lojasiewicz1963propriete">Łojasiewicz, 1963</a>), there are $\delta, c > 0$ and $\rho \in [\tfrac{1}{2}, 1)$ such that $\|\nabla F(\theta)\| \ge c\, |F(\theta) - F(\theta_\infty)|^\rho$ whenever $\|\theta - \theta_\infty\| \lt \delta$. As long as $\theta(t)$ stays in this ball,
       $$
-      \frac{d}{dt} F(\theta(t))^{1 - \rho} = -(1 - \rho)\, F(\theta(t))^{-\rho}\, \|\nabla F(\theta(t))\|\, \|\dot\theta(t)\| \le -c\, (1 - \rho)\, \|\dot\theta(t)\|.
+      \frac{d}{dt} e(t)^{1 - \rho} = -(1 - \rho)\, e(t)^{-\rho}\, \|\nabla F(\theta(t))\|\, \|\dot\theta(t)\| \le -c\, (1 - \rho)\, \|\dot\theta(t)\|.
       $$
-      Choose $n$ such that $\|\theta(t_n) - \theta^*\| \lt \delta/2$ and $F(\theta(t_n))^{1 - \rho} \lt c\, (1 - \rho)\, \delta/2$. By the above, the length of the trajectory after $t_n$ is less than $\delta/2$, as long as it stays in the ball. Hence it never leaves the ball, it has finite length, and it converges, necessarily to $\theta^*$. Finally, $\nabla F(\theta^*) = 0$, since otherwise $F(\theta(t))$ would decrease without bound.</p>
+      Choose $n$ such that $\|\theta(t_n) - \theta_\infty\| \lt \delta/2$ and $e(t_n)^{1 - \rho} \lt c\, (1 - \rho)\, \delta/2$. By the above, the length of the trajectory after $t_n$ is less than $\delta/2$, as long as it stays in the ball. Hence it never leaves the ball, it has finite length, and it converges, necessarily to $\theta_\infty$. Moreover, $\nabla F(\theta_\infty) = 0$, since otherwise $F(\theta(t))$ would decrease without bound.</p>
+
+      <p>For large $t$, integrating the inequality above over $[t, \infty)$ gives $\|\theta(t) - \theta_\infty\| \le e(t)^{1 - \rho} / \big(c\, (1 - \rho)\big)$. Moreover, $\dot e = -\|\nabla F(\theta)\|^2 \le -c^2 e^{2\rho}$, so that $e(t) = O\big(\exp(-c^2 t)\big)$ if $\rho = \tfrac{1}{2}$, and $e(t) = O\big(t^{-1/(2\rho - 1)}\big)$ if $\rho > \tfrac{1}{2}$. It remains to show that the gradient inequality holds near $\theta_\infty$ with $\rho = 1 - \frac{1}{R}$ in the first case, and $\rho = 1 - \frac{1}{2\mu}$ in the second. In the first case, this is the bound of <a href="#dacunto2005explicit">D'Acunto and Kurdyka (2005)</a> on the Łojasiewicz exponent of a polynomial of degree $d$ in $\dpar$ variables at a critical point, applied to $F - F(\theta_\infty)$.</p>
+
+      <p>In the second case, write $\varphi - f^* = (g_1, \ldots, g_N)$ in orthonormal coordinates on $V$, so that $F = \|g\|^2$ and $F(\theta_\infty) = 0$. Let $\mathcal{O}$ be the local ring of $\C^{\dpar}$ at $\theta_\infty$, with maximal ideal $\mathfrak{m}$, and $I = (g_1, \ldots, g_N) \subseteq \mathcal{O}$; by definition, $\mu = \dim_\C \mathcal{O}/I$. By Nakayama's lemma, the images of the powers of $\mathfrak{m}$ in $\mathcal{O}/I$ decrease strictly until they vanish, hence $\mathfrak{m}^\mu \subseteq I$. Thus each $(\theta_i - \theta_{\infty, i})^\mu$ is a combination of the $g_l$ with coefficients in $\mathcal{O}$, which are bounded near $\theta_\infty$, and $\|\theta - \theta_\infty\|^\mu \le C\, \|g(\theta)\| = C\, F(\theta)^{1/2}$ for real $\theta$ near $\theta_\infty$. Combined with the inequality $\|\theta - \theta_\infty\|\, \|\nabla F(\theta)\| \ge c\, F(\theta)$ near $\theta_\infty$ (<a href="#bochnak1971converse">Bochnak and Łojasiewicz, 1971</a>), this gives $\|\nabla F\| \ge c'\, F^{1 - 1/(2\mu)}$.</p>
     </details>
 
-    <p>The trajectory in function space is governed by the following equation.</p>
+    <p>The multiplicity $\mu$ in <a href="#thm-convergence"></a> depends only on $\varphi$ and $f^*$, and $\mu \le \deg \varphi$: for generic linear forms $\lambda_1, \ldots, \lambda_{\dpar}$ on $V$, $(\theta_\infty, f^*)$ is an isolated point of multiplicity at least $\mu$ of the intersection of $\Gamma_\varphi$ with $\{(\theta, f) : \lambda_j(f - f^*) = 0 \text{ for all } j\}$, so that the bound follows from the refined Bézout theorem (<a href="#fulton1998intersection">Fulton, 1998</a>, §12.3), as in the proof of <a href="#thm-generic-fiber"></a>.</p>
 
-    <div class="theorem" id="prop-ntk">
-      <p><span class="label">Proposition</span> Along every trajectory of the gradient flow,
-      \begin{equation}\label{eq:function-space-flow}
-      \dot f(t) = -K_{\theta(t)} \nabla L(f(t)), \qquad K_\theta = d\varphi_\theta\, d\varphi_\theta^* \colon V \to V.
-      \end{equation}
-      The operator $K_\theta$ is self-adjoint and positive semi-definite, with image $\operatorname{im} d\varphi_\theta$.</p>
-    </div>
-
-    <details class="proof">
-      <summary>Proof.</summary>
-      <p>By the chain rule, $\nabla (L \circ \varphi)(\theta) = d\varphi_\theta^* \nabla L(f_\theta)$. Hence $\dot f = d\varphi_\theta\, \dot\theta = -d\varphi_\theta\, d\varphi_\theta^* \nabla L(f)$. Clearly, $K_\theta$ is self-adjoint, and $\langle K_\theta u, u \rangle = \|d\varphi_\theta^* u\|^2 \ge 0$ for $u \in V$. In particular, $\ker K_\theta = \ker d\varphi_\theta^* = (\operatorname{im} d\varphi_\theta)^\perp$, so that $\operatorname{im} K_\theta = (\ker K_\theta)^\perp = \operatorname{im} d\varphi_\theta$.</p>
-    </details>
-
-    <p>The operator $K_\theta$ is the <em>neural tangent kernel</em> (NTK) of the model at $\theta$ (<a href="#jacot2018neural">Jacot et al., 2018</a>). Geometrically, $K_\theta$ is the push-forward along $d\varphi_\theta$ of the Euclidean cometric of $\Theta$, i.e., of the inverse of its scalar product. However, $K_\theta$ depends on $\theta$, and not only on $f_\theta$, so these push-forwards do not, in general, define a cometric on $\M$: technically, $\theta \mapsto K_\theta$ is a field of positive semi-definite quadratic forms on the pull-back bundle $\varphi^* T^*V$. The rank of $K_\theta$ equals that of $d\varphi_\theta$, which is $\dim \M$ for generic $\theta$ (see <a href="#identifiability">Identifiability</a>). The points $\theta$ at which it is smaller are, by definition, the <em>critical points</em> of $\varphi$; when $\dpar = \dim \M$, i.e., when the generic fiber is finite, they are also called <em>ramification points</em>.</p>
-
-    <p>By the chain rule, the differential of $L \circ \varphi$ factors as $d(L \circ \varphi)_\theta = dL_{f_\theta} \circ d\varphi_\theta$, i.e., $\nabla (L \circ \varphi)(\theta) = d\varphi_\theta^* \nabla L(f_\theta)$. Since $\operatorname{im} d\varphi_\theta^* = (\ker d\varphi_\theta)^\perp$, in the orthogonal decomposition $\Theta = \ker d\varphi_\theta \oplus (\ker d\varphi_\theta)^\perp$ the gradient has no component along $\ker d\varphi_\theta$. In other words, at every $\theta \in \Theta$, the gradient flow is orthogonal to $\ker d\varphi_\theta$. Consequently, whatever the loss, a trajectory starting on a closed submanifold of $\Theta$ whose tangent spaces contain $(\ker d\varphi_\theta)^\perp$, i.e., whose normal spaces lie in $\ker d\varphi_\theta$, never leaves it. The kernel of the differential $d\varphi_\theta$ therefore plays a fundamental role in the training dynamics. Since $\varphi$ is constant on its fibers, their tangent spaces lie in $\ker d\varphi_\theta$, with equality for generic $\theta$; in particular, the gradient flow is orthogonal to the fibers. From the perspective of algebraic geometry, $\ker d\varphi_\theta$ is precisely the (Zariski) tangent space at $\theta$ to the <em>scheme-theoretic</em> fiber, i.e., to the subscheme of $\Theta$ cut out by the equations $\varphi = f_\theta$. The two tangent spaces coincide when the fiber is reduced, but not in general. Thus, describing $\ker d\varphi_\theta$ is, in a sense, an <a href="#identifiability">identifiability problem</a>.</p>
+    <h3 id="conserved-quantities">Conserved quantities</h3>
 
     <p>Quantities that do not change during training are a basic tool to analyze its dynamics. They confine the trajectories to subsets of $\Theta$ determined by the initialization, reducing the effective dimension of the dynamics, and influencing the solution eventually reached.</p>
 
@@ -664,43 +689,46 @@
       <p><span class="label">Definition</span> (Conserved quantity). A <em>conserved quantity</em> of the model is a differentiable function $Q \colon \Theta \to \R$ such that $\nabla Q(\theta) \in \ker d\varphi_\theta$ for all $\theta \in \Theta$.</p>
     </div>
 
-    <p>The name is justified by the following lemma (<a href="#marcotte2023abide">Marcotte et al., 2023</a>).</p>
-
-    <div class="theorem" id="lem-conserved-quantities">
-      <p><span class="label">Lemma</span> A differentiable function $Q \colon \Theta \to \R$ is a conserved quantity if and only if it is constant along every trajectory of the gradient flow, for every differentiable loss $L \colon V \to \R$.</p>
-    </div>
-
-    <details class="proof">
-      <summary>Proof.</summary>
-      <p>Along a trajectory, $\dot\theta(t) = -d\varphi_{\theta(t)}^* \nabla L(f(t))$ by the chain rule, so that
-      $$
-      \frac{d}{dt} Q(\theta(t)) = \langle \nabla Q(\theta(t)), \dot\theta(t) \rangle = -\big\langle d\varphi_{\theta(t)} \nabla Q(\theta(t)), \nabla L(f(t)) \big\rangle,
-      $$
-      which vanishes if $Q$ is a conserved quantity. Conversely, let $\theta_0 \in \Theta$ and $u \in V$, and consider the linear loss $L = \langle u, \cdot \rangle$, so that $\nabla L = u$. Since $L \circ \varphi$ is a polynomial, the Picard–Lindelöf theorem provides a trajectory with $\theta(0) = \theta_0$. As $Q$ is constant along it, the derivative above vanishes at $t = 0$, i.e., $\langle d\varphi_{\theta_0} \nabla Q(\theta_0), u \rangle = 0$. Since $u$ is arbitrary, $\nabla Q(\theta_0) \in \ker d\varphi_{\theta_0}$.</p>
-    </details>
+    <p>Since $\frac{d}{dt} Q(\theta(t)) = -\big\langle d\varphi_{\theta(t)} \nabla Q(\theta(t)), \nabla L(f(t)) \big\rangle$ along a trajectory, and $\nabla L = u$ is arbitrary for linear losses $L = \langle u, \cdot \rangle$, a differentiable $Q$ is a conserved quantity if and only if it is constant along every trajectory of the gradient flow, for every differentiable loss $L$ (<a href="#marcotte2023abide">Marcotte et al., 2023</a>).</p>
 
     <p>Since $\ker d\varphi_\theta$ is the tangent space of the fiber for generic $\theta$, non-constant conserved quantities exist only if the generic fiber is positive-dimensional, i.e., if $\dim \M < \dpar$. Such fibers often come from continuous parameter symmetries, whose orbits lie in the fibers (as in <a href="#prop-equivariance-fibers"></a>), and some of these symmetries yield conserved quantities.</p>
 
+    <p>Let $G$ be a Lie group acting linearly on $\Theta$. For $\xi$ in its Lie algebra $\mathfrak{g}$, the infinitesimal action $\theta \mapsto \xi \cdot \theta = \frac{d}{dt}\big|_{t = 0} \exp(t\xi) \cdot \theta$ is a linear operator on $\Theta$. Let $\mathfrak{p} \subseteq \mathfrak{g}$ be the subspace of the $\xi$ for which this operator is self-adjoint, and let $\mu \colon \Theta \to \mathfrak{p}^*$ be the quadratic map defined by $\mu(\theta)(\xi) = \mu_\xi(\theta) = \frac{1}{2} \langle \xi \cdot \theta, \theta \rangle$.</p>
+
     <div class="theorem" id="thm-gradient-map">
-      <p><span class="label">Theorem</span> (Gradient map). Let $G$ be a Lie group acting linearly on $\Theta$ with $f_{g \cdot \theta} = f_\theta$ for all $g \in G$ and $\theta \in \Theta$. For $\xi$ in its Lie algebra $\mathfrak{g}$, let $\xi \cdot \theta = \frac{d}{dt}\big|_{t = 0} \exp(t\xi) \cdot \theta$, let $\mathfrak{p} \subseteq \mathfrak{g}$ be the subspace of the $\xi$ acting by self-adjoint operators, and let $\mu \colon \Theta \to \mathfrak{p}^*$ be the quadratic map defined by $\mu(\theta)(\xi) = \mu_\xi(\theta) = \frac{1}{2} \langle \xi \cdot \theta, \theta \rangle$. Then, for every $\xi \in \mathfrak{p}$, $\mu_\xi$ is a conserved quantity, with $\nabla \mu_\xi(\theta) = \xi \cdot \theta$. Hence, whatever the loss, every trajectory of the gradient flow stays in the real algebraic variety $\mu^{-1}(\mu(\theta(0)))$.</p>
+      <p><span class="label">Theorem</span> (Gradient map). If $f_{g \cdot \theta} = f_\theta$ for all $g \in G$ and $\theta \in \Theta$, then, for every $\xi \in \mathfrak{p}$, $\mu_\xi$ is a conserved quantity, with $\nabla \mu_\xi(\theta) = \xi \cdot \theta$. Hence, whatever the loss, every trajectory of the gradient flow stays in the real algebraic variety $\mu^{-1}(\mu(\theta(0)))$.</p>
     </div>
 
     <details class="proof">
       <summary>Proof.</summary>
-      <p>Let $\xi \in \mathfrak{g}$ and $\theta \in \Theta$. Differentiating $\varphi(\exp(t\xi) \cdot \theta) = \varphi(\theta)$ at $t = 0$ gives $d\varphi_\theta(\xi \cdot \theta) = 0$. If $\xi \in \mathfrak{p}$, then, by self-adjointness, $d(\mu_\xi)_\theta(v) = \frac{1}{2} \langle \xi \cdot v, \theta \rangle + \frac{1}{2} \langle \xi \cdot \theta, v \rangle = \langle \xi \cdot \theta, v \rangle$ for all $v \in \Theta$, i.e., $\nabla \mu_\xi(\theta) = \xi \cdot \theta \in \ker d\varphi_\theta$. The last claim follows from <a href="#lem-conserved-quantities"></a>.</p>
+      <p>Let $\xi \in \mathfrak{g}$ and $\theta \in \Theta$. Differentiating $\varphi(\exp(t\xi) \cdot \theta) = \varphi(\theta)$ at $t = 0$ gives $d\varphi_\theta(\xi \cdot \theta) = 0$. If $\xi \in \mathfrak{p}$, then, by self-adjointness, $d(\mu_\xi)_\theta(v) = \frac{1}{2} \langle \xi \cdot v, \theta \rangle + \frac{1}{2} \langle \xi \cdot \theta, v \rangle = \langle \xi \cdot \theta, v \rangle$ for all $v \in \Theta$, i.e., $\nabla \mu_\xi(\theta) = \xi \cdot \theta \in \ker d\varphi_\theta$. The last claim follows, as conserved quantities are constant along trajectories.</p>
     </details>
 
-    <p><a href="#thm-gradient-map"></a> is an analogue of Noether's theorem for gradient flows (<a href="#kunin2021neural">Kunin et al., 2021</a>), with the scalar product in place of the symplectic form: accordingly, $\mu$, characterized by $\nabla \mu_\xi(\theta) = \xi \cdot \theta$, is the analogue of a moment map, called a <em>gradient map</em> (<a href="#heinzner2008stratifications">Heinzner et al., 2008</a>). Unlike in the symplectic case, however, symmetries preserving the scalar product, i.e., generated by skew-adjoint $\xi$, such as rotations, yield no conserved quantity in this way; see <a href="#nguyen2026parameter">Nguyen and Montúfar (2026)</a> for the precise relation between symmetries and conservation laws.</p>
+    <p><a href="#thm-gradient-map"></a> is an analogue of Noether's theorem for gradient flows (<a href="#kunin2021neural">Kunin et al., 2021</a>), with the scalar product in place of the symplectic form. Accordingly, $\mu$ is the analogue of a moment map, called a <em>gradient map</em> (<a href="#heinzner2008stratifications">Heinzner et al., 2008</a>).</p>
+
+    <div class="example" id="ex-balanced">
+      <p><span class="label">Example</span> (Balanced weights). For a linear network (<a href="#ex-perceptrons"></a>), $f_\theta$ is invariant under the action of $\mathrm{GL}_{d_1}(\R) \times \cdots \times \mathrm{GL}_{d_{L-1}}(\R)$ by $W_j \mapsto g_j W_j g_{j-1}^{-1}$, where $g_0$ and $g_L$ are identity matrices. By <a href="#thm-gradient-map"></a>, the matrices $W_j W_j^\top - W_{j+1}^\top W_{j+1}$, for $0 \lt j \lt L$, are conserved. For a deep monomial network, i.e., an MLP with $\sigma(t) = t^r$ and vanishing biases, $f_\theta$ is invariant under the action of invertible diagonal matrices $D_1, \ldots, D_{L-1}$ by $W_j \mapsto D_j W_j D_{j-1}^{-r}$, where $D_0$ and $D_L$ are identity matrices. By <a href="#thm-gradient-map"></a>, the quantities $\|W_j[i,:]\|^2 - r\, \|W_{j+1}[:,i]\|^2$, one for each hidden neuron, are conserved. Parameters at which these conserved quantities vanish are called <em>balanced</em>.</p>
+    </div>
   </details>
 
   <details class="section">
-    <summary><h2 id="feature-learning">Feature learning</h2></summary>
+    <summary><h2 id="feature-learning">Feature learning and limiting dynamics</h2></summary>
 
     <p>The kernel of $d\varphi_\theta$ (see <a href="#gradient-flow">Gradient flow</a>) also governs how, and when, the neurons of a network activate during training.</p>
 
-    <p>Subnetworks (<a href="#ex-subnetworks"></a>) provide examples where $\ker d\varphi_\theta$ is larger than the tangent space of the fiber. Let $c \in \R$ be a critical point of $\sigma$ of order $k \ge 2$, i.e., $\sigma'(c) = \cdots = \sigma^{(k-1)}(c) = 0 \neq \sigma^{(k)}(c)$. For an MLP (<a href="#ex-perceptrons"></a>), possibly with skip connections (<a href="#ex-skip-connections"></a>), let $0 < j < L$ and $1 \le i \le d_j$, and let $S \subseteq \Theta$ be the affine subspace defined by $W_j[i,:] = 0$ and $b_j[i] = c$. For $\theta \in S$, the $i$-th neuron of layer $j$ is inactive, with pre-activation constantly equal to $c$. Since $\sigma'(c) = 0$, the derivatives of $f_\theta$ with respect to $W_j[i,:]$ and $b_j[i]$ vanish, so that the normal spaces of $S$ lie in $\ker d\varphi_\theta$. By the above, $S$ is invariant under the gradient flow, for every loss. Yet perturbing $W_j[i,:]$ by $\varepsilon$ changes $f_\theta$ at order $\varepsilon^k$, and, in general, these $d_{j-1}$ directions are not tangent to the fiber: the scheme-theoretic fiber is non-reduced. The order $k$ measures how flat the loss is near $S$: in the directions normal to $S$, it varies only at order $k$, and at distance $\varepsilon$ from $S$ the normal component of its gradient is $O(\varepsilon^{k-1})$. Hence, trajectories starting near $S$ move almost parallel to it, essentially following the dynamics of the network without this neuron, but they may escape. If the loss decreases away from $S$, the distance $\delta$ from $S$ grows according to $\dot\delta \propto \delta^{k-1}$, so that escaping from distance $\varepsilon$ takes a time of order $\log(1/\varepsilon)$ if $k = 2$, and of order $\varepsilon^{2-k}$ if $k \ge 3$.</p>
+    <p>Subnetworks (<a href="#ex-subnetworks"></a>) provide examples where $\ker d\varphi_\theta$ is larger than the tangent space of the fiber. Let $c \in \R$ be a critical point of $\sigma$ of order $k \ge 2$, i.e., $\sigma'(c) = \cdots = \sigma^{(k-1)}(c) = 0 \neq \sigma^{(k)}(c)$. For an MLP (<a href="#ex-perceptrons"></a>), possibly with skip connections (<a href="#ex-skip-connections"></a>), let $n = (j, i)$ be the $i$-th neuron of a layer $j$ with activation $\sigma$, and let $S \subseteq \Theta$ be the affine subspace defined by $W_j[i,:] = 0$ and $b_j[i] = c$. For $\theta \in S$, the neuron $n$ is inactive, with pre-activation constantly equal to $c$. Since $\sigma'(c) = 0$, the derivatives of $f_\theta$ with respect to $W_j[i,:]$ and $b_j[i]$ vanish, so that the normal spaces of $S$ lie in $\ker d\varphi_\theta$. By the above, $S$ is invariant under the gradient flow, for every loss. Yet perturbing $W_j[i,:]$ by $\varepsilon$ changes $f_\theta$ at order $\varepsilon^k$, and, in general, these $d_{j-1}$ directions are not tangent to the fiber: the scheme-theoretic fiber is non-reduced.</p>
 
-    <p>This mechanism is a starting point for a theory of feature learning and sparsity. Consider initializations at scale $\alpha \to 0$ around a parameter at which all the neurons are inactive in this way, e.g., with vanishing weights and hidden biases equal to $c$. Learning is then expected to proceed sequentially, through a <em>saddle-to-saddle</em> dynamics (<a href="#jacot2021saddle">Jacot et al., 2021</a>; <a href="#kunin2025alternating">Kunin et al., 2025</a>). During a plateau, the loss is almost constant, and the inactive neurons move almost parallel to their subspaces. Their weights stay small, but align with the directions along which activating them would decrease the loss the most, while accumulating this <em>utility</em> over time. Eventually, a neuron escapes: it suddenly activates, and the loss drops abruptly. Metaphorically, the neuron <em>learns a feature</em>. The active neurons then settle at a critical point of the loss of the subnetwork they form, which is a saddle of the full loss, and a new plateau begins, until convergence. Thus the trajectory visits a sequence of subnetworks, activating neurons only when needed, which biases learning towards sparse networks. All of this is an infinitesimal phenomenon: as $\alpha \to 0$, with time rescaled by the escape time, the trajectory degenerates into plateaus separated by instantaneous jumps between saddles, and the loss curve becomes piecewise constant. The limit has been proved in special cases, such as diagonal linear networks (<a href="#pesme2023saddle">Pesme and Flammarion, 2023</a>), but a general proof is not yet available.</p>
+    <p>The order $k$ measures how flat the loss is near $S$. Let $w_n = (W_j[i,:], b_j[i] - c)$, so that $S = \{w_n = 0\}$, and let $\theta^{\setminus n}$ be $\theta$ with $w_n$ replaced by $0$. Then $f_\theta = \Phi_j\big(\bar h_j + \sigma(c + \langle w_n, \hat h_{j-1} \rangle)\, e_i\big)$, where $h_j$ is the output of layer $j$, $\hat h = (h, 1)$, $\bar h_j$ is $h_j$ without the contribution of $n$, and $\Phi_j$ is the map computed by the subsequent layers, none of which depends on $w_n$. Since $t^k$ divides $\sigma(c + t) - \sigma(c)$, every monomial of $f_\theta - f_{\theta^{\setminus n}}$ in $w_n$ has degree at least $k$. Hence, for every smooth loss $L \colon V \to \R$, $F = L \circ \varphi$ satisfies
+    $$
+    \partial^\beta_{w_n} F = 0 \ \text{ on } S \qquad \text{for every } 1 \le |\beta| \le k - 1, \tag{H}
+    $$
+    and $F(\theta) = F(\theta^{\setminus n}) - U_n(\theta; w_n) + O(\|w_n\|^{k+1})$, where the <em>utility</em> $U_n(\theta; \cdot)$ of $n$ at $\theta$ is a $k$-form, namely minus the homogeneous part of degree $k$ of the Taylor expansion of $F$ in $w_n$ at $\theta^{\setminus n}$. For the MSE, the chain rule gives, for $\theta \in S$,
+    $$
+    U_n(\theta; w) = 2c_\sigma\, \mathbb{E}\big[\langle w, \hat h_{j-1} \rangle^k\, \langle d\Phi_j(h_j)\, e_i,\, y - f_\theta(x) \rangle\big], \qquad c_\sigma = \frac{\sigma^{(k)}(c)}{k!},
+    $$
+    where $\mathbb{E}$ is the mean over the datapoints $(x, y)$: the correlation between the $k$-th power of the change $\langle w, \hat h_{j-1} \rangle$ of the pre-activation of the neuron and the back-propagated residual. In particular, at distance $\varepsilon$ from $S$, the normal component of the gradient of $F$ is $O(\varepsilon^{k-1})$. Hence, trajectories starting near $S$ move almost parallel to it, essentially following the dynamics of the network without this neuron, but they may escape. If the loss decreases away from $S$, the distance $\delta$ from $S$ grows according to $\dot\delta \propto \delta^{k-1}$, so that escaping from distance $\varepsilon$ takes a time of order $\log(1/\varepsilon)$ if $k = 2$, and of order $\varepsilon^{2-k}$ if $k \ge 3$.</p>
+
+    <p>This mechanism is a starting point for a theory of feature learning and sparsity. Consider initializations at scale $\alpha \to 0$ around a parameter at which all the neurons are inactive in this way, e.g., with vanishing weights and hidden biases equal to $c$. Learning is then expected to proceed sequentially, through a <em>saddle-to-saddle</em> dynamics (<a href="#jacot2021saddle">Jacot et al., 2021</a>; <a href="#kunin2025alternating">Kunin et al., 2025</a>). During a plateau, the loss is almost constant, and the inactive neurons move almost parallel to their subspaces. Their weights stay small, but align with the directions along which activating them would decrease the loss the most, while accumulating this utility over time. Eventually, a neuron escapes: it suddenly activates, and the loss drops abruptly. Metaphorically, the neuron <em>learns a feature</em>. The active neurons then settle at a critical point of the loss of the subnetwork they form, which is a saddle of the full loss, and a new plateau begins, until convergence. Thus the trajectory visits a sequence of subnetworks, activating neurons only when needed, which biases learning towards sparse networks. All of this is an infinitesimal phenomenon: as $\alpha \to 0$, with time rescaled by the escape time, the trajectory degenerates into plateaus separated by instantaneous jumps between saddles, and the loss curve becomes piecewise constant. The limit has been proved only in special cases, such as diagonal linear networks (<a href="#pesme2023saddle">Pesme and Flammarion, 2023</a>) and, as we show below, polynomial ResNets.</p>
 
     <details class="note">
       <summary>What is this?</summary>
@@ -768,6 +796,101 @@
         <noscript><p>The neuromanifold viewer needs JavaScript.</p></noscript>
       </div>
     </figure>
+
+    <h3 id="convergence-proof-for-resnets">Convergence proof for ResNets</h3>
+
+    <p>We now prove the saddle-to-saddle limit for polynomial ResNets (<a href="#ex-skip-connections"></a>) when $k \ge 3$. A ResNet of width $d$ and depth $L$ computes $f_\theta = h_L$, where $h_0 = x$ and $h_j = h_{j-1} + \sigma(W_j h_{j-1} + b_j)$. Since the skip connections play the role of outgoing weights, the $w_n$, for its neurons $n = (j, i)$, form coordinates in which $\Theta = (\R^{d+1})^{Ld}$ and $\theta = 0$ is the parameter at which all the neurons are inactive. Let $\iota_n \colon \R^{d+1} \to \Theta$ be the inclusion of the $n$-th factor. For a set $A$ of neurons, regarded as active, let $S_A = \{\theta : w_n = 0 \text{ for all } n \notin A\}$, let $\pi_A$ be the orthogonal projection onto $S_A$, and let $F_A = F|_{S_A}$. As the intersection of the subspaces $S$ of the neurons not in $A$, $S_A$ is invariant under the gradient flow, which on $S_A$ is the gradient flow of $F_A$. Hence the critical points of $F_A$ are critical points of $F$, and those at which some $U_n(\theta; \cdot)$, $n \notin A$, takes a positive value are not local minima of $F$. Besides smoothness, the proof below only uses (H), for every neuron $n$, and therefore applies to every smooth function on $(\R^{d+1})^{Ld}$ satisfying it. Let $\theta^\alpha = (w^\alpha_n)_n$ be the trajectory of the gradient flow with $\theta^\alpha(0) = \alpha \xi$, for a fixed $\xi \in \Theta$.</p>
+
+    <p>Let $\theta^*$ be a non-degenerate local minimum of $F_A$, let $n \notin A$, and let $u^*$ be a non-degenerate local maximum of $U_n(\theta^*; \cdot)|_{\mathbb{S}^d}$ (in the Riemannian sense on the unit sphere $\mathbb{S}^d \subseteq \R^{d+1}$) with $U_n(\theta^*; u^*) > 0$. The <em>escape orbit</em> of $\theta^*$ along $(n, u^*)$ is the maximal trajectory $\gamma$ of the gradient flow in $S_{A \cup \{n\}}$ such that $\gamma(t) \to \theta^*$ and $\gamma_n(t)/\|\gamma_n(t)\| \to u^*$ as $t \to -\infty$, where $\gamma_n$ is the $n$-th component of $\gamma$. As shown in the proof of <a href="#thm-saddle-to-saddle"></a>, it exists and is unique up to time translation, and it is the limit, as $\varepsilon \to 0$, of the trajectories starting at $\theta^* + \iota_n(\varepsilon u^*)$, suitably shifted in time.</p>
+
+    <div class="definition" id="def-saddle-to-saddle">
+      <p><span class="label">Definition</span> (Saddle-to-saddle process). Set $s_0 = 0$, $A_0 = \emptyset$, $\theta^{(0)} = 0$ and $\Xi_n(0) = \xi_n$ for every neuron $n$. At stage $m \ge 0$, we are given $s_m$, a set $A_m$ of neurons, a non-degenerate local minimum $\theta^{(m)}$ of $F_{A_m}$, and $\Xi_n(s_m) \in \R^{d+1}$ for $n \notin A_m$. Each <em>dormant</em> $\Xi_n$, $n \notin A_m$, solves
+      \begin{equation}\label{eq:dormant}
+      \frac{d}{ds} \Xi_n = \nabla U^{(m)}_n(\Xi_n), \qquad U^{(m)}_n = U_n(\theta^{(m)}; \cdot),
+      \end{equation}
+      up to its blow-up time $s_m + T^{(m)}_n \in (s_m, \infty]$. Let $s_{m+1} = s_m + \min_{n \notin A_m} T^{(m)}_n$. The stage is <em>non-degenerate</em> if $s_{m+1} < \infty$ and:</p>
+      <ul>
+        <li>(ND1) the minimum is attained at a single neuron $n_{m+1}$;</li>
+        <li>(ND2) as $s \to s_{m+1}$, $\Xi_{n_{m+1}}(s)/\|\Xi_{n_{m+1}}(s)\|$ converges to a non-degenerate local maximum $u_{m+1}$ of $U^{(m)}_{n_{m+1}}|_{\mathbb{S}^d}$;</li>
+        <li>(ND3) the escape orbit $\gamma_{m+1}$ of $\theta^{(m)}$ along $(n_{m+1}, u_{m+1})$ is defined for all $t \ge 0$, and converges to a non-degenerate local minimum $\theta^{(m+1)}$ of $F_{A_{m+1}}$, where $A_{m+1} = A_m \cup \{n_{m+1}\}$.</li>
+      </ul>
+      <p>In that case, the next stage starts from the values $\Xi_n(s_{m+1})$, $n \notin A_{m+1}$. Since every such stage activates a new neuron, there are at most $Ld$ of them. The <em>limit path</em> is $\bar\theta(s) = \theta^{(m)}$ for $s_m \le s < s_{m+1}$.</p>
+    </div>
+
+    <p>Writing $\Xi_n = R_n u_n$ with $\|u_n\| = 1$, Euler's identity turns \eqref{eq:dormant} into
+    $$
+    \frac{d}{ds} R_n^{2-k} = -k(k-2)\, U^{(m)}_n(u_n), \qquad \frac{d}{ds} u_n = R_n^{k-2}\, \nabla_{\mathbb{S}} U^{(m)}_n(u_n),
+    $$
+    where, for a $k$-form $U$, $\nabla_{\mathbb{S}} U(u) = \nabla U(u) - kU(u)\, u$ is the gradient of $U|_{\mathbb{S}^d}$. Thus $n$ activates when its accumulated utility $\int_0^s U^{(m(s'))}_n(u_n(s'))\, ds'$, where $m(s')$ is the stage at time $s'$, reaches $\|\xi_n\|^{2-k}/(k(k-2))$, while its direction performs gradient ascent of the utility on the sphere. This is the alternation of utility maximization and loss minimization of <em>alternating gradient flows</em> (<a href="#kunin2025alternating">Kunin et al., 2025</a>). At a blow-up, $R_n^{2-k}$ tends to $0$ at a bounded rate, so that the time $\int R_n^{k-2}\, ds$ of the ascent diverges, and $U^{(m)}_n(u_n)$ increases to a limit, which is positive since $R_n^{2-k}$ vanishes. Hence $U^{(m)}_{n_{m+1}}(u_{m+1}) > 0$ in (ND2), as required by (ND3).</p>
+
+    <div class="theorem" id="thm-saddle-to-saddle">
+      <p><span class="label">Theorem</span> (Saddle-to-saddle limit). Assume that stages $0, \ldots, M - 1$ are non-degenerate, and let $\bar s \in (s_M, s_{M+1})$. For $\alpha$ small, $\theta^\alpha$ is defined on $[0, \alpha^{2-k} \bar s]$ and, as $\alpha \to 0$, in the rescaled time $s = \alpha^{k-2} t$:</p>
+      <ul>
+        <li>(Plateaus) for every $\delta > 0$, $\theta^\alpha(\alpha^{2-k} s) \to \bar\theta(s)$ uniformly for $s \in [0, \bar s]$ outside the intervals $(s_m - \delta, s_m + \delta)$, $1 \le m \le M$; in particular, the loss converges to the step function $F(\bar\theta(s))$, and $F(\theta^{(0)}) > \cdots > F(\theta^{(M)})$;</li>
+        <li>(Dormant neurons) $\alpha^{-1} w^\alpha_n(\alpha^{2-k} s) \to \Xi_n(s)$ uniformly on $[0, \bar s]$ for $n \notin A_M$, and on $[0, s_m - \delta]$ for $n = n_m$ and every $\delta > 0$;</li>
+        <li>(Jumps) for $1 \le m \le M$, there are times $t^\alpha_m$ with $\alpha^{k-2} t^\alpha_m \to s_m$ such that $\theta^\alpha(t^\alpha_m + \cdot)$ converges to a time translate of $\gamma_m$, uniformly on compact sets; moreover, if $\delta$ is smaller than half the gaps between $0, s_1, \ldots, s_M, \bar s$, the curve $\{\theta^\alpha(\alpha^{2-k} s) : |s - s_m| \le \delta\}$ converges to the closure of $\gamma_m(\R)$ in the Hausdorff distance.</li>
+      </ul>
+      <p>Each $\theta^{(m)}$ is a critical point of $F$ and, for $m < M$, a saddle, i.e., not a local minimum.</p>
+    </div>
+
+    <p>In words, during the $m$-th plateau, which lasts a time of order $\alpha^{2-k}$, the active parameters stay near the saddle $\theta^{(m)}$, while the weights of the inactive neurons, of order $\alpha$, follow the dormant flows. The first of these to blow up activates, and the parameters jump to $\theta^{(m+1)}$ along the escape orbit, in a vanishing rescaled time. The assumption $k \ge 3$ separates the two time scales, since $\alpha^{2-k} \to \infty$. It also makes the dormant flows blow up in finite time, at times that depend on $\xi$, which breaks the tie between the neurons $(1, i), \ldots, (L, i)$, whose utilities coincide at $\theta = 0$ if $\sigma(c) = 0$, since all the layers are then the identity. For $k = 2$, the dormant flows are linear, these neurons escape at once, and the outcome of the first jump depends on the ratios of their initial weights.</p>
+
+    <details class="proof">
+      <summary>Proof.</summary>
+      <p>Constants, including those in $O(\cdot)$, are uniform on the bounded sets involved, and $C$ may change from line to line. Throughout, $\theta^*$ is a non-degenerate local minimum of $F_A$, and $\mu > 0$ is such that $\nabla^2 F_A \succeq \mu$ near $\theta^*$.</p>
+
+      <p><em>Flatness.</em> Derivatives of $F$ in directions tangent to $\{w_{n'} = 0\}$ still satisfy (H) in $w_{n'}$, so that, by Taylor's formula, they change by $O(\|w_{n'}\|^k)$ when $w_{n'}$ is set to $0$. Applying this to the neurons not in $A$ one at a time, and expanding $\nabla_{w_n} F$ to order $k - 1$ in $w_n$, we get, locally uniformly in $\theta$:</p>
+      <ul>
+        <li>(F1) $\nabla_{w_n} F(\theta) = -\nabla U_n(\theta; w_n) + O(\|w_n\|^k)$, and in particular $\nabla_{w_n} F(\theta) = O(\|w_n\|^{k-1})$;</li>
+        <li>(F2) $\pi_A \nabla F(\theta) = \nabla F_A(\pi_A \theta) + O\big(\sum_{n \notin A} \|w_n\|^k\big)$.</li>
+      </ul>
+
+      <p><em>Plateau.</em> There is $r_0 > 0$ such that the following holds. Let $\Xi_n$, $n \notin A$, solve $\frac{d}{ds} \Xi_n = \nabla U_n(\theta^*; \Xi_n)$ on $[s', s'']$, and let $\tau_\alpha$ be times with $\|\pi_A \theta^\alpha(\tau_\alpha) - \theta^*\| \le r_0$ and $\alpha^{-1} w^\alpha_n(\tau_\alpha) \to \Xi_n(s')$ for $n \notin A$. Then, as $\alpha \to 0$, $\alpha^{-1} w^\alpha_n\big(\tau_\alpha + \alpha^{2-k}(s - s')\big) \to \Xi_n(s)$ uniformly on $[s', s'']$, for $n \notin A$, and, for small $\alpha$ and $0 \le t - \tau_\alpha \le \alpha^{2-k}(s'' - s')$,
+      \begin{equation}\label{eq:plateau}
+      \|\pi_A \theta^\alpha(t) - \theta^*\| \le e^{-\mu(t - \tau_\alpha)}\, \|\pi_A \theta^\alpha(\tau_\alpha) - \theta^*\| + O(\alpha^k).
+      \end{equation}
+      Indeed, as long as the rescaled weights $\alpha^{-1} w^\alpha_n$, $n \notin A$, stay bounded, $e = \pi_A \theta^\alpha - \theta^*$ satisfies $\dot e = -\nabla F_A(\theta^* + e) + O(\alpha^k)$ by (F2), and \eqref{eq:plateau} follows from the strong convexity of $F_A$ and Grönwall's lemma. In the rescaled time, (F1), the smoothness of $U_n$ in $\theta$ and its homogeneity in $w$ give
+      $$
+      \frac{d}{ds}\big(\alpha^{-1} w^\alpha_n\big) = -\alpha^{1-k} \nabla_{w_n} F(\theta^\alpha) = \nabla U_n\big(\theta^*; \alpha^{-1} w^\alpha_n\big) + O\big(\|\pi_A \theta^\alpha - \theta^*\| + \alpha\big),
+      $$
+      and, by \eqref{eq:plateau}, the error term has integral $O(\alpha^{k-2} + \alpha)$ over $[s', s'']$. Grönwall's lemma gives the convergence, and a continuity argument removes the a priori bound.</p>
+
+      <p><em>Escape.</em> Let $n \notin A$, $A' = A \cup \{n\}$ and $U = U_n(\theta^*; \cdot)$, and let $u^*$ be a non-degenerate local maximum of $U|_{\mathbb{S}^d}$ with $U(u^*) > 0$. Write $\theta = a + \iota_n(\rho u) + z$, with $a = \pi_A \theta$, $\rho = \|w_n\|$, $\|u\| = 1$, and $z = \theta - \pi_{A'} \theta$, which collects the other inactive neurons. We show:</p>
+      <ul>
+        <li>(E1) the escape orbit $\gamma$ of $\theta^*$ along $(n, u^*)$ exists and is unique up to time translation, and $\|\pi_A \gamma - \theta^*\| = O(\|\gamma_n\|^k)$ as $t \to -\infty$;</li>
+        <li>(E2) there are $\rho_1, r, \varepsilon_1, C > 0$ such that, if a trajectory satisfies $\rho_0 := \rho < \rho_1$, $\|u - u^*\| \le r$, $\eta := \|z\| \le \varepsilon_1 \rho_0$ and $\|a - \theta^*\| \le \rho_0$ at a time $t_0$, then $\rho$ increases and reaches $\rho_1$ at a time $t_1 \le t_0 + C\rho_0^{2-k}$, and $\|z\| \le 2\eta$ on $[t_0, t_1]$. Moreover, as $\rho_0 \to 0$, uniformly in the trajectory, $\theta(t_1) \to \gamma(0)$ and $\sup_{[t_0, t_1]} \operatorname{dist}\big(\theta, \gamma((-\infty, 0])\big) \to 0$, where $\gamma$ is normalized so that $\|\gamma_n\|$ first reaches $\rho_1$ at $t = 0$.</li>
+      </ul>
+      <p>The escape is degenerate, since the linearization of the flow in $w_n$ vanishes. A centre manifold reduction removes the active coordinates and, in polar coordinates, the degeneracy can be divided out, which turns the escape orbit into the unstable manifold of a hyperbolic equilibrium. Below, $r$ is small, and then $\rho_1$ and $\varepsilon_1 \le 1$ are small.</p>
+
+      <p><em>Polar coordinates.</em> By (H), $-\nabla_{w_n} F(a + \iota_n(\rho u) + z) = \rho^{k-1} G(\rho, u, a, z)$, with $G$ smooth for all $\rho \in \R$ and $G(0, u, a, z) = \nabla U_n(a + z; u)$. Hence the gradient flow reads
+      \begin{equation}\label{eq:polar}
+      \dot\rho = \rho^{k-1} \langle u, G \rangle, \qquad \dot u = \rho^{k-2} \big(G - \langle u, G \rangle\, u\big), \qquad \dot a = -\pi_A \nabla F(\theta).
+      \end{equation}
+      At $(\rho, a, z) = (0, \theta^*, 0)$, Euler's identity gives $\langle u, G \rangle = kU(u)$ and $G - \langle u, G \rangle\, u = \nabla_{\mathbb{S}} U(u)$, whose zero $u^*$ is a sink, with the Riemannian Hessian as linearization.</p>
+
+      <p><em>Invariance.</em> Under the assumptions of (E2), a continuity argument gives the following on $[t_0, t_1]$. First, $\kappa \le \langle u, G \rangle \le C$ for some $\kappa > 0$, so that $\dot\rho \ge \kappa \rho^{k-1}$: $\rho$ increases, and $t_1 - t_0 \le C\rho_0^{2-k}$. Next, $\frac{d}{dt} \|z\|^{2-k} \ge -C$ by (F1), so that $\|z\|^{2-k} \ge \eta^{2-k} - C\rho_0^{2-k} \ge (2\eta)^{2-k}$, as $\eta \le \varepsilon_1 \rho_0$. Next, $\|u - u^*\| \le r$, since $\dot u$ points inwards where $\|u - u^*\| = r$: $\nabla_{\mathbb{S}} U(u)$ does, and $G - \langle u, G \rangle\, u - \nabla_{\mathbb{S}} U(u) = O(\rho + \|a - \theta^*\| + \|z\|)$ is small. Finally, (F2) and the strong convexity of $F_A$ give $\frac{d}{dt} \|a - \theta^*\| \le -\mu \|a - \theta^*\| + C(\rho^k + \|z\|^k)$, so that, as $\rho$ increases and $\|z\| \le 2\rho$,
+      \begin{equation}\label{eq:slaving}
+      \|a - \theta^*\| \le e^{-\mu(t - t_0)} \rho_0 + C\rho^k \qquad \text{on } [t_0, t_1].
+      \end{equation}</p>
+
+      <p><em>Centre manifold.</em> By (H) and $k \ge 3$, the linearization at $\theta^*$ of the gradient flow of $F_{A'}$ is $-\nabla^2 F_A(\theta^*) \oplus 0$ on $S_{A'} = S_A \oplus \R^{d+1}$. By the centre manifold theorem (<a href="#carr1981applications">Carr, 1981</a>, Chapter 2, Theorem 1), this flow has a locally invariant manifold $W^c = \{a = \psi(w_n)\}$ near $\theta^*$, where $\psi$ is of class $C^2$, $\psi(0) = \theta^*$ and $d\psi_0 = 0$. By invariance, $q = a - \psi(w_n)$ satisfies $\dot q = -\big(\nabla^2 F_A(\theta^*) + o(1)\big)\, q$ along trajectories in $S_{A'}$ near $\theta^*$. Hence such a trajectory lies in $W^c$ if it stays near $\theta^*$ for all $t \le t'$.</p>
+
+      <p><em>Blow-up.</em> On $W^c$, \eqref{eq:polar} becomes $\dot\rho = \rho^{k-1} \langle u, \tilde G \rangle$ and $\dot u = \rho^{k-2} (\tilde G - \langle u, \tilde G \rangle\, u)$, where $\tilde G(\rho, u) = G(\rho, u, \psi(\rho u), 0)$. In the time $\tau$ with $d\tau = \rho^{k-2}\, dt$, this is the flow of the vector field $(\rho \langle u, \tilde G \rangle, \tilde G - \langle u, \tilde G \rangle\, u)$ on $\R \times \mathbb{S}^d$, which is of class $C^2$ near $(0, u^*)$ and preserves $\{\rho = 0\}$, where it is the gradient flow of $U|_{\mathbb{S}^d}$. Hence $(0, u^*)$ is a hyperbolic equilibrium: the eigenvalue $kU(u^*) > 0$ has an eigenvector transverse to $\{\rho = 0\}$, and the other eigenvalues, those of the Riemannian Hessian, are negative. By the unstable manifold theorem (<a href="#teschl2012ordinary">Teschl, 2012</a>, Theorems 9.4 and 9.5), the points whose backward orbit stays in a small neighbourhood $B$ of $(0, u^*)$ form a $C^1$ curve $\Gamma$ transverse to $\{\rho = 0\}$, and their backward orbits converge to $(0, u^*)$. So $\Gamma \cap \{\rho > 0\}$ is an arc of a single orbit, which, since $dt = \rho^{2-k}\, d\tau$, gives a trajectory $\gamma$ in $W^c$ with $\gamma \to \theta^*$ and $\gamma_n/\|\gamma_n\| \to u^*$ as $t \to -\infty$. Conversely, ($\star$) every trajectory in $S_{A'}$ with $0 < \rho \le \rho_1$, $\|u - u^*\| \le r$ and $\|a - \theta^*\| \le r$ for all $t \le t'$ is a time translate of $\gamma$. Indeed, it lies in $W^c$, and $\kappa\rho^{k-1} \le \dot\rho \le C\rho^{k-1}$ gives $\rho \to 0$ and $\tau \to -\infty$ as $t \to -\infty$, so that $(\rho, u)$ is a backward orbit in $B$, which lies in $\Gamma$.</p>
+
+      <p><em>Proof of (E1).</em> Every escape orbit satisfies the assumptions of ($\star$) for $t' \ll 0$, which gives existence and uniqueness. As $\psi(w) - \theta^* = o(\|w\|)$, the invariance step applies to $\gamma$ at every $t_0 \ll 0$, with $\eta = 0$. Hence $\|\gamma_n\|$ increases until it reaches $\rho_1$, at $t = 0$ say, and \eqref{eq:slaving} with $t_0 \to -\infty$ gives $\|\pi_A \gamma - \theta^*\| \le C\|\gamma_n\|^k$.</p>
+
+      <p><em>Proof of (E2).</em> The first claims are contained in the invariance step. For the others, let $\theta_\ell$ be trajectories as in (E2) with $\rho_0 \to 0$, shifted so that $t_1 = 0$. Then $t_0 \to -\infty$, since $\dot\rho \le C\rho^{k-1}$. By compactness and continuous dependence on initial conditions, a subsequence converges, uniformly on compact subsets of $(-\infty, 0]$, to a trajectory $\theta_\infty$, which, by the invariance step, satisfies the assumptions of ($\star$) with $t' = 0$, and whose $\rho$ increases to $\rho_1$ at $t = 0$. Hence $\theta_\infty = \gamma$ for every subsequence, and $\theta_\ell \to \gamma$ uniformly on every $[-T, 0]$. Finally, by \eqref{eq:slaving}, $\theta_\ell(t)$ is $O(\rho')$-close to $\theta^*$, a limit point of $\gamma$, as long as $\rho \le \rho'$, and $\rho \ge \rho'$ only for $t \ge -C(\rho')^{2-k}$. Let $\ell \to \infty$, and then $\rho' \to 0$. In particular, by continuous dependence on initial conditions, the trajectories starting at $\theta^* + \iota_n(\varepsilon u^*)$, shifted so that $\|w_n\|$ reaches $\rho_1$ at $t = 0$, converge to $\gamma$ uniformly on compact sets as $\varepsilon \to 0$.</p>
+
+      <p><em>Induction.</em> We show by induction on $m \le M$ that there are times $\tau^\alpha_m$ with $\alpha^{k-2} \tau^\alpha_m \to s_m$, $\|\pi_{A_m} \theta^\alpha(\tau^\alpha_m) - \theta^{(m)}\| \le r_0$, with $r_0$ as in the plateau step at $\theta^{(m)}$, and $\alpha^{-1} w^\alpha_n(\tau^\alpha_m) \to \Xi_n(s_m)$ for $n \notin A_m$. For $m = 0$, take $\tau^\alpha_0 = 0$. Assume the claim for $m$. The plateau step, applied on $[s_m, s_{m+1} - \delta]$ if $m < M$, and on $[s_M, s'']$ with $\bar s < s'' < s_{M+1}$ if $m = M$, gives the claim on dormant neurons on this interval. Since the inactive weights are $O(\alpha)$, it also gives $\|\theta^\alpha - \theta^{(m)}\| \le e^{-\mu(t - \tau^\alpha_m)} r_0 + O(\alpha)$, which tends to $0$ uniformly for $s \ge s_m + \delta$, and even for $s \ge 0$ if $m = 0$, since $\pi_\emptyset \theta = 0$. This gives the claim on plateaus.</p>
+
+      <p>For the jump, let $m < M$, $n_* = n_{m+1}$ and $u_* = u_{m+1}$, and take $\rho_1, r, \varepsilon_1$ as in (E2) at $(A_m, \theta^{(m)}, n_*, u_*)$. By (ND2), $\|\Xi_{n_*}(s)\| \to \infty$, with direction converging to $u_*$, as $s \to s_{m+1}$, and, by (ND1), $\sum_{n \notin A_{m+1}} \|\Xi_n\|^2 \le R^2$ on $[s_m, s_{m+1}]$ for some $R$. Fix $\delta > 0$ small, so that $R_\delta = \|\Xi_{n_*}(s_{m+1} - \delta)\| \ge 2R/\varepsilon_1$ and $\Xi_{n_*}(s_{m+1} - \delta)/R_\delta$ is $r/2$-close to $u_*$, and let $t_0$ be the time corresponding to $s_{m+1} - \delta$. By the plateau step, the assumptions of (E2) hold at $t_0$ for small $\alpha$: $\rho_0 = \alpha(R_\delta + o(1))$, $\|u - u_*\| \le r$, $\eta \le \alpha(R + o(1)) \le \varepsilon_1 \rho_0$, and $\|a - \theta^{(m)}\| = O(\alpha^k) \le \rho_0$. Let $t^\alpha_{m+1} = t_1$ be the first time after $\tau^\alpha_m$ at which $\|w_{n_*}\| = \rho_1$, which does not depend on $\delta$. By (E2), $\theta^\alpha(t_1) \to \gamma_{m+1}(0)$, with $\gamma_{m+1}$ normalized as in (E2). The jump is fast, since $\alpha^{k-2}(t_1 - t_0) \le C\alpha^{k-2}\rho_0^{2-k} \to CR_\delta^{2-k}$. Moreover, $\|z\| \le 2\eta = O(\alpha)$ on $[t_0, t_1]$, so that, by (F1), the rescaled weights $\alpha^{-1} w^\alpha_n$ of the other dormant neurons have velocity $\alpha^{1-k} \|\nabla_{w_n} F\| = O(1)$ in the time $s$, and move by $O(R_\delta^{2-k})$, uniformly in $\delta$. By continuous dependence on initial conditions, $\theta^\alpha(t_1 + \cdot) \to \gamma_{m+1}$ uniformly on compact sets, which is the first claim on jumps. By (ND3), there is $T$ with $\|\gamma_{m+1}(T) - \theta^{(m+1)}\| \le r_0/2$. Set $\tau^\alpha_{m+1} = t_1 + T$. On $[t_1, t_1 + T]$, the rescaled dormant weights move by $O(\alpha^{k-2})$. Hence $\alpha^{k-2} t_1$ and $\alpha^{k-2} \tau^\alpha_{m+1}$ lie in $[s_{m+1} - \delta, s_{m+1} - \delta + CR_\delta^{2-k}] + o(1)$ and, for $n \notin A_{m+1}$,
+      $$
+      \big\|\alpha^{-1} w^\alpha_n(\tau^\alpha_{m+1}) - \Xi_n(s_{m+1})\big\| \le CR_\delta^{2-k} + \operatorname{osc}_{[s_{m+1} - \delta,\, s_{m+1}]} \Xi_n + o(1).
+      $$
+      Since $t_1$ and $\tau^\alpha_{m+1}$ do not depend on $\delta$, and $R_\delta \to \infty$ as $\delta \to 0$, this proves the claim for $m + 1$, and $\alpha^{k-2} t^\alpha_{m+1} \to s_{m+1}$.</p>
+
+      <p>The plateau and jump steps cover $[0, \alpha^{2-k} \bar s]$, on which $\theta^\alpha$ stays bounded, hence is defined. For the Hausdorff convergence at $s_{m+1}$, run the jump step with some $\delta' < \delta$. Before $t_0$, the curve is close to $\theta^{(m)}$, by the claim on plateaus. On $[t_0, t_1]$, it is close to $\gamma_{m+1}((-\infty, 0])$, by (E2), and on $[t_1, t_1 + T]$ to $\gamma_{m+1}([0, T])$. Afterwards, it stays within $\|\gamma_{m+1}(T) - \theta^{(m+1)}\| + o(1)$ of $\theta^{(m+1)}$, by \eqref{eq:plateau}, and $T$ is arbitrarily large. Conversely, the curve approaches every point of the closure of $\gamma_{m+1}(\R)$, by the convergence of $\theta^\alpha(t_1 + \cdot)$ and the claim on plateaus at $s_{m+1} \pm \delta$. Finally, $F(\theta^{(m)}) > F(\theta^{(m+1)})$, since $F$ decreases strictly along $\gamma_{m+1}$, and $\theta^{(m)}$ is a critical point of $F_{A_m}$, hence of $F$, which, for $m < M$, is not a local minimum, since $U^{(m)}_{n_{m+1}}(u_{m+1}) > 0$.</p>
+    </details>
   </details>
 
   <details class="section">
@@ -777,17 +900,22 @@
          "et al." for three or more authors. Entries are sorted by the surname of the first author; ids follow papers.js
          (surname, year, first word of the title). A link to an entry opens this section (assets/sections.js). -->
     <ol class="refs">
+      <li id="amari2001geometrical">Shun-ichi Amari, Hyeyoung Park, Tomoko Ozeki. <cite>Geometrical Singularities in the Neuromanifold of Multilayer Perceptrons.</cite> Advances in Neural Information Processing Systems (NIPS), 2001. <a href="https://proceedings.neurips.cc/paper/2001/hash/65d2ea03425887a717c435081cfc5dbb-Abstract.html">proceedings.neurips.cc</a></li>
       <li id="bartlett2002rademacher">Peter L. Bartlett, Shahar Mendelson. <cite>Rademacher and Gaussian Complexities: Risk Bounds and Structural Results.</cite> Journal of Machine Learning Research 3, 463–482, 2002. <a href="https://www.jmlr.org/papers/v3/bartlett02a.html">jmlr.org/papers/v3/bartlett02a</a></li>
       <li id="basu2023hausdorff">Saugata Basu, Antonio Lerario. <cite>Hausdorff Approximations and Volume of Tubes of Singular Algebraic Sets.</cite> Mathematische Annalen 387, 79–109, 2023. <a href="https://doi.org/10.1007/s00208-022-02458-w">doi:10.1007/s00208-022-02458-w</a></li>
+      <li id="bochnak1971converse">Jacek Bochnak, Stanisław Łojasiewicz. <cite>A Converse of the Kuiper–Kuo Theorem.</cite> Proceedings of Liverpool Singularities Symposium I, Lecture Notes in Mathematics 192, Springer, 1971. <a href="https://doi.org/10.1007/BFb0066825">doi:10.1007/BFb0066825</a></li>
       <li id="bochnak1998real">Jacek Bochnak, Michel Coste, Marie-Françoise Roy. <cite>Real Algebraic Geometry.</cite> Springer, 1998. <a href="https://doi.org/10.1007/978-3-662-03718-8">doi:10.1007/978-3-662-03718-8</a></li>
       <li id="borsuk1957independent">Karol Borsuk. <cite>On the $k$-Independent Subsets of the Euclidean Space and of the Hilbert Space.</cite> Bulletin de l'Académie Polonaise des Sciences, Classe III, 5, 351–356, 1957.</li>
+      <li id="breiding2024metric">Paul Breiding, Kathlén Kohn, Bernd Sturmfels. <cite>Metric Algebraic Geometry.</cite> Oberwolfach Seminars 53, Birkhäuser, 2024. <a href="https://doi.org/10.1007/978-3-031-51462-3">doi:10.1007/978-3-031-51462-3</a></li>
       <li id="bronstein2021geometric">Michael M. Bronstein, Joan Bruna, Taco Cohen, Petar Veličković. <cite>Geometric Deep Learning: Grids, Groups, Graphs, Geodesics, and Gauges.</cite> Preprint, 2021. <a href="https://arxiv.org/abs/2104.13478">arXiv:2104.13478</a></li>
+      <li id="carr1981applications">Jack Carr. <cite>Applications of Centre Manifold Theory.</cite> Applied Mathematical Sciences 35, Springer, 1981. <a href="https://doi.org/10.1007/978-1-4612-5929-9">doi:10.1007/978-1-4612-5929-9</a></li>
       <li id="chang2026linear">Xiaotian Chang, Yacoub Hendi. <cite>Linear Independence of Polynomial Compositions with Bounded Input Degree.</cite> Preprint, 2026. <a href="https://arxiv.org/abs/2610.20825">arXiv:2610.20825</a></li>
       <li id="chirka1989complex">Evgenii M. Chirka. <cite>Complex Analytic Sets.</cite> Kluwer, 1989. <a href="https://doi.org/10.1007/978-94-009-2366-9">doi:10.1007/978-94-009-2366-9</a></li>
       <li id="cifuentes2022voronoi">Diego Cifuentes, Kristian Ranestad, Bernd Sturmfels, Madeleine Weinstein. <cite>Voronoi Cells of Varieties.</cite> Journal of Symbolic Computation 109, 351–366, 2022. <a href="https://doi.org/10.1016/j.jsc.2020.07.009">doi:10.1016/j.jsc.2020.07.009</a></li>
       <li id="cruttwell2022categorical">Geoffrey S. H. Cruttwell, Bruno Gavranović, Neil Ghani, Paul Wilson, Fabio Zanasi. <cite>Categorical Foundations of Gradient-Based Learning.</cite> European Symposium on Programming (ESOP), 2022. <a href="https://arxiv.org/abs/2103.01931">arXiv:2103.01931</a></li>
       <li id="cucker2002mathematical">Felipe Cucker, Steve Smale. <cite>On the Mathematical Foundations of Learning.</cite> Bulletin of the American Mathematical Society 39(1), 1–49, 2002. <a href="https://doi.org/10.1090/S0273-0979-01-00923-5">doi:10.1090/S0273-0979-01-00923-5</a></li>
       <li id="cybenko1989approximation">George Cybenko. <cite>Approximation by Superpositions of a Sigmoidal Function.</cite> Mathematics of Control, Signals and Systems 2(4), 303–314, 1989. <a href="https://doi.org/10.1007/BF02551274">doi:10.1007/BF02551274</a></li>
+      <li id="dacunto2005explicit">Didier D'Acunto, Krzysztof Kurdyka. <cite>Explicit Bounds for the Łojasiewicz Exponent in the Gradient Inequality for Polynomials.</cite> Annales Polonici Mathematici 87, 51–61, 2005. <a href="https://doi.org/10.4064/ap87-0-5">doi:10.4064/ap87-0-5</a></li>
       <!-- <li id="dahlgren2026polynomial">Isabel Dahlgren, Giovanni Luca Marchetti, Kathlén Kohn. <cite>Polynomial Residual Networks are Generically Identifiable.</cite> Preprint, 2026. <a href="https://arxiv.org/abs/2610.33738">arXiv:2610.33738</a></li> -->
       <li id="devore1993constructive">Ronald A. DeVore, George G. Lorentz. <cite>Constructive Approximation.</cite> Grundlehren der mathematischen Wissenschaften 303, Springer, 1993. <a href="https://doi.org/10.1007/978-3-662-02888-9">doi:10.1007/978-3-662-02888-9</a></li>
       <li id="dudley1967sizes">Richard M. Dudley. <cite>The Sizes of Compact Subsets of Hilbert Space and Continuity of Gaussian Processes.</cite> Journal of Functional Analysis 1(3), 290–330, 1967. <a href="https://doi.org/10.1016/0022-1236(67)90017-1">doi:10.1016/0022-1236(67)90017-1</a></li>
@@ -813,14 +941,15 @@
       <li id="lojasiewicz1984trajectoires">Stanisław Łojasiewicz. <cite>Sur les trajectoires du gradient d'une fonction analytique.</cite> Seminari di Geometria 1982–1983, Università di Bologna, 115–117, 1984.</li>
       <li id="marchetti2025invitation">Giovanni Luca Marchetti, Vahid Shahverdi, Stefano Mereta, Matthew Trager, Kathlén Kohn. <cite>Algebra Unveils Deep Learning – An Invitation to Neuroalgebraic Geometry.</cite> International Conference on Machine Learning (ICML), 2025. <a href="https://arxiv.org/abs/2501.18915">arXiv:2501.18915</a></li>
       <li id="marcotte2023abide">Sibylle Marcotte, Rémi Gribonval, Gabriel Peyré. <cite>Abide by the Law and Follow the Flow: Conservation Laws for Gradient Flows.</cite> Advances in Neural Information Processing Systems (NeurIPS), 2023. <a href="https://arxiv.org/abs/2307.00144">arXiv:2307.00144</a></li>
-      <li id="nguyen2026parameter">Khang Nguyen, Guido Montúfar. <cite>On Parameter Symmetries and Conservation Laws in Gradient Flow.</cite> Preprint, 2026. <a href="https://arxiv.org/abs/2609.34549">arXiv:2609.34549</a></li>
       <li id="pesme2023saddle">Scott Pesme, Nicolas Flammarion. <cite>Saddle-to-Saddle Dynamics in Diagonal Linear Networks.</cite> Advances in Neural Information Processing Systems (NeurIPS), 2023. <a href="https://arxiv.org/abs/2304.00488">arXiv:2304.00488</a></li>
       <li id="pinkus1999approximation">Allan Pinkus. <cite>Approximation Theory of the MLP Model in Neural Networks.</cite> Acta Numerica 8, 143–195, 1999. <a href="https://doi.org/10.1017/S0962492900002919">doi:10.1017/S0962492900002919</a></li>
       <li id="pinkus2005density">Allan Pinkus. <cite>Density in Approximation Theory.</cite> Surveys in Approximation Theory 1, 1–45, 2005. <a href="https://arxiv.org/abs/math/0501328">arXiv:math/0501328</a></li>
+      <li id="ribot2026neural">Alvaro Ribot, Yulia Alexandr, Anna Seigal. <cite>Do Neural Models Prefer Their Submodels?</cite> Preprint, 2026. <a href="https://arxiv.org/abs/2610.28439">arXiv:2610.28439</a></li>
       <li id="shahverdi2025geometry">Vahid Shahverdi, Giovanni Luca Marchetti, Kathlén Kohn. <cite>On the Geometry and Optimization of Polynomial Convolutional Networks.</cite> International Conference on Artificial Intelligence and Statistics (AISTATS), 2025. <a href="https://arxiv.org/abs/2410.00722">arXiv:2410.00722</a></li>
       <li id="shahverdi2026identifiable">Vahid Shahverdi, Giovanni Luca Marchetti, Georg Bökman, Kathlén Kohn. <cite>Identifiable Equivariant Networks are Layerwise Equivariant.</cite> International Conference on Machine Learning (ICML), 2026. <a href="https://arxiv.org/abs/2601.21645">arXiv:2601.21645</a></li>
       <li id="shahverdi2026learning">Vahid Shahverdi, Giovanni Luca Marchetti, Kathlén Kohn. <cite>Learning on a Razor's Edge: Identifiability and Singularity of Polynomial Neural Networks.</cite> International Conference on Learning Representations (ICLR), 2026. <a href="https://arxiv.org/abs/2505.11846">arXiv:2505.11846</a></li>
       <li id="stoll1964growth">Wilhelm Stoll. <cite>The Growth of the Area of a Transcendental Analytic Set. I, II.</cite> Mathematische Annalen 156, 47–78 and 144–170, 1964. <a href="https://doi.org/10.1007/BF01359980">doi:10.1007/BF01359980</a>, <a href="https://doi.org/10.1007/BF01359928">doi:10.1007/BF01359928</a></li>
+      <li id="teschl2012ordinary">Gerald Teschl. <cite>Ordinary Differential Equations and Dynamical Systems.</cite> Graduate Studies in Mathematics 140, American Mathematical Society, 2012. <a href="https://doi.org/10.1090/gsm/140">doi:10.1090/gsm/140</a></li>
       <li id="thie1967lelong">Paul R. Thie. <cite>The Lelong Number of a Point of a Complex Analytic Set.</cite> Mathematische Annalen 172(4), 269–312, 1967. <a href="https://doi.org/10.1007/BF01351593">doi:10.1007/BF01351593</a></li>
       <li id="vitushkin1955variations">Anatoli G. Vitushkin. <cite>On Multidimensional Variations.</cite> Gostekhizdat, Moscow, 1955 (in Russian).</li>
       <li id="watanabe2009algebraic">Sumio Watanabe. <cite>Algebraic Geometry and Statistical Learning Theory.</cite> Cambridge Monographs on Applied and Computational Mathematics 25, Cambridge University Press, 2009. <a href="https://doi.org/10.1017/CBO9780511800474">doi:10.1017/CBO9780511800474</a></li>
@@ -830,11 +959,7 @@
   </details>
 </main>
 
-<footer class="site-footer">
-  <span>Neuroalgebraic Geometry</span>
-  <span>Maintained by the community</span>
-  <a href="community.html">Contribute</a>
-</footer>
+<footer class="site-footer"></footer>
 
 </body>
 </html>

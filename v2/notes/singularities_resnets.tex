@@ -36,7 +36,7 @@
 \maketitle
 
 \noindent
-Theorem~25 of the Primer shows that the functions of subnetworks of an MLP are singular points of the neurovariety. Its proof moves along the fiber of a neuron whose \emph{outgoing} weights vanish. In a residual network there are no outgoing weights, and a subnetwork is defined by the vanishing of the \emph{incoming} weights of a neuron (Example~9). We prove that, for deep residual networks of constant width and a generic activation of degree at least $5$, the functions of subnetworks are again singular points (Theorem~\ref{thm:sing}). The mechanism is different: the fiber is finite, but it contains several parameters, which give several branches of the neurovariety through the same point. In the opposite direction, we show that the functions of non-degenerate parameters are smooth points (Theorem~\ref{thm:smooth}). For width one, or depth one, this gives a complete description of the singularities. In general, however, subnetworks are not the only singularities of a residual network (Proposition~\ref{prop:other}).
+Theorem~25 of the Primer shows that the functions of subnetworks of an MLP are singular points of the neurovariety. Its proof moves along the fiber of a neuron whose \emph{outgoing} weights vanish. In a residual network there are no outgoing weights, and a subnetwork is defined by the vanishing of the \emph{incoming} weights of a neuron (Example~9). We prove that, for deep residual networks of constant width and a generic activation of degree at least $5$, the functions of subnetworks are again singular points (Theorem~\ref{thm:sing}). The mechanism is different: the fiber is finite, but it contains several parameters, which give several branches of the neurovariety through the same point. In the opposite direction, we show that the functions of non-degenerate parameters are smooth points (Theorem~\ref{thm:smooth}). For width one, or depth one, this gives a complete description of the singularities. In general, however, subnetworks are not the only singularities of a residual network (Proposition~\ref{prop:other}). Finally, over the real numbers, we study the Voronoi cells of these singular points, i.e., the sets of the targets for which they minimize the distance. For a generic subnetwork they are not larger than those of the smooth points. They are larger when the inactive neuron sits at the minimum of $\sigma$, which requires $\sigma$ to have even degree: for such subnetworks we compute their dimension (Theorem~\ref{thm:voronoi}).
 
 \section{Setting and results}
 
@@ -85,9 +85,34 @@ Let $\K$ be algebraically closed, let $\sigma(t)=t^5+t^2+t$, which satisfies \eq
 
 At this parameter the hidden state $h_1$ takes values in a line, so that condition (ii) of Definition~\ref{def:nd} fails, and the fiber of $f_\theta$ has positive dimension. What happens at the other degenerate parameters is left open; see Remark~\ref{rem:open}.
 
+\paragraph{Voronoi cells.} Let $\K=\R$, and fix a scalar product $\langle\cdot,\cdot\rangle$ on $V$, with norm $\|\cdot\|$; let $N=\dim V=d\binom{d+r^L}{d}$. As in the Primer, the \emph{Voronoi cell} of a point $z$ of a subset $Z\subseteq V$ is the convex set
+\[
+\mathrm{Vor}_Z(z)=\{u\in V:\ \|u-z\|\le\|u-q\|\ \text{for all }q\in Z\}
+\]
+of the points of $V$ that have $z$ as a closest point in $Z$. Thus $\mathrm{Vor}_{\M}(f)$ is the set of the targets for which $f\in\M$ minimizes the ideal loss. For $\theta\in\Theta$, let $d^2\varphi_\theta$ be the second differential of $\varphi$ at $\theta$, so that $d^2\varphi_\theta(\dot\theta,\dot\theta)$ is the second derivative of $\tau\mapsto\varphi(\theta+\tau\dot\theta)$ at $\tau=0$, and let $C_\theta\subseteq V$ be the closed convex cone of the vectors $v$ such that, for every $\theta'\in\varphi^{-1}(f_\theta)$,
+\begin{equation}\label{eq:cone}
+v\perp\operatorname{im}d\varphi_{\theta'}\qquad\text{and}\qquad\langle v,d^2\varphi_{\theta'}(\dot\theta,\dot\theta)\rangle\le0\quad\text{for all }\dot\theta\in\ker d\varphi_{\theta'}.
+\end{equation}
+These are the first- and second-order conditions for the points of the fiber to minimize the distance from $f_\theta+v$, so that $\mathrm{Vor}_{\M}(f_\theta)\subseteq f_\theta+C_\theta$ (Lemma~\ref{lem:necessary}). In particular, if $d\varphi_\theta$ is injective, the Voronoi cell of $f_\theta$ lies in the normal space $f_\theta+(\operatorname{im}d\varphi_\theta)^\perp$, of dimension $N-\dpar$, which is $N-\dim\M$ under \eqref{eq:A}. This is the case at the non-degenerate parameters (Proposition~\ref{prop:diff}), but also at a generic parameter with an inactive neuron (Lemma~\ref{lem:diag}): in general, the singular points of Theorem~\ref{thm:sing} do not have larger Voronoi cells than the smooth points.
+
+The Voronoi cell is larger when the inactive neuron sits at the minimum of the activation. Assume that $r$ is even and $a_r>0$, let $\beta_0\in\R$ be a point where $\sigma$ attains its minimum, fix a neuron $(j,i)$, and let
+\[
+S_0=\{\theta\in\Theta:\ W_j[i,:]=0,\ b_{j,i}=\beta_0\}.
+\]
+
+\begin{maintheorem}[Voronoi cells at the minimum of $\sigma$]\label{thm:voronoi}
+Assume \eqref{eq:A}, that $r$ is even and $a_r>0$, and that $\beta_0$ is the only point where $\sigma$ attains its minimum, with $\sigma''(\beta_0)>0$. Then there is a non-empty Zariski-open subset $S_0^\circ\subseteq S_0$ such that, for every $\theta\in S_0^\circ$, the fiber $\varphi^{-1}(f_\theta)$ is finite, $C_\theta$ is the closure of the cone generated by $\mathrm{Vor}_{\M}(f_\theta)-f_\theta$, and
+\[
+\dim\mathrm{Vor}_{\M}(f_\theta)=N-\dim\M+d+1.
+\]
+Moreover, the points of $V$ that have a unique closest point in $\M$, of the form $f_\theta$ with $\theta\in S_0$, form a set with non-empty interior.
+\end{maintheorem}
+
+The set $S_0^\circ$ is described in Definition~\ref{def:S0}. For instance, $\sigma(t)=t^6+t^3+t^2$ satisfies the assumptions, with $\beta_0=0$. If $d\ge2$ and $\theta\in S_0^\circ$, then $\varphi^{-1}(f_\theta)=\{\theta\}$, the kernel of $d\varphi_\theta$ consists of the directions of the incoming weights and of the bias of the inactive neuron, and the second condition in \eqref{eq:cone} says that a quadratic form in these $d+1$ variables is negative semi-definite (Propositions~\ref{prop:jets} and~\ref{prop:proper}). If $d=1$, the fiber has $L$ points, since the inactive layer can be moved to any position (Proposition~\ref{prop:one}). Thus the Voronoi cell of $f_\theta$ is larger than those of the smooth points, by the dimension $d+1$ of the kernel of the differential, and the last assertion says that, for a set of targets of positive measure, the closest function in $\M$ is computed by a subnetwork. Intuitively, a neuron near the minimum of $\sigma$ can only increase its output: if the target asks for less, the best choice is to leave the neuron inactive. Theorem~\ref{thm:voronoi} is a statement on the semi-algebraic set $\M$, and not on its Zariski closure; see Remark~\ref{rem:voronoi}.
+
 \section{Tools}
 
-Throughout the proofs, $\K$ is algebraically closed. This is not restrictive: as in \texttt{singularities.tex}, the ideal of $\Mbar$ is the kernel of $g\mapsto g\circ\varphi$, which commutes with the extension of scalars to the algebraic closure, so that the Jacobian criterion at a point of $V$ gives the same answer over both fields, while \eqref{eq:A}, the inactivity of a neuron and Definition~\ref{def:nd} do not depend on the field. For $g\in\K[x]$, we write $[g]_e$ for its homogeneous component of degree $e$, and $\deg0=-\infty$.
+Throughout the proofs, except in Section~\ref{sec:voronoi}, $\K$ is algebraically closed. This is not restrictive: as in \texttt{singularities.tex}, the ideal of $\Mbar$ is the kernel of $g\mapsto g\circ\varphi$, which commutes with the extension of scalars to the algebraic closure, so that the Jacobian criterion at a point of $V$ gives the same answer over both fields, while \eqref{eq:A}, the inactivity of a neuron and Definition~\ref{def:nd} do not depend on the field. For $g\in\K[x]$, we write $[g]_e$ for its homogeneous component of degree $e$, and $\deg0=-\infty$.
 
 \begin{lemma}[Rigidity]\label{lem:rigid}
 Assume \eqref{eq:A}.
@@ -287,6 +312,229 @@ and $\ell_1,\ell_2$ are the derivatives of the two pre-activations, which are ar
 
 Finally, $h_{1,1}=x_1+t^5+t^2+t$ does not lie in $E$. Indeed, if $h_{1,1}=(5t^4+2t)A+B$, the components of degree $5$ give $A=t/5+a$ for some $a\in\K$, and then $B=x_1-5a\,t^4+\tfrac35t^2+(1-2a)\,t$ is not affine. Therefore $T$ contains the spaces $\sigma'(p_{2,m})\,(E\oplus\K h_{1,1})\,\varepsilon_m$ for $m=1,2$, whose sum is direct and has dimension $14$. Since $\dim\Mbar\le\dpar=12$, the point $f_\theta$ is singular. \qed
 
+\section{Voronoi cells: proof of Theorem~\ref{thm:voronoi}}\label{sec:voronoi}
+
+In this section $\K=\R$. We start with two general statements on the Voronoi cells of the image of a polynomial map $\varphi\colon\R^M\to V$: the first- and second-order conditions at the points of a fiber are necessary and, in their strict form, sufficient, provided that the fiber is finite and that nothing comes from infinity. We write $|\cdot|$ for the Euclidean norm of $\R^M$.
+
+\begin{lemma}[Necessary conditions]\label{lem:necessary}
+Let $\varphi\colon\R^M\to V$ be a polynomial map with image $Z$, let $\theta\in\R^M$ and $u\in\mathrm{Vor}_Z(\varphi(\theta))$, and let $v=u-\varphi(\theta)$. Then $v$ is orthogonal to the image of $d\varphi_\theta$, and $\langle v,d^2\varphi_\theta(\eta,\eta)\rangle\le0$ for all $\eta\in\ker d\varphi_\theta$.
+\end{lemma}
+
+\begin{proof}
+The function $F(\vartheta)=\|\varphi(\vartheta)-u\|^2$ on $\R^M$ has a minimum at $\theta$, where $\varphi(\theta)-u=-v$. Hence its differential at $\theta$, which is $\eta\mapsto-2\langle v,d\varphi_\theta(\eta)\rangle$, vanishes. Moreover, for $\eta\in\ker d\varphi_\theta$, the second derivative of $\tau\mapsto F(\theta+\tau\eta)$ at $\tau=0$, which is $2\|d\varphi_\theta(\eta)\|^2-2\langle v,d^2\varphi_\theta(\eta,\eta)\rangle=-2\langle v,d^2\varphi_\theta(\eta,\eta)\rangle$, is non-negative.
+\end{proof}
+
+\begin{lemma}[Sufficient conditions]\label{lem:sufficient}
+Let $\varphi\colon\R^M\to V$ be a polynomial map with image $Z$, and let $z\in Z$. Assume that the fiber $\varphi^{-1}(z)=\{\theta_1,\dots,\theta_n\}$ is finite, and that every sequence $(\vartheta^\nu)$ in $\R^M$ with $\varphi(\vartheta^\nu)\to z$ has a subsequence converging to a point of the fiber. Let $v\in V$ be such that, for $a=1,\dots,n$, $v$ is orthogonal to the image of $d\varphi_{\theta_a}$ and $\langle v,d^2\varphi_{\theta_a}(\eta,\eta)\rangle<0$ for all non-zero $\eta\in\ker d\varphi_{\theta_a}$. Then $z+tv\in\mathrm{Vor}_Z(z)$ for all sufficiently small $t\ge0$.
+\end{lemma}
+
+\begin{proof}
+We may assume $v\ne0$. For $\vartheta\in\R^M$ and $t\ge0$, let
+\[
+F_t(\vartheta)=\|\varphi(\vartheta)-(z+tv)\|^2-\|z-(z+tv)\|^2=\|\varphi(\vartheta)-z\|^2-2t\,\langle v,\varphi(\vartheta)-z\rangle.
+\]
+We have to show that $F_t\ge0$ on $\R^M$ for all small $t\ge0$.
+
+\emph{Near the fiber.} Fix $a$, let $\theta=\theta_a$ and $U=\ker d\varphi_\theta$, and let $U^\perp$ be the orthogonal complement of $U$ in $\R^M$. By compactness of the unit spheres, there are $\delta,\lambda>0$ such that $\langle v,d^2\varphi_\theta(\eta,\eta)\rangle\le-2\delta|\eta|^2$ for $\eta\in U$ and $\|d\varphi_\theta(\xi)\|\ge\lambda|\xi|$ for $\xi\in U^\perp$. Let $\eta\in U$ and $\xi\in U^\perp$ with $|\eta|,|\xi|\le1$, and let $y=\varphi(\theta+\eta+\xi)-z$. By Taylor's formula,
+\[
+y=d\varphi_\theta(\xi)+\tfrac12\,d^2\varphi_\theta(\eta+\xi,\eta+\xi)+R,\qquad\|R\|\le c\,\big(|\eta|^3+|\xi|^3\big),
+\]
+for a constant $c$. Since $v$ is orthogonal to the image of $d\varphi_\theta$, expanding the second differential we get, for a larger constant $c$,
+\begin{equation}\label{eq:taylor}
+\langle v,y\rangle\le-\delta|\eta|^2+c\,\big(|\eta||\xi|+|\xi|^2+|\eta|^3\big),\qquad\|y\|\ge\lambda|\xi|-c\,\big(|\eta|^2+|\xi|^2\big).
+\end{equation}
+Let $c'=4c/\lambda$, and let $\epsilon\in(0,1]$ be so small that $2c\,\epsilon\le\lambda$, $4c\,\epsilon\le\delta$ and $c\,(1+c'+c'^2)\,\epsilon\le\delta$. Assume that $|\eta|,|\xi|\le\epsilon$; then $\|y\|\ge\frac\lambda2|\xi|-c\,|\eta|^2$. If $|\xi|<c'|\eta|^2$, the first inequality in \eqref{eq:taylor} gives
+\[
+\langle v,y\rangle\le-\delta|\eta|^2+c\,(1+c'+c'^2)\,|\eta|^3\le0,
+\]
+so that $F_t(\theta+\eta+\xi)\ge-2t\,\langle v,y\rangle\ge0$ for all $t\ge0$. If $|\xi|\ge c'|\eta|^2$, then $\|y\|\ge\frac\lambda4|\xi|$ and, since $2c\,|\eta||\xi|\le\frac\delta2|\eta|^2+\frac{2c^2}\delta|\xi|^2$ and $2c\,|\eta|^3\le\frac\delta2|\eta|^2$,
+\[
+F_t(\theta+\eta+\xi)\ge\tfrac{\lambda^2}{16}|\xi|^2+2t\delta|\eta|^2-2tc\,\big(|\eta||\xi|+|\xi|^2+|\eta|^3\big)\ge\Big(\tfrac{\lambda^2}{16}-t\,\big(\tfrac{2c^2}\delta+2c\big)\Big)|\xi|^2+t\delta|\eta|^2,
+\]
+which is non-negative if $t\le t_a:=\lambda^2\big/\big(\tfrac{32c^2}\delta+32c\big)$. Thus $F_t\ge0$ on the open neighborhood $\Omega_a=\{\theta_a+\eta+\xi:\ \eta\in U,\ \xi\in U^\perp,\ |\eta|,|\xi|<\epsilon\}$ of $\theta_a$, for $0\le t\le t_a$.
+
+\emph{Far from the fiber.} Let $\Omega=\Omega_1\cup\dots\cup\Omega_n$. Then $\epsilon_0=\inf\{\|\varphi(\vartheta)-z\|:\ \vartheta\notin\Omega\}$ is positive: otherwise there would be a sequence $(\vartheta^\nu)$ in the complement of $\Omega$ with $\varphi(\vartheta^\nu)\to z$, and a subsequence would converge to some $\theta_a$, which is impossible, since the complement of $\Omega$ is closed and does not contain $\theta_a$. For $\vartheta\notin\Omega$ and $2t\|v\|\le\epsilon_0$ we get $F_t(\vartheta)\ge\|\varphi(\vartheta)-z\|\,\big(\|\varphi(\vartheta)-z\|-2t\|v\|\big)\ge0$. Hence $F_t\ge0$ on $\R^M$ for $0\le t\le\min\{t_1,\dots,t_n,\epsilon_0/(2\|v\|)\}$.
+\end{proof}
+
+We now return to residual networks, under the assumptions of Theorem~\ref{thm:voronoi}; let $c_0=\sigma(\beta_0)$ be the minimum of $\sigma$. We apply Lemma~\ref{lem:gap} and Proposition~\ref{prop:diff} to real polynomials and parameters, which are special cases of the complex ones. That $r$ is even is used in the next two lemmas. The first one implies that no branch of $\M$ comes from infinity.
+
+\begin{lemma}[Compactness]\label{lem:compact}
+Let $(\theta^\nu)$ be a sequence in $\Theta$ such that $(f_{\theta^\nu})$ is bounded in $V$, and let $p^\nu_k$ and $h^\nu_k$ be the pre-activations and the hidden states of $\theta^\nu=(W^\nu_k,b^\nu_k)_{k\le L}$. After passing to a subsequence, $p^\nu_k\to\bar p_k$ and $h^\nu_k\to\bar h_k$ for all $k$, where $\bar h_0=x$ and $\bar h_k=\bar h_{k-1}+\sigma(\bar p_k)$. Moreover, if $1,\bar h_{k-1,1},\dots,\bar h_{k-1,d}$ are linearly independent for some $k\ge1$, then $(W^\nu_k,b^\nu_k)$ converges to the only $(\bar W_k,\bar b_k)$ such that $\bar p_k=\bar W_k\bar h_{k-1}+\bar b_k$.
+\end{lemma}
+
+\begin{proof}
+For all $\theta\in\Theta$ and $x\in\R^d$, we have $f_{\theta,m}(x)=x_m+\sum_{k=1}^L\sigma(p_{k,m}(x))$, where every term of the sum is at least $c_0$. Let $B$ be the unit ball of $\R^d$. Since $(f_{\theta^\nu})$ is bounded in $V$, there is $c$ such that $|f_{\theta^\nu,m}(x)|\le c$ for all $\nu$, $m$ and $x\in B$. Then, for $x\in B$,
+\[
+c_0\le\sigma\big(p^\nu_{k,m}(x)\big)=f_{\theta^\nu,m}(x)-x_m-\sum_{l\ne k}\sigma\big(p^\nu_{l,m}(x)\big)\le c+1-(L-1)\,c_0.
+\]
+Since $\sigma(t)\to+\infty$ as $|t|\to\infty$, the polynomials $p^\nu_{k,m}$ are uniformly bounded on $B$. Hence they are bounded in the space of the polynomials of degree at most $r^{L-1}$, on which the maximum over $B$ is a norm. Passing to a subsequence, $p^\nu_k\to\bar p_k$ for all $k$, and then $h^\nu_k=x+\sum_{l\le k}\sigma(p^\nu_l)$ converges to $\bar h_k=x+\sum_{l\le k}\sigma(\bar p_l)$.
+
+For the last claim, fix $m$, and let $\omega^\nu=(W^\nu_k[m,:],b^\nu_{k,m})\in\R^d\times\R$, so that $p^\nu_{k,m}=\sum_n\omega^\nu_n\,h^\nu_{k-1,n}+\omega^\nu_0$. If $(\omega^\nu)$ were unbounded, along a subsequence we would have $|\omega^\nu|\to\infty$ and $\omega^\nu/|\omega^\nu|\to\omega\ne0$; dividing by $|\omega^\nu|$ and passing to the limit would give $\sum_n\omega_n\,\bar h_{k-1,n}+\omega_0=0$, against the linear independence. So $(\omega^\nu)$ is bounded, and each of its limit points $\bar\omega$ satisfies $\bar p_{k,m}=\sum_n\bar\omega_n\,\bar h_{k-1,n}+\bar\omega_0$. By linear independence there is only one such $\bar\omega$, and $\omega^\nu\to\bar\omega$.
+\end{proof}
+
+\begin{lemma}[Rigidity over $\R$]\label{lem:realrigid}
+Let $\zeta,e\in\R$ with $\zeta\ne0$. If $\zeta^r\sigma(t)-\sigma(\zeta t+e)$ has degree at most $1$ in $t$, then $\zeta=1$ and $e=0$.
+\end{lemma}
+
+\begin{proof}
+As in the proof of Lemma~\ref{lem:rigid}, let $u=t+\kappa$, so that $\sigma(t)=\hs(u)$ and $\sigma(\zeta t+e)=\hs(\zeta u+e')$ with $e'=e+(1-\zeta)\kappa$. Since $\ha_{r-1}=0$, the coefficient of $u^{r-1}$ in $\zeta^r\hs(u)-\hs(\zeta u+e')$ is $-r\ha_r\zeta^{r-1}e'$, so $e'=0$, as $r-1\ge2$. Then the coefficient of $u^m$ is $\ha_m(\zeta^r-\zeta^m)$, so that $\zeta^{r-m}=1$ for all $m\ge2$ with $\ha_m\ne0$. By \eqref{eq:A}, some of these $m$ are smaller than $r$, hence $\zeta=\pm1$, as $\zeta$ is real. If $\zeta=-1$, all these $m$ have the parity of $r$, i.e., they are even, against \eqref{eq:A}. So $\zeta=1$, and $e=e'=0$.
+\end{proof}
+
+\begin{definition}\label{def:S0}
+If $d\ge2$, let $S_0^\circ$ be the set of the $\theta\in S_0$ such that
+\begin{enumerate}[label=\textup{(\roman*)},nosep]
+\item $\deg p_{k,m}=r^{k-1}$ for all $(k,m)\ne(j,i)$;
+\item $1,h_{k,1},\dots,h_{k,d}$ are linearly independent for all $0\le k<L$;
+\item $W_1,\dots,W_{j-1}$ are invertible and, for every $2\le k\le j$, there is $m\ne i$ with $W_k[m,i]\ne0$.
+\end{enumerate}
+If $d=1$, let $S_0^\circ$ be the set of the $\theta=(w_k,b_k)_{k\le L}\in S_0$ such that $w_k\ne0$ for all $k\ne j$.
+\end{definition}
+
+Conditions (i) and (ii) are those of Definition~\ref{def:nd}, except at the inactive neuron. Condition (iii) says that, up to layer $j$, the coordinates are mixed: the $i$-th coordinate of $h_{k-1}$ is read by another neuron of layer $k$. It excludes, for instance, the parameters at which the network splits into networks of width one, for which the fiber is larger, as for $d=1$.
+
+The set $S_0^\circ$ is Zariski-open in $S_0$. It is not empty: this is clear for $d=1$, and for $d\ge2$, since $S_0$ is irreducible, it suffices to find a point of $S_0$ satisfying (iii), which is clear, and another one satisfying (i) and (ii). For the latter, let $\theta\in S_0$ be such that every $W_k$ is diagonal with non-zero diagonal entries, except that $W_j[i,i]=0$ and, if $j<L$, $W_{j+1}[i,m_0]=1$ for one index $m_0\ne i$. For $m\ne i$, the $m$-th coordinates form a network of width one with non-zero weights, so that $p_{k,m}$ and $h_{k,m}$ are polynomials in $x_m$ of degrees $r^{k-1}$ and $r^k$. The same holds for $m=i$ and $k<j$. Moreover, $h_{j,i}=h_{j-1,i}+c_0$, then $p_{j+1,i}=W_{j+1}[i,i]\,h_{j,i}+h_{j,m_0}+b_{j+1,i}$ has the degree $r^j$ of $h_{j,m_0}$, and $p_{k,i}=W_k[i,i]\,h_{k-1,i}+b_{k,i}$ for $k>j+1$, so that $\deg p_{k,i}=r^{k-1}$ and $\deg h_{k,i}=r^k$ for all $k>j$, by induction. This is (i). For (ii), note that $h_{k,m}$ does not depend on $x_i$ for $m\ne i$, while
+\[
+\frac{\partial h_{k,i}}{\partial x_i}=\big(1+W_k[i,i]\,\sigma'(p_{k,i})\big)\,\frac{\partial h_{k-1,i}}{\partial x_i}
+\]
+is non-zero for all $k$, by induction: the first factor is $1$ for $k=j$, and it is not constant for $k\ne j$. Hence, in a linear relation among $1,h_{k,1},\dots,h_{k,d}$, the coefficient of $h_{k,i}$ vanishes, and so do the others, as the $h_{k,m}$ with $m\ne i$ are non-constant polynomials in distinct variables.
+
+\begin{lemma}[Leading forms]\label{lem:leading}
+Let $\theta\in\Theta$ and $k\ge0$ be such that $W_1,\dots,W_k$ are invertible. Then $h_{k,1},\dots,h_{k,d}$ have degree $r^k$, and their leading forms $H_{k,1},\dots,H_{k,d}$ are algebraically independent. In particular, for $\omega\in\R^d\sm\{0\}$ and $\omega_0\in\R$, the polynomial $\omega\cdot h_k+\omega_0$ has degree $r^k$ and leading form $\omega\cdot H_k$.
+\end{lemma}
+
+\begin{proof}
+By induction on $k$, the case $k=0$ being clear. Let $k\ge1$. The forms $P_m=W_k[m,:]\,H_{k-1}$, obtained from the algebraically independent forms $H_{k-1,n}$ by an invertible linear substitution, are algebraically independent, and $P_m$ is the leading form of $p_{k,m}$, of degree $r^{k-1}$. Hence $h_{k,m}=h_{k-1,m}+\sigma(p_{k,m})$ has degree $r^k$ and leading form $a_rP_m^r$. If a polynomial $G$ vanishes at $(a_rP_1^r,\dots,a_rP_d^r)$, then $G(a_ry_1^r,\dots,a_ry_d^r)=0$ in $\R[y_1,\dots,y_d]$, and $G=0$.
+\end{proof}
+
+We first treat the case $d\ge2$. The next proposition computes the first two jets of $\varphi$ at a point of $S_0^\circ$.
+
+\begin{proposition}[Jets]\label{prop:jets}
+Let $d\ge2$ and $\theta\in S_0^\circ$. Let $A$ be the span of $1,h_{j-1,1},\dots,h_{j-1,d}$, and let $\Theta_{j,i}\subseteq\Theta$ be the space of the $\dot\theta=(\dot W_k,\dot b_k)_{k\le L}$ whose entries vanish, except for $\dot W_j[i,:]$ and $\dot b_{j,i}$. For $\eta\in\R[x]^d$, let $\Lambda\eta=\eta_L$, where $\eta_j=\eta$ and $\eta_k=\eta_{k-1}+\sigma'(p_k)\odot(W_k\eta_{k-1})$ for $j<k\le L$, and let $\varepsilon_i$ be the $i$-th vector of the standard basis of $\R^d$.
+\begin{enumerate}[label=\textup{(\alph*)},nosep]
+\item $\ker d\varphi_\theta=\Theta_{j,i}$. Hence the image $T$ of $d\varphi_\theta$ has dimension $\dpar-d-1$.
+\item If $\dot\theta\in\Theta_{j,i}$ and $\ell=\dot W_j[i,:]\,h_{j-1}+\dot b_{j,i}\in A$, then $d^2\varphi_\theta(\dot\theta,\dot\theta)=\sigma''(\beta_0)\,\Lambda(\ell^2\varepsilon_i)$.
+\item If $s$ is a sum of squares of elements of $A$ and $\Lambda(s\,\varepsilon_i)\in T$, then $s=0$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+Let $\dot\theta=(\dot W_k,\dot b_k)\in\Theta$, and let $\dot h_k$ and $\dot p_k$ be the corresponding derivatives of the hidden states and of the pre-activations at $\theta$, so that
+\[
+\dot h_0=0,\qquad\dot p_k=\dot W_kh_{k-1}+\dot b_k+W_k\dot h_{k-1},\qquad\dot h_k=\dot h_{k-1}+\sigma'(p_k)\odot\dot p_k,\qquad d\varphi_\theta(\dot\theta)=\dot h_L,
+\]
+and $\deg\dot h_{k,m}\le r^k$. By (i), and since $r\ge3$, the polynomial $\sigma'(p_{k,m})\,q$ has degree at least $(r-1)\,r^{k-1}>r^{k-1}$ for all $(k,m)\ne(j,i)$ and all non-zero $q\in\R[x]$. Hence:
+\begin{equation*}\tag{$\ast\ast$}\label{eq:starstar}
+\text{if $(k,m)\ne(j,i)$, $\deg g\le r^{k-1}$ and $g+\sigma'(p_{k,m})\,q=0$, then $g=q=0$.}
+\end{equation*}
+At the inactive neuron, instead, $\sigma'(p_{j,i})=\sigma'(\beta_0)=0$.
+
+(a) If $\dot\theta\in\Theta_{j,i}$, then $\dot h_k=0$ for $k<j$ and $\dot p_j=\ell\,\varepsilon_i$, so that $\dot h_j=\sigma'(\beta_0)\,\ell\,\varepsilon_i=0$, and $\dot h_k=0$ for all $k$. Conversely, let $\dot h_L=0$. If $\dot h_k=0$ for some $k\ge1$, then $\dot h_{k-1,m}+\sigma'(p_{k,m})\,\dot p_{k,m}=0$ for all $m$. By \eqref{eq:starstar}, $\dot h_{k-1,m}=0$ and $\dot p_{k,m}=0$ for $(k,m)\ne(j,i)$, while $\dot h_{j-1,i}=0$ for $(k,m)=(j,i)$. By descending induction, $\dot h_k=0$ for all $k$, and $\dot W_k[m,:]\,h_{k-1}+\dot b_{k,m}=\dot p_{k,m}=0$ for all $(k,m)\ne(j,i)$. By (ii), $\dot W_k[m,:]=0$ and $\dot b_{k,m}=0$ for these $(k,m)$, i.e., $\dot\theta\in\Theta_{j,i}$.
+
+(b) Let $\Phi$ be the polynomial map computed by the layers $j+1,\dots,L$ of $\theta$, so that $f_\theta=\Phi(h_j)$ and $\Lambda$ is the differential of $\Phi$ at $h_j$. For $\dot\theta\in\Theta_{j,i}$ and $\tau\in\R$, the parameter $\theta+\tau\dot\theta$ has the same hidden state $h_{j-1}$ as $\theta$ and the same pre-activations at layer $j$, except for $p_{j,i}=\beta_0+\tau\ell$. Hence
+\[
+f_{\theta+\tau\dot\theta}=\Phi\big(h_j+(\sigma(\beta_0+\tau\ell)-c_0)\,\varepsilon_i\big),\qquad\sigma(\beta_0+\tau\ell)-c_0=\tfrac12\,\sigma''(\beta_0)\,\tau^2\ell^2+O(\tau^3),
+\]
+since $\sigma'(\beta_0)=0$. Therefore $f_{\theta+\tau\dot\theta}=f_\theta+\frac12\,\sigma''(\beta_0)\,\tau^2\,\Lambda(\ell^2\varepsilon_i)+O(\tau^3)$.
+
+(c) Let $s=\sum_a\ell_a^2$ with $\ell_a\in A$, and let $\dot\theta\in\Theta$ with $d\varphi_\theta(\dot\theta)=\Lambda(s\,\varepsilon_i)$. Let $\mu_j=s\,\varepsilon_i$ and $\mu_k=\mu_{k-1}+\sigma'(p_k)\odot(W_k\mu_{k-1})$ for $k>j$, so that $\Lambda(s\,\varepsilon_i)=\mu_L$. Since $\deg s\le2r^{j-1}\le r^j$, we have $\deg\mu_{k,m}\le r^k$ for $k\ge j$, by induction. For $k>j$,
+\[
+\dot h_k-\mu_k=(\dot h_{k-1}-\mu_{k-1})+\sigma'(p_k)\odot\big(\dot W_kh_{k-1}+\dot b_k+W_k(\dot h_{k-1}-\mu_{k-1})\big),
+\]
+so that $\dot h_k=\mu_k$ implies $\dot h_{k-1}=\mu_{k-1}$, by \eqref{eq:starstar}. As $\dot h_L=\mu_L$, we get $\dot h_j=s\,\varepsilon_i$, that is, $\dot h_{j-1,m}+\sigma'(p_{j,m})\,\dot p_{j,m}$ equals $s$ for $m=i$ and $0$ for $m\ne i$. Hence $\dot h_{j-1}=s\,\varepsilon_i$: for $m\ne i$ by \eqref{eq:starstar}, and for $m=i$ because $\sigma'(p_{j,i})=0$. In particular, $\deg s\le r^{j-1}$. If $j=1$, then $s=0$, as $\dot h_0=0$. Let $j\ge2$, and write $\ell_a=\omega_a\cdot h_{j-1}+c_a$ with $\omega_a\in\R^d$ and $c_a\in\R$. By (iii) and Lemma~\ref{lem:leading}, the component of degree $2r^{j-1}$ of $s$ is $\sum_a(\omega_a\cdot H_{j-1})^2$, where $\omega_a\cdot H_{j-1}\ne0$ if $\omega_a\ne0$. A sum of squares of real polynomials vanishes only if all of them do. Since $\deg s\le r^{j-1}<2r^{j-1}$, we get $\omega_a=0$ for all $a$, i.e., $s$ is the constant $s_0=\sum_ac_a^2$. Finally, if $\dot h_k=s_0\,\varepsilon_i$ for some $1\le k<j$, then \eqref{eq:starstar}, applied to the coordinates of $\dot h_{k-1}-s_0\,\varepsilon_i$, gives $\dot h_{k-1}=s_0\,\varepsilon_i$. By descending induction, $\dot h_0=s_0\,\varepsilon_i$, and $s_0=0$ since $\dot h_0=0$.
+\end{proof}
+
+By (a), (b) and (ii), for $d\ge2$ and $\theta\in S_0^\circ$ the conditions \eqref{eq:cone} at $\theta'=\theta$ read: $v\perp T$ and $\langle v,\Lambda(\ell^2\varepsilon_i)\rangle\le0$ for all $\ell\in A$, i.e., the quadratic form $\ell\mapsto\langle v,\Lambda(\ell^2\varepsilon_i)\rangle$ on the space $A$, of dimension $d+1$, is negative semi-definite. The next proposition shows that $\theta$ is the only point of its fiber, and that nothing comes from infinity.
+
+\begin{proposition}[Limits]\label{prop:proper}
+Let $d\ge2$ and $\theta\in S_0^\circ$. If $(\theta^\nu)$ is a sequence in $\Theta$ such that $f_{\theta^\nu}\to f_\theta$, then $\theta^\nu\to\theta$. In particular, $\varphi^{-1}(f_\theta)=\{\theta\}$.
+\end{proposition}
+
+\begin{proof}
+It suffices to show that a subsequence converges to $\theta$, since this applies to every subsequence. By Lemma~\ref{lem:compact}, we may assume that $p^\nu_k\to\bar p_k$ and $h^\nu_k\to\bar h_k$ for all $k$, with $\bar h_L=f_\theta$. Here $\deg\bar p_{k,m}\le r^{k-1}$ and $\deg\bar h_{k,m}\le r^k$. We write $p_k$, $h_k$ for the pre-activations and the hidden states of $\theta$, and show that $\bar p_k=p_k$ and $\bar h_k=h_k$ for all $k$.
+
+\emph{Step 1: from the top.} If $\bar h_{k,m}=h_{k,m}$ for some $(k,m)\ne(j,i)$, then $\sigma\circ p_{k,m}-\sigma\circ\bar p_{k,m}=\bar h_{k-1,m}-h_{k-1,m}$ has degree at most $r^{k-1}=\deg p_{k,m}$, so that $\bar p_{k,m}=p_{k,m}$ by Lemma~\ref{lem:gap}(i), and $\bar h_{k-1,m}=h_{k-1,m}$. Starting from $\bar h_L=h_L$, by descending induction on $k$ we get $\bar p_{k,m}=p_{k,m}$ whenever $k>j$ or $m\ne i$, and $\bar h_{k,m}=h_{k,m}$ whenever $k\ge j$ or $m\ne i$.
+
+\emph{Step 2: from the bottom.} We show that $\bar h_k=h_k$ for $0\le k<j$, by induction on $k$. The case $k=0$ is clear. Let $1\le k<j$, and assume that $\bar h_{k-1}=h_{k-1}$. By Step~1, it remains to show that $\bar h_{k,i}=h_{k,i}$. By (ii) and Lemma~\ref{lem:compact}, $\bar p_{k,i}=\bar\omega\cdot h_{k-1}+\bar b$ for some $\bar\omega\in\R^d$ and $\bar b\in\R$, and $\bar h_{k,i}=h_{k-1,i}+\sigma(\bar p_{k,i})$.
+
+We claim that $\bar h_{k,i}=\gamma_0+\sum_n\gamma_n\,h_{k,n}$ for some $\gamma_0,\dots,\gamma_d\in\R$. If $1,\bar h_{k,1},\dots,\bar h_{k,d}$ are linearly dependent, this holds because $1$ and the $\bar h_{k,n}=h_{k,n}$ with $n\ne i$ are linearly independent, by (ii). Otherwise, choose $m\ne i$ with $W_{k+1}[m,i]\ne0$, by (iii). By Step~1 and Lemma~\ref{lem:compact}, $p_{k+1,m}=\bar p_{k+1,m}=\bar u\cdot\bar h_k+\bar u_0$ for some $\bar u\in\R^d$ and $\bar u_0\in\R$, that is,
+\[
+W_{k+1}[m,:]\,h_k+b_{k+1,m}=\sum_{n\ne i}\bar u_n\,h_{k,n}+\bar u_i\,\bar h_{k,i}+\bar u_0.
+\]
+If $\bar u_i=0$, this is a linear relation among $1,h_{k,1},\dots,h_{k,d}$ in which the coefficient of $h_{k,i}$ is $W_{k+1}[m,i]\ne0$, against (ii). So $\bar u_i\ne0$, and we can solve for $\bar h_{k,i}$.
+
+By the claim,
+\begin{equation}\label{eq:bottom}
+h_{k-1,i}+\sigma(\bar p_{k,i})=\gamma_0+\sum_n\gamma_n\,\big(h_{k-1,n}+\sigma(p_{k,n})\big).
+\end{equation}
+Let $H=H_{k-1}$ be the leading forms of $h_{k-1}$, which are algebraically independent by (iii) and Lemma~\ref{lem:leading}, and let $\omega_n=W_k[n,:]$. The components of degree $r^{k-1}$ of $\bar p_{k,i}$ and $p_{k,n}$ are $\bar\omega\cdot H$ and $\omega_n\cdot H$, so that the components of degree $r^k$ in \eqref{eq:bottom} give $(\bar\omega\cdot H)^r=\sum_n\gamma_n\,(\omega_n\cdot H)^r$, and therefore $(\bar\omega\cdot y)^r=\sum_n\gamma_n\,(\omega_n\cdot y)^r$ in $\R[y_1,\dots,y_d]$. Since $W_k$ is invertible, the forms $z_n=\omega_n\cdot y$ are coordinates; writing $\bar\omega\cdot y=\sum_n\lambda_nz_n$, we get $(\sum_n\lambda_nz_n)^r=\sum_n\gamma_nz_n^r$. The coefficient of $z_a^{r-1}z_b$ shows that $\lambda_a^{r-1}\lambda_b=0$ for $a\ne b$, so that at most one $\lambda_a$ is non-zero, and $\gamma_n=\lambda_n^r$ for all $n$. Hence there are an index $a$ and $\zeta\in\R$ such that $\bar\omega=\zeta\,\omega_a$, $\gamma_a=\zeta^r$, and $\gamma_n=0$ for $n\ne a$. Then $\bar p_{k,i}=\zeta\,p_{k,a}+e$ for some $e\in\R$, and \eqref{eq:bottom} becomes
+\[
+h_{k-1,i}-\zeta^rh_{k-1,a}-\gamma_0=\rho(p_{k,a}),\qquad\rho(t)=\zeta^r\sigma(t)-\sigma(\zeta t+e).
+\]
+The left-hand side has degree at most $r^{k-1}=\deg p_{k,a}$, so $\deg\rho\le1$. If $\zeta=0$, then $\rho$ is constant, and so is $h_{k-1,i}$, which is false, by Lemma~\ref{lem:leading}. So $\zeta\ne0$, and $\zeta=1$, $e=0$ by Lemma~\ref{lem:realrigid}. Then $\rho=0$ and $h_{k-1,i}-h_{k-1,a}=\gamma_0$, which forces $a=i$, by (ii). Therefore $\bar p_{k,i}=p_{k,i}$ and $\bar h_{k,i}=h_{k,i}$.
+
+\emph{Step 3: conclusion.} By Steps~1 and~2, $\bar h_{j-1}=h_{j-1}$ and $\bar h_j=h_j$, so that $\sigma(\bar p_{j,i})=\bar h_{j,i}-\bar h_{j-1,i}=h_{j,i}-h_{j-1,i}=c_0$. Since $\sigma$ attains its minimum $c_0$ only at $\beta_0$, the polynomial $\bar p_{j,i}$ is constantly equal to $\beta_0=p_{j,i}$. Thus $\bar h_k=h_k$ and $\bar p_k=p_k$ for all $k$. By (ii) and Lemma~\ref{lem:compact}, for every $k$, $(W^\nu_k,b^\nu_k)$ converges to the only $(\bar W_k,\bar b_k)$ such that $\bar W_kh_{k-1}+\bar b_k=p_k$, namely to $(W_k,b_k)$.
+\end{proof}
+
+\paragraph{Width one.} Let $d=1$. For a parameter $\vartheta=(w_k,b_k)_{k\le L}$ with $w_{j'}=0$ for some $j'$, layer $j'$ adds the constant $c=\sigma(b_{j'})$, which can be absorbed by the biases of the subsequent layers: by induction on $k$, the polynomials $g_k=h_k$ for $k<j'$ and $g_k=h_{k+1}-c$ for $j'\le k<L$ are the hidden states of the network of depth $L-1$ with parameter
+\[
+\mathrm{red}_{j'}(\vartheta)=\big((w_k,b_k)_{k<j'},\ (w_{k+1},\,b_{k+1}+c\,w_{k+1})_{j'\le k<L}\big).
+\]
+Hence
+\begin{equation}\label{eq:red}
+f_\vartheta=\sigma(b_{j'})+\psi\big(\mathrm{red}_{j'}(\vartheta)\big)\qquad\text{whenever }w_{j'}=0,
+\end{equation}
+where $\psi$ is the parametrization map of the network of depth $L-1$ (for $L=1$, it is constant, with value $x$). Now let $\theta\in S_0^\circ$, and let $\tilde\theta=\mathrm{red}_j(\theta)=(\tilde w_k,\tilde b_k)_{k<L}$, with hidden states $\tilde h_k$ and pre-activations $\tilde p_k$. Since $\tilde w_k\ne0$ for all $k$, it is non-degenerate, with $\deg\tilde p_k=r^{k-1}$ and $\deg\tilde h_k=r^k$. For $1\le j'\le L$, let $\theta^{(j')}$ be the parameter whose layers are $(\tilde w_k,\tilde b_k)$ for $k<j'$, $(0,\beta_0)$ for $k=j'$, and $(\tilde w_{k-1},\tilde b_{k-1}-c_0\tilde w_{k-1})$ for $k>j'$. Thus $\mathrm{red}_{j'}(\theta^{(j')})=\tilde\theta$ and $\theta^{(j)}=\theta$, and $f_{\theta^{(j')}}=c_0+\tilde h_{L-1}=f_\theta$ for all $j'$, by \eqref{eq:red}: the inactive layer can be moved to any position. Finally, let
+\[
+\Pi_{j'}=\prod_{k=j'}^{L-1}\big(1+\tilde w_k\,\sigma'(\tilde p_k)\big),\qquad\deg\Pi_{j'}=\sum_{k=j'}^{L-1}(r-1)\,r^{k-1}=r^{L-1}-r^{j'-1}.
+\]
+
+\begin{proposition}[Width one]\label{prop:one}
+Let $d=1$ and $\theta\in S_0^\circ$, with the notation above, and let $T$ be the image of $d\psi_{\tilde\theta}$.
+\begin{enumerate}[label=\textup{(\alph*)},nosep]
+\item If $(\theta^\nu)$ is a sequence in $\Theta$ such that $f_{\theta^\nu}\to f_\theta$, then a subsequence converges to one of $\theta^{(1)},\dots,\theta^{(L)}$. In particular, $\varphi^{-1}(f_\theta)=\{\theta^{(1)},\dots,\theta^{(L)}\}$.
+\item For every $j'$, the image of $d\varphi_{\theta^{(j')}}$ is $T$, of dimension $\dpar-2$, and its kernel is the space $\Theta_{j'}$ of the $\dot\theta=(\dot w_k,\dot b_k)_{k\le L}$ with $\dot w_k=\dot b_k=0$ for $k\ne j'$. Moreover, $d^2\varphi_{\theta^{(j')}}(\dot\theta,\dot\theta)=\sigma''(\beta_0)\,\ell^2\,\Pi_{j'}$ for $\dot\theta\in\Theta_{j'}$, where $\ell=\dot w_{j'}\tilde h_{j'-1}+\dot b_{j'}$.
+\item For $j'=1,\dots,L$, let $s_{j'}$ be a sum of squares of elements of the span of $1$ and $\tilde h_{j'-1}$. If $\sum_{j'}s_{j'}\Pi_{j'}\in T$, then $s_{j'}=0$ for all $j'$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(a) The statement only involves $\tilde\theta$, which can be any parameter of depth $L-1$ with non-zero weights, and we prove it by induction on $L$. By Lemma~\ref{lem:compact}, we may assume that $p^\nu_k\to\bar p_k$ and $h^\nu_k\to\bar h_k$ for all $k$, with $\bar h_L=c_0+\tilde h_{L-1}$. Since $\deg\bar h_{L-1}\le r^{L-1}$, the polynomial $\sigma(\bar p_L)=c_0+\tilde h_{L-1}-\bar h_{L-1}$ has degree at most $r^{L-1}$, so that $\deg\bar p_L\le r^{L-2}$; in particular, $\bar p_L$ is constant if $L=1$.
+
+Assume first that $\bar p_L$ is a constant $\bar\beta$, and let $e=\sigma(\bar\beta)-c_0\ge0$, so that $\bar h_{L-1}=\tilde h_{L-1}-e$. If $\bar h_k=\tilde h_k-e$ for some $1\le k<L$, then $\sigma(\tilde p_k)-\sigma(\bar p_k)=\bar h_{k-1}-\tilde h_{k-1}+e$ has degree at most $r^{k-1}=\deg\tilde p_k$, so that $\bar p_k=\tilde p_k$ by Lemma~\ref{lem:gap}(i), and $\bar h_{k-1}=\tilde h_{k-1}-e$. By descending induction, this holds for all $k<L$, and for $k=0$ it reads $x=x-e$. Hence $e=0$ and $\bar\beta=\beta_0$, while $\bar h_k=\tilde h_k$ and $\bar p_k=\tilde p_k$ for $k<L$. Since the $\tilde h_k$ are not constant, Lemma~\ref{lem:compact} shows that $(w^\nu_k,b^\nu_k)\to(\tilde w_k,\tilde b_k)$ for $k<L$ and $(w^\nu_L,b^\nu_L)\to(0,\beta_0)$, i.e., $\theta^\nu\to\theta^{(L)}$.
+
+Assume now that $\bar p_L$ is not constant, so that $L\ge2$. We have
+\[
+\sigma(\tilde p_{L-1})-\sigma(\bar p_L)=\bar h_{L-1}-c_0-\tilde h_{L-2}.
+\]
+If $\bar h_{L-1}$ were constant, the right-hand side would have degree at most $r^{L-2}=\deg\tilde p_{L-1}$, so that $\bar p_L=\tilde p_{L-1}$ by Lemma~\ref{lem:gap}(i), and $\tilde h_{L-2}$ would be constant, which is false. Hence, by Lemma~\ref{lem:compact}, $(w^\nu_L,b^\nu_L)\to(\bar w,\bar b)$ with $\bar p_L=\bar w\,\bar h_{L-1}+\bar b$ and $\bar w\ne0$. Then $\deg\bar h_{L-1}=\deg\bar p_L\le r^{L-2}$, and the same argument gives $\bar p_L=\tilde p_{L-1}$ and $\bar h_{L-1}=c_0+\tilde h_{L-2}$. The latter is the limit of the functions $h^\nu_{L-1}$ of the networks of depth $L-1$ with parameters $\theta^\nu_{<L}$, and $\tilde h_{L-2}$ is the function of $\tilde\theta_{<L-1}$. By induction, a subsequence of $(\theta^\nu_{<L})$ converges to the parameter of depth $L-1$ with layers $(\tilde w_k,\tilde b_k)$ for $k<j'$, $(0,\beta_0)$ for $k=j'$, and $(\tilde w_{k-1},\tilde b_{k-1}-c_0\tilde w_{k-1})$ for $j'<k<L$, for some $j'<L$. Moreover, $\bar w\,(c_0+\tilde h_{L-2})+\bar b=\tilde p_{L-1}=\tilde w_{L-1}\tilde h_{L-2}+\tilde b_{L-1}$ gives $(\bar w,\bar b)=(\tilde w_{L-1},\tilde b_{L-1}-c_0\tilde w_{L-1})$. So this subsequence of $(\theta^\nu)$ converges to $\theta^{(j')}$. The last claim follows by taking constant sequences.
+
+(b) Let $S_0^{(j')}$ be the affine subspace of $\Theta$ defined by $w_{j'}=0$ and $b_{j'}=\beta_0$. On it, $\varphi=c_0+\psi\circ\mathrm{red}_{j'}$ by \eqref{eq:red}, and $\mathrm{red}_{j'}$ restricts to an affine isomorphism from $S_0^{(j')}$ onto the parameter space of depth $L-1$, which maps $\theta^{(j')}$ to $\tilde\theta$. Since $d\psi_{\tilde\theta}$ is injective by Proposition~\ref{prop:diff}, $d\varphi_{\theta^{(j')}}$ maps the tangent space of $S_0^{(j')}$ isomorphically onto $T$. On the other hand, the derivatives of $\varphi$ at $\theta^{(j')}$ with respect to $w_{j'}$ and $b_{j'}$ vanish, being multiples of $\sigma'(\beta_0)=0$. Since $\Theta$ is the direct sum of $\Theta_{j'}$ and of the tangent space of $S_0^{(j')}$, the kernel of $d\varphi_{\theta^{(j')}}$ is $\Theta_{j'}$ and its image is $T$. For the second derivative we argue as in the proof of Proposition~\ref{prop:jets}(b): for $\dot\theta\in\Theta_{j'}$,
+\[
+f_{\theta^{(j')}+\tau\dot\theta}=\Phi\big(\tilde h_{j'-1}+\sigma(\beta_0+\tau\ell)\big),
+\]
+where $\Phi$ is computed by the layers $k>j'$ of $\theta^{(j')}$. These layers have weights $\tilde w_{k-1}$ and, at $\theta^{(j')}$, pre-activations $\tilde p_{k-1}$, so that the differential of $\Phi$ at $\tilde h_{j'-1}+c_0$ is the multiplication by $\Pi_{j'}$.
+
+(c) The elements of $T$ have degree at most $r^{L-1}$. A sum of squares $s_{j'}=\sum_a(\omega_a\tilde h_{j'-1}+c_a)^2$ has degree $2r^{j'-1}$ if some $\omega_a$ is non-zero, its leading coefficient being a positive multiple of $\sum_a\omega_a^2$, and it is a non-negative constant otherwise. In the first case $\deg(s_{j'}\Pi_{j'})=r^{L-1}+r^{j'-1}$, and in the second one it is at most $r^{L-1}-r^{j'-1}$. If the first case occurred, then, for the largest such $j'$, the sum $\sum_{j'}s_{j'}\Pi_{j'}$ would have degree $r^{L-1}+r^{j'-1}>r^{L-1}$. Hence all the $s_{j'}$ are non-negative constants. Now $\Pi_L=1$ and, for $j'<L$, $\Pi_{j'}-\Pi_{j'+1}=\tilde w_{j'}\,\sigma'(\tilde p_{j'})\,\Pi_{j'+1}$ is $\tilde w_{j'}$ times the derivative of $\psi$ at $\tilde\theta$ with respect to $\tilde b_{j'}$, which lies in $T$. So $\Pi_{j'}-1\in T$ for all $j'$, and $\sum_{j'}s_{j'}\in T$. But $T$ does not contain the non-zero constants: if $d\psi_{\tilde\theta}(\dot\theta)$ is a constant $c$, then, with the notation of the proof of Proposition~\ref{prop:diff}, $\dot h_{L-1}=c$; and if $\dot h_k=c$ for some $k\ge1$, then $\sigma'(\tilde p_k)\,\dot p_k=c-\dot h_{k-1}$ has degree at most $r^{k-1}$, so that $\dot p_k=0$ and $\dot h_{k-1}=c$. By descending induction, $c=\dot h_0=0$. Therefore $\sum_{j'}s_{j'}=0$, and $s_{j'}=0$ for all $j'$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:voronoi}]
+Let $\theta\in S_0^\circ$ and $f=f_\theta$. By Propositions~\ref{prop:proper} and~\ref{prop:one}(a), the fiber $\varphi^{-1}(f)$ is finite, and every sequence $(\theta^\nu)$ with $f_{\theta^\nu}\to f$ has a subsequence converging to a point of the fiber. By Propositions~\ref{prop:jets}(a) and~\ref{prop:one}(b), the differentials of $\varphi$ at the points of the fiber have the same image $T$, of dimension $\dpar-d-1$. Let $\Gamma\subseteq V$ be the set of the vectors $d^2\varphi_{\theta'}(\dot\theta,\dot\theta)$, for $\theta'$ in the fiber and $\dot\theta$ in the unit sphere of $\ker d\varphi_{\theta'}$; it is compact. By homogeneity, $C_\theta$ is the set of the $v\in T^\perp$ such that $\langle v,g\rangle\le0$ for all $g\in\Gamma$. Let $C_\theta^\circ$ be the set of the $v\in T^\perp$ such that $\langle v,g\rangle<0$ for all $g\in\Gamma$; it is open in $T^\perp$.
+
+\emph{The cone $C_\theta^\circ$ is not empty.} We claim that the convex hull of $\Gamma$ does not meet $T$. Let $g=\sum_a\lambda_ag_a$ with $g_a\in\Gamma$, $\lambda_a>0$ and $\sum_a\lambda_a=1$. If $d\ge2$, then $g_a=\sigma''(\beta_0)\,\Lambda(\ell_a^2\varepsilon_i)$ for some non-zero $\ell_a\in A$, by Proposition~\ref{prop:jets}(b) and (ii). Hence $g=\sigma''(\beta_0)\,\Lambda(s\,\varepsilon_i)$, where $s=\sum_a\lambda_a\ell_a^2$ is a non-zero sum of squares of elements of $A$, and $g\notin T$ by Proposition~\ref{prop:jets}(c). If $d=1$, similarly, $g=\sigma''(\beta_0)\sum_{j'}s_{j'}\Pi_{j'}$ by Proposition~\ref{prop:one}(b), where the $s_{j'}$ are sums of squares as in Proposition~\ref{prop:one}(c), not all zero, and $g\notin T$. Therefore the orthogonal projection of the convex hull of $\Gamma$ to $T^\perp$ is a compact convex set that does not contain $0$. If $w$ is its point of least norm, then $\langle w,y\rangle\ge\|w\|^2>0$ for all its points $y$, and $-w\in C_\theta^\circ$.
+
+\emph{Cone and dimension.} By Lemma~\ref{lem:necessary}, $\mathrm{Vor}_{\M}(f)-f\subseteq C_\theta$. By Lemma~\ref{lem:sufficient}, for every $v\in C_\theta^\circ$ there is $t>0$ such that $f+tv\in\mathrm{Vor}_{\M}(f)$. Thus the cone generated by $\mathrm{Vor}_{\M}(f)-f$ contains $C_\theta^\circ$ and is contained in $C_\theta$. Its closure is $C_\theta$, because $C_\theta$ is closed, and $v+\tau v'\in C_\theta^\circ$ for all $v\in C_\theta$, $v'\in C_\theta^\circ$ and $\tau>0$. Moreover, $\mathrm{Vor}_{\M}(f)-f$ is a convex subset of $T^\perp$ that contains $0$ and a positive multiple of every vector of the non-empty open subset $C_\theta^\circ$ of $T^\perp$. Hence it spans $T^\perp$, and
+\[
+\dim\mathrm{Vor}_{\M}(f)=\dim T^\perp=N-\dpar+d+1,
+\]
+where $\dpar=\dim\M$ by Theorem~\ref{thm:smooth}.
+
+\emph{Interior.} Let $\mathcal V$ be the set of the pairs $(\theta,u)\in S_0^\circ\times V$ such that $u'=2u-f_\theta$ lies in $\mathrm{Vor}_{\M}(f_\theta)$, i.e., such that $u$ is the midpoint of $f_\theta$ and of a point $u'$ of its Voronoi cell. It is semi-algebraic, by the Tarski--Seidenberg theorem. Let $(\theta,u)\in\mathcal V$ and $q\in\M$. Since $\|u'-q\|^2-\|u'-f_\theta\|^2=\|q-f_\theta\|^2-2\langle u'-f_\theta,q-f_\theta\rangle$ is non-negative,
+\[
+\|u-q\|^2-\|u-f_\theta\|^2=\|q-f_\theta\|^2-\langle u'-f_\theta,q-f_\theta\rangle\ge\tfrac12\,\|q-f_\theta\|^2,
+\]
+so that $f_\theta$ is the only closest point to $u$ in $\M$. Consequently, the projection $\mathcal V\to V$ is injective: $u$ determines $f_\theta$, and $\theta$ is the only point of $\varphi^{-1}(f_\theta)$ in $S_0$, by Proposition~\ref{prop:proper} if $d\ge2$, and because $\theta^{(j')}$ has a non-zero weight at layer $j$ for $j'\ne j$ if $d=1$. The fiber of $\mathcal V$ over $\theta\in S_0^\circ$ is $\frac12\big(f_\theta+\mathrm{Vor}_{\M}(f_\theta)\big)$, of dimension $N-\dpar+d+1$, while $S_0^\circ$ has dimension $\dpar-d-1$. By the additivity of the dimension of semi-algebraic sets in families, and its invariance under semi-algebraic bijections (van den Dries, \emph{Tame Topology and O-minimal Structures}, Chapter~4, \S1), $\mathcal V$ and its projection to $V$ have dimension $N$. Finally, a semi-algebraic subset of $V$ of dimension $N=\dim V$ has non-empty interior.
+\end{proof}
+
 \section{Remarks}
 
 \begin{remark}[Mechanism]
@@ -307,6 +555,10 @@ For $d\ge2$ and $L\ge2$, a parameter without inactive neurons can be degenerate 
 
 \begin{remark}[The assumption on $\sigma$]
 Assumption \eqref{eq:A} excludes the degrees $r\le4$ and the activations with an affine symmetry, such as even polynomials and monomials. For these, the generic fiber of $\varphi$ is expected to be the orbit of a non-trivial finite group, and the statements have to be modified accordingly; we have not treated this case.
+\end{remark}
+
+\begin{remark}[Voronoi cells in the neurovariety]\label{rem:voronoi}
+Theorem~\ref{thm:voronoi} concerns the semi-algebraic set $\M$: the Voronoi cell of $f_\theta$ in the set of the real points of $\Mbar$ is smaller. Let $d\ge2$ and $\theta\in S_0^\circ$, and let $\Phi$ be as in the proof of Proposition~\ref{prop:jets}(b), so that $f_\theta=\Phi(h_j)$. For $c\in\R$, the function $f^c=\Phi\big(h_j+(c-c_0)\,\varepsilon_i\big)$, obtained by letting the inactive neuron output $c$ instead of $c_0$, lies in $\Mbar$: it is computed by the parameter obtained from $\theta$ by replacing $b_{j,i}$ with a root of $\sigma(b)=c$, which is not real for $c<c_0$, and the polynomials that vanish on $\M$ also vanish at the functions of the complex parameters. Thus the curve $c\mapsto f^c$ stops at $c=c_0$ in $\M$, while it continues in $\Mbar$, like the handle of the Whitney umbrella. If $u$ lies in the Voronoi cell of $f_\theta$ in $\Mbar$, the distance from $u$ along this curve is minimal at $c=c_0$, so that $v=u-f_\theta$ is orthogonal to its derivative $\Lambda\varepsilon_i$. But $\sigma''(\beta_0)\,\Lambda\varepsilon_i$ is the second derivative of $\varphi$ at $\theta$ in the direction of the bias $b_{j,i}$, so that $\langle v,\Lambda\varepsilon_i\rangle<0$ on the open cone $C_\theta^\circ$ of the proof of Theorem~\ref{thm:voronoi}. Hence the Voronoi cell of $f_\theta$ in $\Mbar$ lies in a hyperplane of $f_\theta+T^\perp$, and its dimension is at most $N-\dim\M+d$. The same holds for $d=1$, with $\Pi_j$ in place of $\Lambda\varepsilon_i$.
 \end{remark}
 
 \end{document}

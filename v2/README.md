@@ -7,7 +7,7 @@ A plain HTML website. There is no build step: open `index.html` in a browser.
 | File | Contents |
 |:--|:--|
 | `index.html` | Home page |
-| `primer.html`, `literature.html`, `open-problems.html`, `community.html` | The other pages |
+| `primer.html`, `literature.html`, `open-problems.html` | The other pages |
 | `assets/style.css` | Colors, type and layout |
 | `assets/mathjax-config.js` | LaTeX settings and shared macros |
 | `papers.js` | The papers listed on the Literature page, and the tags that filter them |
@@ -102,7 +102,7 @@ Above the list, the Literature page shows the tags as buttons, each with the num
 
 ## Adding a page
 
-1. Copy an existing page, for example `community.html`, and change its title and content.
+1. Copy an existing page, for example `open-problems.html`, and change its title and content.
 2. Add a link to the new page in the menu (`<nav class="site-nav">`) of every page.
 3. In the new page's menu, put `aria-current="page"` on its own link.
 

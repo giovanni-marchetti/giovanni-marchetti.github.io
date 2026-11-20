@@ -131,10 +131,16 @@ details.section:not([open]) > summary { margin-bottom: 0; }
 details.section:not([open]) + details.section > summary { margin-top: 1.2rem; }
 /* The first section, after the Primer's opening line, sits as close to it as closed sections sit to each other. */
 p + details.section > summary { margin-top: 1.2rem; }
+/* Subsections (Primer): an <h3> inside a section, in the italics of h3 and the accent of the opening initial (.lede). */
+details.section h3 { color: var(--orange-deep); font-size: 1.1rem; }
 
-/* Math ignores the surrounding small caps and letter-spacing; display math scrolls inside its own box on narrow screens. */
+/* Math ignores the surrounding small caps and letter-spacing; display math scrolls inside its own box on narrow screens.
+   Its scrollbar has no track, only a translucent gray thumb, so it sits on the paper and on shaded boxes alike. */
 mjx-container { font-variant: normal; letter-spacing: normal; }
-mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+mjx-container[display="true"] {
+  overflow-x: auto; overflow-y: hidden; max-width: 100%;
+  scrollbar-color: color-mix(in srgb, var(--ink) 40%, transparent) transparent;
+}
 
 /* Theorem-like blocks, as in a book: small-caps label, italic statement (upright in definitions and examples). */
 .theorem, .definition, .example, .proof { margin: 1.2rem 0; }
@@ -410,22 +416,12 @@ tbody tr:last-child td { border-bottom: 1px solid var(--ink); }
 .news time { color: var(--muted); font-variant-numeric: oldstyle-nums; }
 @media (max-width: 600px) { .news li { grid-template-columns: minmax(0, 1fr); gap: 0; } }
 
-/* Footer: small caps, centered, a hairline above. */
+/* Footer: a hairline closing the page. */
 .site-footer {
   margin-top: 4rem;
   margin-bottom: 2.5rem;
-  padding-top: .9rem;
   border-top: 1px solid var(--rule);
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: .2rem 1.2rem;
-  font-variant: small-caps;
-  letter-spacing: .05em;
-  font-size: .8rem;
-  color: var(--muted);
 }
-.site-footer a { color: inherit; }
 
 /* Figures: images scale down to the column width. */
 figure { margin: 1.6rem 0 2rem; }
@@ -458,3 +454,12 @@ figure img { display: block; width: 100%; height: auto; }
 @keyframes hero-s12 { 0%, 26% { stroke-dashoffset: .35; opacity: 0; } 27% { stroke-dashoffset: .35; opacity: 1; }
   36% { stroke-dashoffset: -1; opacity: 1; } 37%, 100% { stroke-dashoffset: -1; opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .hero-net * { animation: none; } }
+
+/* Epigraph under the top drawing (<figure class="epigraph">), as at the head of a book's chapter: the quotation in
+   italics, in a block narrower than the column, centred; under it, flush right, the author and the work, in the
+   upright text of the page. The negative top margin brings it closer to the drawing, whose bottom margin is 2rem. */
+.epigraph { max-width: 31rem; margin: -.8rem auto 2.4rem; font-size: .92rem; }
+.epigraph blockquote { margin: 0; font-style: italic; }
+.epigraph blockquote p { margin: 0; }
+.epigraph figcaption { margin-top: .4rem; text-align: right; color: var(--muted); }
+.epigraph cite { font-style: normal; }

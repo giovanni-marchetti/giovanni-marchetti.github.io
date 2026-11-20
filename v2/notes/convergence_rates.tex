@@ -1,0 +1,91 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{remark}
+\newtheorem*{remarks}{Remarks}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\cO}{\mathcal{O}}
+\newcommand{\m}{\mathfrak{m}}
+
+\title{Convergence rates of gradient flows for algebraic models:\\ degree and fiber multiplicity}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\paragraph{Setting.}
+Let $\Theta=\R^n$ and $V\cong\R^N$ be Euclidean, $\varphi\colon\Theta\to V$ a polynomial map whose coordinates have degree at most $k$, $L\colon V\to\R$ a polynomial, and $F=L\circ\varphi$, so that $\deg F\le d:=k\deg L$. Let $\theta(t)$ be a bounded trajectory of $\dot\theta=-\nabla F(\theta)$. By {\L}ojasiewicz's theorem~\cite{Loj84}, $\theta(t)\to\theta_\infty$ with $\nabla F(\theta_\infty)=0$; set $F_\infty=F(\theta_\infty)$. We use two classical inequalities, each holding near $x_0$ for some $c>0$:
+\begin{itemize}
+\item[(DK)] if $f$ is a polynomial on $\R^n$ of degree $d\ge2$ with $f(x_0)=0$ and $\nabla f(x_0)=0$, then $\|\nabla f\|\ge c\,|f|^{1-1/R(n,d)}$, where $R(n,d)=d(3d-3)^{n-1}$~\cite{DK05};
+\item[(BL)] if $f$ is real analytic with $f(x_0)=0$, then $\|x-x_0\|\,\|\nabla f(x)\|\ge\tfrac12|f(x)|$~\cite{BL71}.
+\end{itemize}
+
+\begin{lemma}\label{lem:rates}
+Suppose $\|\nabla F\|\ge c\,|F-F_\infty|^{\rho}$ near $\theta_\infty$, with $c>0$ and $\rho\in[\frac12,1)$. Then, for large $t$,
+\[
+\|\theta(t)-\theta_\infty\|\le\frac{(F(\theta(t))-F_\infty)^{1-\rho}}{c(1-\rho)},
+\qquad
+F(\theta(t))-F_\infty=
+\begin{cases}
+O(e^{-c^2t}), & \rho=\frac12,\\[2pt]
+O\big(t^{-1/(2\rho-1)}\big), & \rho>\frac12.
+\end{cases}
+\]
+\end{lemma}
+
+\begin{proof}
+Let $e(t)=F(\theta(t))-F_\infty\ge0$, and let $t_0$ be such that $\theta(t)$ stays in the neighborhood for $t\ge t_0$. If $e$ vanishes at some time, $\theta$ is constant afterwards. Otherwise $\dot e=-\|\nabla F\|^2\le-c^2e^{2\rho}$, which integrates to the second claim. Moreover $-\frac{d}{dt}e^{1-\rho}=(1-\rho)e^{-\rho}\|\nabla F\|^2\ge c(1-\rho)\|\dot\theta\|$, and integrating over $[t,\infty)$ gives the first.
+\end{proof}
+
+\begin{theorem}\label{thm:main}
+In the setting above:
+\begin{itemize}
+\item[(a)] \emph{Any limit.} Let $d\ge2$ and $R=R(n,d)$. Then $\|\nabla F\|\ge c\,|F-F_\infty|^{1-1/R}$ near $\theta_\infty$. Hence, if $R>2$,
+\[
+F(\theta(t))-F_\infty=O\big(t^{-\frac{R}{R-2}}\big),\qquad \|\theta(t)-\theta_\infty\|=O\big(t^{-\frac{1}{R-2}}\big),
+\]
+and both decay exponentially if $R=2$, i.e.\ $(n,d)=(1,2)$.
+\item[(b)] \emph{Isolated limit.} Let $L(f)=\|f-f^*\|^2$ and $F_\infty=0$, i.e.\ $\theta_\infty\in\varphi^{-1}(f^*)$. Write $g=\varphi-f^*=(g_1,\dots,g_N)$ in orthonormal coordinates. Let $\cO$ be the local ring of $\C^n$ at $\theta_\infty$, with maximal ideal $\m$, and $I=(g_1,\dots,g_N)\subseteq\cO$. Assume $\theta_\infty$ is isolated in the complex fiber, i.e.\ its multiplicity $\mu:=\dim_\C\cO/I$ is finite. Then $\mu\le k^n$ and $\|\nabla F\|\ge c\,F^{1-\frac1{2\mu}}$ near $\theta_\infty$. Hence convergence is exponential if $\mu=1$, and if $\mu\ge2$
+\[
+F(\theta(t))=O\big(t^{-\frac{\mu}{\mu-1}}\big),\qquad \|\theta(t)-\theta_\infty\|=O\big(t^{-\frac{1}{2\mu-2}}\big).
+\]
+\end{itemize}
+\end{theorem}
+
+\begin{proof}
+\emph{(a)} The polynomial $f=F-F_\infty$ satisfies $f(\theta_\infty)=0$ and $\nabla f(\theta_\infty)=0$. If $\deg f\le1$, then $f\equiv0$. Otherwise apply (DK) to $f$, using that $\deg f\le d$, that $R(n,\cdot)$ is increasing, and that $|f|<1$ near $\theta_\infty$. Then apply Lemma~\ref{lem:rates} with $\rho=1-\frac1R$.
+
+\emph{(b)} Write $\theta^*=\theta_\infty$, so $F=\|g\|^2$.
+
+\emph{Step 1: $\|g(\theta)\|\ge c\,\|\theta-\theta^*\|^{\mu}$ near $\theta^*$.} In $A=\cO/I$, if $\bar\m^{\,j}\neq0$ then, by Nakayama, $A\supsetneq\bar\m\supsetneq\dots\supsetneq\bar\m^{\,j+1}$, so $j<\dim_\C A=\mu$. Hence $\m^\mu\subseteq I$. In particular, for each $i$, $(\theta_i-\theta^*_i)^\mu=\sum_l a_{il}\,g_l$ with $a_{il}\in\cO$ bounded near $\theta^*$, so $|\theta_i-\theta^*_i|^\mu\le C\|g(\theta)\|$ for real $\theta$ near $\theta^*$.
+
+\emph{Step 2: gradient inequality.} By Step 1, $\|\theta-\theta^*\|\le C\,F^{1/(2\mu)}$. Combined with (BL), i.e.\ $2\|\theta-\theta^*\|\,\|\nabla F\|\ge F$, this gives $\|\nabla F\|\ge c\,F^{1-\frac1{2\mu}}$. The rates follow from Lemma~\ref{lem:rates} with $\rho=1-\frac1{2\mu}$.
+
+\emph{Step 3: $\mu\le k^n$.} Let $h_1,\dots,h_n$ be generic $\C$-linear combinations of $g_1,\dots,g_N$. For $j<n$, each irreducible component of $\{h_1=\dots=h_j=0\}\subseteq\C^n$ through $\theta^*$ has dimension $\ge n-j>0$ by Krull's theorem. So it is not contained in $\{g=0\}$, where $\theta^*$ is isolated, and $h_{j+1}$ does not vanish identically on it. Inductively these components have dimension exactly $n-j$, so $\theta^*$ is isolated in $\{h=0\}$. Since $(h_1,\dots,h_n)\subseteq I$, $\mu\le\dim_\C\cO/(h_1,\dots,h_n)$. The right-hand side is the intersection multiplicity of the hypersurfaces $\{h_j=0\}$ at $\theta^*$, which is at most $\prod_j\deg h_j\le k^n$ by Bézout's theorem~\cite[\S12.3]{Ful98}.
+\end{proof}
+
+\begin{remarks}
+(i) \emph{Sharpness.} For $n=1$, $\varphi(\theta)=\theta^\mu$ and $f^*=0$, one has $\mu=k^n$, and $\dot\theta=-2\mu\theta^{2\mu-1}$ gives $F\asymp t^{-\mu/(\mu-1)}$ and $|\theta|\asymp t^{-1/(2\mu-2)}$. In general, Steps 1--2 hold with $\mu$ replaced by the optimal exponent $\nu\le\mu$ of Step 1, and then $\rho=1-\frac1{2\nu}$ is the exact {\L}ojasiewicz exponent of $F$ at $\theta_\infty$~\cite{Gwo99}.
+
+(ii) \emph{Comparison.} In (b), $d=2k$ and $1-\frac1{2k^n}\le1-\frac1{R(n,2k)}$, since $2k^n\le2k(6k-3)^{n-1}$. So (b) improves (a).
+
+(iii) \emph{NTK form.} With $r=f_{\theta(t)}-f^*$ and $K_\theta=d\varphi_\theta\,d\varphi_\theta^*$, one has $\|\nabla F\|^2=4\langle K_\theta r,r\rangle$. So the inequality in (b) reads $\langle K_\theta\hat r,\hat r\rangle\ge c\,\|r\|^{2-2/\mu}$.
+
+(iv) \emph{Scope.} The empirical MSE is covered by replacing $\varphi$ with $\theta\mapsto(f_\theta(x_i))_i$. Isolatedness excludes continuous symmetries. Steps 1--2 still apply on a nonsingular flow-invariant real algebraic subvariety, such as a regular level set of conserved quantities, if $\theta_\infty$ is isolated in the fiber there; $\mu$ is then computed on that subvariety.
+\end{remarks}
+
+\begin{thebibliography}{9}
+\bibitem{BL71} J.~Bochnak, S.~{\L}ojasiewicz, A converse of the Kuiper--Kuo theorem, \emph{Proc.\ Liverpool Singularities Symposium I}, Lecture Notes in Math.\ 192, Springer, 1971.
+\bibitem{DK05} D.~D'Acunto, K.~Kurdyka, Explicit bounds for the {\L}ojasiewicz exponent in the gradient inequality for polynomials, \emph{Ann.\ Polon.\ Math.} 87 (2005), 51--61.
+\bibitem{Ful98} W.~Fulton, \emph{Intersection Theory}, 2nd ed., Springer, 1998.
+\bibitem{Gwo99} J.~Gwo\'zdziewicz, The {\L}ojasiewicz exponent of an analytic function at an isolated zero, \emph{Comment.\ Math.\ Helv.} 74 (1999), 364--375.
+\bibitem{Loj84} S.~{\L}ojasiewicz, Sur les trajectoires du gradient d'une fonction analytique, \emph{Seminari di Geometria 1982--1983}, Universit\`a di Bologna, 1984, 115--117.
+\end{thebibliography}
+
+\end{document}
